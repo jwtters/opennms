@@ -308,6 +308,10 @@
       <bundle>wrap:mvn:jfree/jcommon/1.0.16</bundle>
     </feature>
 
+    <feature name="jldap" description="OpenLDAP :: JLDAP" version="4.3">
+      <bundle>wrap:mvn:com.novell.ldap/jldap/4.3</bundle>
+    </feature>
+
     <feature name="jolokia" description="Jolokia" version="1.2.3">
       <feature>http</feature>
       <bundle>mvn:org.jolokia/jolokia-osgi/1.2.3</bundle>
@@ -991,25 +995,26 @@
       <bundle>mvn:org.opennms/opennms-provision-shell/${project.version}</bundle>
     </feature>
     
-    <feature name="opennms-poller-monitors" description="OpenNMS :: Poller :: Monitors" version="${project.version}">
+    <feature name="opennms-poller-monitors-core" description="OpenNMS :: Poller :: Monitors :: Core" version="${project.version}">
+      <feature>camel-core</feature>
+      <feature>camel-http</feature>
+      <feature>commons-io</feature>
+      <feature>commons-lang</feature>
+      <feature>commons-net</feature>
+      <feature>dnsjava</feature>
+      <feature>hibernate36</feature>
+      <feature>jldap</feature>
       <feature>jolokia-client</feature>
       <feature>json-simple</feature>
+
+      <!-- We really just need org.apache.httpcomponents out of here -->
+      <feature>opennms-core-web</feature>
+      <feature>opennms-icmp-api</feature> 
       <feature>opennms-poller-api</feature>
-      <feature>commons-cli</feature>
-      <feature>commons-jexl</feature>
-      <feature>commons-lang</feature>
-      <feature>commons-io</feature>
-      <feature>smack</feature>
-      <feature>opennms-bootstrap</feature>
-      <feature>opennms-javamail</feature>
-      <feature>castor</feature>
-      <feature>opennms-dao</feature>
-      <feature>opennms-events-daemon</feature>
-      <feature>quartz</feature>
-      <feature>twitter4j</feature>
-      <bundle>mvn:org.opennms/opennms-services/${project.version}</bundle>
+
+      <bundle>mvn:org.opennms.features.poller.monitors/org.opennms.features.poller.monitors.core/${project.version}</bundle>
     </feature>
-    
+
     <feature name="opennms-poller-shell" description="OpenNMS :: Poller :: Shell" version="${project.version}">
       <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.shell/${project.version}</bundle>
     </feature>

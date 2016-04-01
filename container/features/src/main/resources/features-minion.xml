@@ -113,9 +113,8 @@
       <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.registry/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.client-rpc/${project.version}</bundle>
-      <feature>opennms-poller-monitors</feature>
+      <feature>opennms-poller-monitors-core</feature>
     </feature>
-    
     
     <feature name="minion-shell-poller" description="Minion :: Shell :: Poller" version="${project.version}">
       <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.registry/${project.version}</bundle>
