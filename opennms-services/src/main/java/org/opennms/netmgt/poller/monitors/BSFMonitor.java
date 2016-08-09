@@ -44,6 +44,7 @@ import org.apache.bsf.BSFManagerTerminator;
 import org.apache.bsf.util.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
@@ -130,7 +131,7 @@ import org.opennms.netmgt.poller.PollStatus;
  * @author <A HREF="mailto:dschlenk@converge-one.com</A>
  * @author <A HREF="http://www.opennms.org">OpenNMS</A>
  */
-
+@Component
 public class BSFMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(BSFMonitor.class);
 

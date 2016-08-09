@@ -35,6 +35,7 @@ import java.util.Map;
 import org.opennms.core.utils.ParameterMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.opennms.netmgt.icmp.PingConstants;
 import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.poller.Distributable;
@@ -56,6 +57,7 @@ import org.opennms.netmgt.poller.PollStatus;
  */
 
 @Distributable
+@Component
 final public class IcmpMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(IcmpMonitor.class);
     /**

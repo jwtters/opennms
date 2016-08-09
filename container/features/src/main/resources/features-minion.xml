@@ -102,4 +102,12 @@
     <feature name="minion-shell" description="Minion :: Shell" version="${project.version}">
       <feature>minion-shell-provision</feature>
     </feature>
+    
+    <feature name="minion-poller" description="Minion :: Poller" version="${project.version}">
+      <feature>minion-rpc-server</feature>
+      <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.registry/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.client-rpc/${project.version}</bundle>
+    </feature>
+    
 </features>

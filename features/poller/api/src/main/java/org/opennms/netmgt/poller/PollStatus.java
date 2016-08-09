@@ -44,6 +44,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.opennms.core.rpc.api.RpcResponse;
+
 
 /**
  * Represents the status of a node, interface or services
@@ -51,7 +53,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @Embeddable
 @XmlRootElement(name="poll-status")
 @XmlAccessorType(XmlAccessType.NONE)
-public class PollStatus implements Serializable {
+public class PollStatus implements Serializable, RpcResponse {
     private static final long serialVersionUID = 3L;
 
     public static final String PROPERTY_RESPONSE_TIME = "response-time";

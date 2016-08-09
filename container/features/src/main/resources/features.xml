@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<features 
+<features
   name="opennms-${project.version}"
   xmlns="http://karaf.apache.org/xmlns/features/v1.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -948,4 +948,11 @@
       <!-- Dependencies should be available from the parent classloader and from the ONMSGi registry -->
       <bundle>mvn:org.opennms/opennms-provision-shell/${project.version}</bundle>
     </feature>
+    
+    <feature name="opennms-poller-shell" description="OpenNMS :: Poller :: Shell" version="${project.version}">
+      <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.shell/${project.version}</bundle>
+<!--       <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.registry/${project.version}</bundle> -->
+<!--       <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.api/${project.version}</bundle> -->
+    </feature>
+    
 </features>

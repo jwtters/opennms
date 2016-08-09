@@ -36,6 +36,7 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.springframework.stereotype.Component;
 /**
  * <p>LoopMonitor class.</p>
  *
@@ -44,6 +45,7 @@ import org.opennms.netmgt.poller.ServiceMonitor;
  */
 
 @Distributable
+@Component
 public class LoopMonitor implements ServiceMonitor {
 
     /* (non-Javadoc)
