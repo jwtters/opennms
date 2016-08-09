@@ -11,6 +11,9 @@
 
 	<context:annotation-config />
 
+    <context:component-scan base-package="org.opennms.netmgt.poller.monitors"
+      name-generator="org.opennms.netmgt.poller.monitors.MonitorsBeanNameGenerator"/>
+
     <bean id="servicePollerRegistry" class="org.opennms.netmgt.poller.registry.impl.ServicePollerRegistryImpl"/>
     <onmsgi:service interface="org.opennms.netmgt.poller.registry.api.ServicePollerRegistry" ref="servicePollerRegistry"/>
 
