@@ -44,7 +44,7 @@ import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.PollStatus;
 
-@Command(scope = "poller", name = "invoke", description = "Monitor the service on a host at specified location")
+@Command(scope = "poller", name = "poll", description = "Monitor the service on a host at specified location")
 public class PollerCommand extends OsgiCommandSupport {
 
     @Option(name = "-l", aliases = "--location", description = "Location", required = false, multiValued = false)

@@ -10,7 +10,7 @@
     </bean>
 
     <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
-        <command name="poller/invoke">
+        <command name="poller/poll">
             <action class=" org.opennms.netmgt.poller.shell.PollerCommand">
               <property name="locationAwarePollerClient" ref="locationAwarePollerClient"/>
             </action>
