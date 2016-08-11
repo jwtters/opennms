@@ -602,6 +602,11 @@
       <type>tar.gz</type>
       <classifier>etc</classifier>
     </dependency>
+	<dependency>
+		<groupId>org.twitter4j</groupId>
+		<artifactId>twitter4j-core</artifactId>
+		<version>3.0.6</version>
+	</dependency>
 
     <!-- Apache Karaf features.xml artifacts -->
     <dependency>
@@ -710,5 +715,16 @@
       <name>Coova Repository</name>
       <url>http://maven.opennms.org/content/repositories/coova/</url>
     </repository>
+	<repository>
+		<snapshots>
+			<enabled>false</enabled>
+		</snapshots>
+		<releases>
+			<enabled>true</enabled>
+		</releases>
+		<id>jboss-repo</id>
+		<name>JBoss Repository</name>
+		<url>http://maven.opennms.org/content/repositories/jboss-repo/</url>
+	</repository>
   </repositories>
 </project>

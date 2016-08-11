@@ -48,7 +48,7 @@ import org.springframework.stereotype.Component;
  */
 @Distributable
 @Component
-final public class HttpsMonitor extends HttpMonitor {
+public class HttpsMonitor extends HttpMonitor {
 
     /**
      * Default HTTPS ports.

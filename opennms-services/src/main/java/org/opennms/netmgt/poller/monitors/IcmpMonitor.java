@@ -58,7 +58,7 @@ import org.opennms.netmgt.poller.PollStatus;
 
 @Distributable
 @Component
-final public class IcmpMonitor extends AbstractServiceMonitor {
+public class IcmpMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(IcmpMonitor.class);
     /**
      * Constructs a new monitor.

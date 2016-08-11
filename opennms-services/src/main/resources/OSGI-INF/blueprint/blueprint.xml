@@ -9,19 +9,27 @@
 		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
-
+<!-- 
 	<service interface="org.opennms.netmgt.poller.ServiceMonitor">
 		<bean class="org.opennms.netmgt.poller.monitors.IcmpMonitor" />
-	</service>
+	</service> -->
 	
+	<bean id="icmp" class="org.opennms.netmgt.poller.monitors.IcmpMonitor"> </bean>
+	<service id="icmpMonitor" ref="icmp" interface="org.opennms.netmgt.poller.ServiceMonitor"> </service>
 	
-	<service interface="org.opennms.netmgt.poller.ServiceMonitor">
+	<bean id="ftp" class="org.opennms.netmgt.poller.monitors.FtpMonitor"> </bean>
+	<service id="ftpMonitor" ref="ftp" interface="org.opennms.netmgt.poller.ServiceMonitor"> </service>
+	
+    <bean id="loop" class="org.opennms.netmgt.poller.monitors.LoopMonitor"> </bean>
+	<service id="loopMonitor" ref="loop" interface="org.opennms.netmgt.poller.ServiceMonitor"> </service>
+	
+<!-- 	<service interface="org.opennms.netmgt.poller.ServiceMonitor">
 		<bean class="org.opennms.netmgt.poller.monitors.FtpMonitor" />
-	</service>
+	</service> -->
 
 
 	<service interface="org.opennms.netmgt.poller.ServiceMonitor">
 		<bean class="org.opennms.netmgt.poller.monitors.HttpsMonitor" />
-	</service>
+	</service> 
 	
 </blueprint>

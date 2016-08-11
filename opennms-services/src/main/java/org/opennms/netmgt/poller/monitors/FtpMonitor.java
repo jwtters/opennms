@@ -63,7 +63,7 @@ import org.springframework.stereotype.Component;
  */
 @Distributable
 @Component
-final public class FtpMonitor extends AbstractServiceMonitor {
+public class FtpMonitor extends AbstractServiceMonitor {
     
     
     public static final Logger LOG = LoggerFactory.getLogger(FtpMonitor.class);

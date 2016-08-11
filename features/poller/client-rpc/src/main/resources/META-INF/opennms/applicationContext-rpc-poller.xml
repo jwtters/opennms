@@ -22,4 +22,6 @@
     <bean id="locationAwarePollerClient" class="org.opennms.netmgt.poller.client.rpc.LocationAwarePollerClientImpl" />
     <onmsgi:service interface="org.opennms.netmgt.poller.LocationAwarePollerClient" ref="locationAwarePollerClient"/>
 
+    <bean id="pollerExecutor" class="java.util.concurrent.Executors" factory-method="newCachedThreadPool"/>
+    
 </beans>

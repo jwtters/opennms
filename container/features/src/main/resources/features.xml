@@ -280,6 +280,7 @@
       <bundle>wrap:mvn:javax.mail/mail/1.4.5</bundle>
     </feature>
 
+
     <!-- This feature contains all of the dependencies from the dependencies/jaxb/pom.xml -->
     <feature name="jaxb" description="EclipseLink :: MOXy" version="${eclipselinkVersion}">
       <feature>javax.mail</feature>
@@ -312,6 +313,10 @@
       <bundle>mvn:org.jolokia/jolokia-osgi/1.2.3</bundle>
     </feature>
 
+    <feature name="jolokia-client" description="Jolokia-Client" version="1.1.5">
+      <bundle>mvn:org.jolokia/jolokia-client-java/1.1.5</bundle>
+    </feature>
+    
     <feature name="jrobin" description="JRobin" version="1.6.0-SNAPSHOT">
       <bundle>mvn:org.jrobin/jrobin/1.6.0-SNAPSHOT</bundle>
     </feature>
@@ -328,6 +333,10 @@
 
     <feature name="org.json" description="org.json" version="20140107">
       <bundle>wrap:mvn:org.json/json/20140107$Export-Package=org.json</bundle>
+    </feature>
+    
+    <feature name="json-simple" description="json-simple" version="1.1.1">
+      <bundle>wrap:mvn:com.googlecode.json-simple/json-simple/1.1.1</bundle>
     </feature>
 
     <feature name="postgresql" description="PostgreSQL :: JDBC Driver" version="${postgresqlVersion}">
@@ -364,8 +373,23 @@
     <feature name="jicmp6" description="jicmp6" version="1.2.1">
       <bundle>wrap:mvn:org.opennms/jicmp6-api/1.2.1$Export-Package=org.opennms.protocols.icmp6</bundle>
     </feature>
-
+    
+    <feature name="quartz" description="quartz" version="1.6.5">
+      <bundle>wrap:mvn:org.opensymphony.quartz/quartz/1.6.5</bundle>
+    </feature>
+    
+    <feature name="twitter4j" description="twitter4j" version="3.0.6">
+      <bundle>wrap:mvn:org.twitter4j/twitter4j-core/3.0.6</bundle>
+    </feature>
+    
     <!-- OpenNMS features -->
+    
+    
+    <feature name="opennms-bootstrap" description="opennms-bootstrap" version="${project.version}">
+      <bundle>wrap:mvn:org.opennms/opennms-bootstrap/${project.version}</bundle>
+    </feature>
+    
+    
     <feature name="opennms-core" description="OpenNMS :: Core" version="${project.version}">
       <feature version="[4.0,4.1)">spring</feature>
       <feature version="[4.0,4.1)">spring-orm</feature>
@@ -890,6 +914,14 @@
       <bundle>mvn:org.opennms/opennms-webapp/${project.version}/war</bundle>
     </feature>
 
+    <feature name="smack" description="smack-dependencies" version="4.0.6">
+      <bundle>wrap:mvn:org.igniterealtime.smack/smack-core/4.0.6</bundle>
+      <bundle>wrap:mvn:org.igniterealtime.smack/smack-tcp/4.0.6</bundle>
+      <bundle>wrap:mvn:org.igniterealtime.smack/smack-extensions/4.0.6</bundle>
+      <bundle>wrap:mvn:org.igniterealtime.smack/smack-resolver-javax/4.0.6</bundle>
+      <bundle>wrap:mvn:xmlpull/xmlpull/1.1.3.1</bundle>
+    </feature>
+    
     <feature name="wsman-integration" version="${project.version}" description="OpenNMS :: Features :: WS-Man Integration">
       <feature>opennms-collection-api</feature>
       <feature>opennms-provisioning-api</feature>
@@ -951,10 +983,27 @@
       <bundle>mvn:org.opennms/opennms-provision-shell/${project.version}</bundle>
     </feature>
     
+    <feature name="opennms-poller-monitors" description="OpenNMS :: Poller :: Monitors" version="${project.version}">
+      <feature>jolokia-client</feature>
+      <feature>json-simple</feature>
+      <feature>opennms-poller-api</feature>
+      <feature>commons-cli</feature>
+      <feature>commons-jexl</feature>
+      <feature>commons-lang</feature>
+      <feature>commons-io</feature>
+      <feature>smack</feature>
+      <feature>opennms-bootstrap</feature>
+      <feature>opennms-javamail</feature>
+      <feature>castor</feature>
+      <feature>opennms-dao</feature>
+      <feature>opennms-events-daemon</feature>
+      <feature>quartz</feature>
+      <feature>twitter4j</feature>
+      <bundle>mvn:org.opennms/opennms-services/${project.version}</bundle>
+    </feature>
+    
     <feature name="opennms-poller-shell" description="OpenNMS :: Poller :: Shell" version="${project.version}">
       <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.shell/${project.version}</bundle>
-<!--       <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.registry/${project.version}</bundle> -->
-<!--       <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.api/${project.version}</bundle> -->
     </feature>
     
 </features>

@@ -58,7 +58,7 @@ public class ServicePollerRegistryImpl implements ServicePollerRegistry, Initial
                 onBind(serviceMonitor, props);
             }
         }
-        LOG.debug("Registered ServiceMonitors classes are: {}",  getClassNames());
+        LOG.debug("Registered ServiceMonitors classes are: {}", getClassNames());
     }
 
     @SuppressWarnings({ "rawtypes" })

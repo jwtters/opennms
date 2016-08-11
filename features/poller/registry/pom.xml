@@ -31,5 +31,9 @@
       <groupId>org.opennms.features.poller</groupId>
       <artifactId>org.opennms.features.poller.api</artifactId>
     </dependency>
+    <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.core</artifactId>
+      </dependency>
   </dependencies>
 </project>

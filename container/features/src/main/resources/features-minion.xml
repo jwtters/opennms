@@ -101,9 +101,12 @@
       <bundle>mvn:org.opennms/opennms-detector-registry/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.minion.shell/org.opennms.features.minion.shell.provision/${project.version}</bundle>
     </feature>
+    
 
     <feature name="minion-shell" description="Minion :: Shell" version="${project.version}">
       <feature>minion-shell-provision</feature>
+      <feature>minion-shell-poller</feature>
+      <feature>minion-rpc-server</feature>
       <feature>opennms-model</feature>
       <feature>commons-lang</feature>
     </feature>
@@ -113,6 +116,13 @@
       <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.registry/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.client-rpc/${project.version}</bundle>
+      <feature>opennms-poller-monitors</feature>
+    </feature>
+    
+    
+    <feature name="minion-shell-poller" description="Minion :: Shell :: Poller" version="${project.version}">
+      <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.registry/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.minion.shell/org.opennms.features.minion.shell.poller/${project.version}</bundle>
     </feature>
     
 </features>
