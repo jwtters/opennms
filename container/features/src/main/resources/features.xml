@@ -652,7 +652,7 @@
       <feature>hibernate36</feature>
 
       <feature>opennms-core</feature>
-
+      <feature>opennms-core-rpc-xml</feature>
       <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.api/${project.version}</bundle>
     </feature>
 
@@ -702,6 +702,14 @@
       <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.model/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.repository/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.sdo/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-core-rpc-api" description="OpenNMS :: Core :: RPC :: API" version="${project.version}">
+      <bundle>mvn:org.opennms.core.rpc/org.opennms.core.rpc.api/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-core-rpc-xml" description="OpenNMS :: Core :: RPC :: XML" version="${project.version}">
+      <bundle>mvn:org.opennms.core.rpc/org.opennms.core.rpc.xml/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-rrd-api" description="OpenNMS :: RRD :: API" version="${project.version}">

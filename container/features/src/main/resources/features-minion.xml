@@ -21,7 +21,6 @@
 
     <feature name="opennms-discoverer" description="OpenNMS :: Discovery :: Discoverer" version="${project.version}">
       <feature>minion-core-api</feature>
-      <feature>minion-rpc-server</feature>
       <feature>opennms-dao-minion</feature>
       <feature>opennms-discovery</feature>
       <feature>opennms-icmp-jna</feature>
@@ -31,7 +30,6 @@
     <feature name="opennms-syslogd-handler-minion" description="OpenNMS :: Syslogd :: Handler :: Minion" version="${project.version}">
       <feature>camel-blueprint</feature>
       <feature>minion-core-api</feature>
-      <feature>minion-rpc-server</feature>
       <feature>opennms-dao-minion</feature>
       <feature>opennms-syslogd</feature>
       <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-handler-minion</bundle>
@@ -48,7 +46,6 @@
     <feature name="opennms-trapd-handler-minion" description="OpenNMS :: Trapd :: Handler :: Minion" version="${project.version}">
       <feature>camel-blueprint</feature>
       <feature>minion-core-api</feature>
-      <feature>minion-rpc-server</feature>
       <feature>opennms-dao-minion</feature>
       <feature>opennms-trapd</feature>
       <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}/xml/blueprint-trapd-handler-minion</bundle>
