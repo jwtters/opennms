@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerRequestBuilder;
+import org.opennms.netmgt.poller.ServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +38,11 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder{
 
     @Override
     public PollerRequestBuilder withServiceName(String serviceName) {
+        this.className = client.getRegistry().getClassNameByServiceName(serviceName);
+        ServiceMonitor serviceMonitor = client.getRegistry().getMonitorByClassName(className);
+        if (serviceMonitor == null) {
+            throw new IllegalArgumentException("No poller found with serviceName " + className);
+        }
         this.serviceName = serviceName;
         return this;
     }

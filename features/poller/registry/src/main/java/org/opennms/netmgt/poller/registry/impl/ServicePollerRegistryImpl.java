@@ -48,6 +48,8 @@ public class ServicePollerRegistryImpl implements ServicePollerRegistry, Initial
     Set<ServiceMonitor> m_serviceMonitors;
 
     private final Map<String, ServiceMonitor> m_monitorsByClassName = new HashMap<>();
+    
+    private final Map<String, String> m_classNameByServiceName = new HashMap<>();
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -66,7 +68,9 @@ public class ServicePollerRegistryImpl implements ServicePollerRegistry, Initial
         LOG.debug("bind called with {}: {}", serviceMonitor, properties);
         if (serviceMonitor != null) {
             final String className = serviceMonitor.getClass().getCanonicalName();
+            final String serviceName = className.substring(className.lastIndexOf(".") + 1).trim();
             m_monitorsByClassName.put(className, serviceMonitor);
+            m_classNameByServiceName.put(serviceName, className);
         }
     }
 
@@ -87,6 +91,16 @@ public class ServicePollerRegistryImpl implements ServicePollerRegistry, Initial
     @Override
     public Set<String> getClassNames() {
         return Collections.unmodifiableSet(m_monitorsByClassName.keySet());
+    }
+
+    @Override
+    public Set<String> getServiceNames() {
+        return Collections.unmodifiableSet(m_classNameByServiceName.keySet());
+    }
+
+    @Override
+    public String getClassNameByServiceName(String serviceName) {
+        return m_classNameByServiceName.get(serviceName);
     }
 
 }

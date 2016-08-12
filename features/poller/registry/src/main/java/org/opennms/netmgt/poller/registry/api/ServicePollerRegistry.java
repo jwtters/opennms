@@ -37,5 +37,9 @@ public interface ServicePollerRegistry {
     ServiceMonitor getMonitorByClassName(String className);
     
     Set<String> getClassNames();
+    
+    Set<String> getServiceNames();
+    
+    String getClassNameByServiceName(String serviceName);
 
 }

@@ -15,7 +15,7 @@ public class PollerNameCompleter implements Completer{
     @Override
     public int complete(String buffer, int cursor, List<String> candidates) {
         StringsCompleter serviceNames = new StringsCompleter();
-        serviceNames.getStrings().addAll(servicePollerRegistry.getClassNames());
+        serviceNames.getStrings().addAll(servicePollerRegistry.getServiceNames());
         return serviceNames.complete(buffer, cursor, candidates);
     }
 

@@ -65,7 +65,7 @@ public class PollerCommand extends OsgiCommandSupport {
     protected Object doExecute() throws Exception {
 
         final CompletableFuture<PollStatus> future = locationAwarePollerClient.poll().withLocation(m_location)
-                .withClassName(serviceName).withAddress(InetAddress.getByName(m_host))
+                .withServiceName(serviceName).withAddress(InetAddress.getByName(m_host))
                 .withAttributes(parse(attributes)).execute();
         
         while (true) {
