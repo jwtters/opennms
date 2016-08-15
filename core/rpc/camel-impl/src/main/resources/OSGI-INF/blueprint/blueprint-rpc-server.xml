@@ -17,6 +17,11 @@
     <!-- Provided by minion-core -->
     <reference id="queuingservice" interface="org.apache.camel.Component" filter="(alias=opennms.broker)" />
 
+    <!-- Reduces the graceful shutdown time from 300 to 15 seconds. -->
+    <bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
+        <property name="timeout" value="15"/>
+    </bean>
+
     <camelContext id="rpcServer" xmlns="http://camel.apache.org/schema/blueprint">
         <!-- The routes are managed by the CamelRpcServerRouteManager  -->
     </camelContext>
