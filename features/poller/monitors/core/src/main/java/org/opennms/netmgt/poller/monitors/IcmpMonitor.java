@@ -35,8 +35,10 @@ import java.util.Map;
 import org.opennms.core.utils.ParameterMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.opennms.netmgt.icmp.PingConstants;
+import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -60,6 +62,10 @@ import org.opennms.netmgt.poller.PollStatus;
 @Component
 public class IcmpMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(IcmpMonitor.class);
+
+    @Autowired
+    private Pinger pinger;
+
     /**
      * Constructs a new monitor.
      *
@@ -102,7 +108,7 @@ public class IcmpMonitor extends AbstractServiceMonitor {
             long timeout = ParameterMap.getKeyedLong(parameters, "timeout", PingConstants.DEFAULT_TIMEOUT);
             int packetSize = ParameterMap.getKeyedInteger(parameters, "packet-size", PingConstants.DEFAULT_PACKET_SIZE);
             
-            rtt = PingerFactory.getInstance().ping(host, timeout, retries,packetSize);
+            rtt = pinger.ping(host, timeout, retries,packetSize);
         } catch (Throwable e) {
             LOG.debug("failed to ping {}", host, e);
         }
@@ -115,5 +121,9 @@ public class IcmpMonitor extends AbstractServiceMonitor {
         }
 
     }
+
+	public void setPinger(Pinger pinger) {
+		this.pinger = pinger;
+	}
 
 }
