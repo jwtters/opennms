@@ -44,43 +44,42 @@ import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.PollStatus;
 
-@Command(scope = "poller", name = "poll", description = "Monitor the service on a host at specified location")
-public class PollerCommand extends OsgiCommandSupport {
+@Command(scope = "poller", name = "poll", description = "Used to invoke a monitor against a host at a specified location")
+public class Poll extends OsgiCommandSupport {
 
     @Option(name = "-l", aliases = "--location", description = "Location", required = false, multiValued = false)
-    String m_location;
+    String location;
 
-    @Argument(index = 0, name = "monitorType", description = "Service to monitor", required = true, multiValued = false)
-    String serviceName;
+    @Argument(index = 0, name = "monitorClass", description = "Monitor class", required = true, multiValued = false)
+    String className;
 
-    @Argument(index = 1, name = "host", description = "Hostname or IP Address of the system to monitor", required = true, multiValued = false)
-    String m_host;
+    @Argument(index = 1, name = "host", description = "Hostname or IP Address of the system to poll", required = true, multiValued = false)
+    String host;
 
-    @Argument(index = 2, name = "attributes", description = "Monitor attributes in key=value form", multiValued = true)
+    @Argument(index = 2, name = "attributes", description = "Monitor specific attributes in key=value form", multiValued = true)
     List<String> attributes;
 
     private LocationAwarePollerClient locationAwarePollerClient;
 
     @Override
     protected Object doExecute() throws Exception {
-
-        final CompletableFuture<PollStatus> future = locationAwarePollerClient.poll().withLocation(m_location)
-                .withServiceName(serviceName).withAddress(InetAddress.getByName(m_host))
+        final CompletableFuture<PollStatus> future = locationAwarePollerClient.poll().withLocation(location)
+                .withClassName(className).withAddress(InetAddress.getByName(host))
                 .withAttributes(parse(attributes)).execute();
-        
+
         while (true) {
             try {
                 try {
                     PollStatus pollStatus = future.get(1, TimeUnit.SECONDS);
                     if (pollStatus.getStatusCode() == PollStatus.SERVICE_AVAILABLE) {
-                        System.out.printf("%s service available on %s \n", serviceName, m_host);
+                        System.out.printf("Poll with %s was succesful on %s \n", className, host);
                     }else {
-                        System.out.printf("%s service not available on %s \n", serviceName, m_host);
+                        System.out.printf("Poll with %s failed on %s \n", className, host);
                     }
                 } catch (InterruptedException e) {
                     System.out.println("\nInterrupted.");
                 } catch (ExecutionException e) {
-                    System.out.printf("\nPolling failed with: %s\n", e);
+                    System.out.printf("\nPoll failed with: %s\n", e);
                 }
                 break;
             } catch (TimeoutException e) {

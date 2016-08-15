@@ -26,16 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller.registry.api;
+package org.opennms.netmgt.poller.shell;
 
-import java.util.Set;
+import java.util.List;
 
-import org.opennms.netmgt.poller.ServiceMonitor;
+import org.apache.karaf.shell.console.Completer;
+import org.apache.karaf.shell.console.completer.StringsCompleter;
+import org.opennms.netmgt.poller.registry.api.ServicePollerRegistry;
 
-public interface ServicePollerRegistry {
+public class MonitorClassNameCompleter implements Completer{
 
-    ServiceMonitor getMonitorByClassName(String className);
+    private ServicePollerRegistry servicePollerRegistry;
+    
+    @Override
+    public int complete(String buffer, int cursor, List<String> candidates) {
+        StringsCompleter serviceNames = new StringsCompleter();
+        serviceNames.getStrings().addAll(servicePollerRegistry.getClassNames());
+        return serviceNames.complete(buffer, cursor, candidates);
+    }
 
-    Set<String> getClassNames();
+    public void setServicePollerRegistry(ServicePollerRegistry servicePollerRegistry) {
+        this.servicePollerRegistry = servicePollerRegistry;
+    }
 
 }

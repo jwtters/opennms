@@ -1,7 +1,8 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
-	xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
-	xsi:schemaLocation="
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+    xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
+    xsi:schemaLocation="
 		http://www.osgi.org/xmlns/blueprint/v1.0.0 
 		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
 		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
@@ -9,27 +10,33 @@
 		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
-<!-- 
-	<service interface="org.opennms.netmgt.poller.ServiceMonitor">
-		<bean class="org.opennms.netmgt.poller.monitors.IcmpMonitor" />
-	</service> -->
-	
-	<bean id="icmp" class="org.opennms.netmgt.poller.monitors.IcmpMonitor"> </bean>
-	<service id="icmpMonitor" ref="icmp" interface="org.opennms.netmgt.poller.ServiceMonitor"> </service>
-	
-	<bean id="ftp" class="org.opennms.netmgt.poller.monitors.FtpMonitor"> </bean>
-	<service id="ftpMonitor" ref="ftp" interface="org.opennms.netmgt.poller.ServiceMonitor"> </service>
-	
-    <bean id="loop" class="org.opennms.netmgt.poller.monitors.LoopMonitor"> </bean>
-	<service id="loopMonitor" ref="loop" interface="org.opennms.netmgt.poller.ServiceMonitor"> </service>
-	
-<!-- 	<service interface="org.opennms.netmgt.poller.ServiceMonitor">
-		<bean class="org.opennms.netmgt.poller.monitors.FtpMonitor" />
-	</service> -->
 
+    <bean id="icmpMonitor" class="org.opennms.netmgt.poller.monitors.IcmpMonitor" />
+    <service ref="icmpMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+        <service-properties>
+            <entry key="type" value="org.opennms.netmgt.poller.monitors.IcmpMonitor" />
+        </service-properties>
+    </service>
 
-	<service interface="org.opennms.netmgt.poller.ServiceMonitor">
-		<bean class="org.opennms.netmgt.poller.monitors.HttpsMonitor" />
-	</service> 
-	
+    <bean id="ftpMonitor" class="org.opennms.netmgt.poller.monitors.FtpMonitor" />
+    <service ref="ftpMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+        <service-properties>
+            <entry key="type" value="org.opennms.netmgt.poller.monitors.FtpMonitor" />
+        </service-properties>
+    </service>
+
+    <bean id="loopMonitor" class="org.opennms.netmgt.poller.monitors.LoopMonitor" />
+    <service ref="loopMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+        <service-properties>
+            <entry key="type" value="org.opennms.netmgt.poller.monitors.LoopMonitor" />
+        </service-properties>
+    </service>
+
+    <bean id="httpsMonitor" class="org.opennms.netmgt.poller.monitors.HttpsMonitor" />
+    <service ref="httpsMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+        <service-properties>
+            <entry key="type" value="org.opennms.netmgt.poller.monitors.HttpsMonitor" />
+        </service-properties>
+    </service>
+
 </blueprint>

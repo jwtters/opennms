@@ -40,24 +40,25 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.collect.ImmutableMap;
+
 public class ServicePollerRegistryImpl implements ServicePollerRegistry, InitializingBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(ServicePollerRegistryImpl.class);
+
+    private static final String TYPE = "type";
 
     @Autowired(required = false)
     Set<ServiceMonitor> m_serviceMonitors;
 
     private final Map<String, ServiceMonitor> m_monitorsByClassName = new HashMap<>();
-    
-    private final Map<String, String> m_classNameByServiceName = new HashMap<>();
 
     @Override
     public void afterPropertiesSet() throws Exception {
         LOG.debug("afterPropertiesSet called , registering monitors");
         if (m_serviceMonitors != null) {
             for (ServiceMonitor serviceMonitor : m_serviceMonitors) {
-                Map<String, String> props = new HashMap<>();
-                onBind(serviceMonitor, props);
+                onBind(serviceMonitor, ImmutableMap.of(TYPE, serviceMonitor.getClass().getCanonicalName()));
             }
         }
         LOG.debug("Registered ServiceMonitors classes are: {}", getClassNames());
@@ -67,10 +68,13 @@ public class ServicePollerRegistryImpl implements ServicePollerRegistry, Initial
     public synchronized void onBind(ServiceMonitor serviceMonitor, Map properties) {
         LOG.debug("bind called with {}: {}", serviceMonitor, properties);
         if (serviceMonitor != null) {
-            final String className = serviceMonitor.getClass().getCanonicalName();
-            final String serviceName = className.substring(className.lastIndexOf(".") + 1).trim();
+            final String className = getClassName(properties);
+            if (className == null) {
+                LOG.warn("Unable to determine the class name for monitor: {}, with properties: {}. The monitor will not be registered.",
+                        serviceMonitor, properties);
+                return;
+            }
             m_monitorsByClassName.put(className, serviceMonitor);
-            m_classNameByServiceName.put(serviceName, className);
         }
     }
 
@@ -78,7 +82,12 @@ public class ServicePollerRegistryImpl implements ServicePollerRegistry, Initial
     public synchronized void onUnbind(ServiceMonitor serviceMonitor, Map properties) {
         LOG.debug("Unbind called with {}: {}", serviceMonitor, properties);
         if (serviceMonitor != null) {
-            final String className = serviceMonitor.getClass().getCanonicalName();
+            final String className = getClassName(properties);
+            if (className == null) {
+                LOG.warn("Unable to determine the class name for monitor: {}, with properties: {}. The monitor will not be unregistered.",
+                        serviceMonitor, properties);
+                return;
+            }
             m_monitorsByClassName.remove(className, serviceMonitor);
         }
     }
@@ -93,14 +102,12 @@ public class ServicePollerRegistryImpl implements ServicePollerRegistry, Initial
         return Collections.unmodifiableSet(m_monitorsByClassName.keySet());
     }
 
-    @Override
-    public Set<String> getServiceNames() {
-        return Collections.unmodifiableSet(m_classNameByServiceName.keySet());
-    }
-
-    @Override
-    public String getClassNameByServiceName(String serviceName) {
-        return m_classNameByServiceName.get(serviceName);
+    private static String getClassName(Map<?, ?> properties) {
+        final Object type = properties.get(TYPE);
+        if (type != null && type instanceof String) {
+            return (String)type;
+        }
+        return null;
     }
 
 }

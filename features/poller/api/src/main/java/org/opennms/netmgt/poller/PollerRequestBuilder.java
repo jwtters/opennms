@@ -37,8 +37,6 @@ public interface PollerRequestBuilder {
 	
 	PollerRequestBuilder withLocation(String location);
 
-	PollerRequestBuilder withServiceName(String serviceName);
-
 	PollerRequestBuilder withClassName(String className);
 
 	PollerRequestBuilder withAddress(InetAddress address);
