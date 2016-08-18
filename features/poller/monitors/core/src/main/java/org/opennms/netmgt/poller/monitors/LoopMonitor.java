@@ -36,6 +36,7 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerConfigLoader;
 import org.opennms.netmgt.poller.PollerRequest;
 import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.ServiceMonitor;
@@ -123,6 +124,12 @@ public class LoopMonitor implements ServiceMonitor {
         SimpleMonitoredService svc = new SimpleMonitoredService(address, pollerName);
         PollStatus pollStatus = poll(svc, parameters);
         return new PollerResponseImpl(pollStatus);
+    }
+
+    @Override
+    public PollerConfigLoader getConfigLoader() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

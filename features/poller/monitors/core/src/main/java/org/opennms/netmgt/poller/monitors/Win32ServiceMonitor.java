@@ -33,7 +33,6 @@ import java.util.Map;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.monitors.snmp.SnmpMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

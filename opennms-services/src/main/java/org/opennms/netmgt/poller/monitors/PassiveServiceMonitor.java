@@ -35,6 +35,7 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerConfigLoader;
 import org.opennms.netmgt.poller.PollerRequest;
 import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.ServiceMonitor;
@@ -103,6 +104,12 @@ public class PassiveServiceMonitor implements ServiceMonitor {
 
     @Override
     public PollerResponse poll(PollerRequest request) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public PollerConfigLoader getConfigLoader() {
         // TODO Auto-generated method stub
         return null;
     }

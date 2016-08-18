@@ -30,7 +30,6 @@ package org.opennms.netmgt.poller;
 
 import java.util.Map;
 
-
 /**
  * <p>
  * This is the interface that must be implemented by each poller plugin in the
@@ -40,8 +39,8 @@ import java.util.Map;
  *
  * <p>
  * When a service monitor plug-in is loaded and initialized, the framework will
- * initialize the monitor by calling the <EM>initialize()</EM> method.
- * Likewise, when the monitor is unloaded the framework calls the <EM>release()
+ * initialize the monitor by calling the <EM>initialize()</EM> method. Likewise,
+ * when the monitor is unloaded the framework calls the <EM>release()
  * </EM> method is called. If the plug-in needs to save or read any
  * configuration information after the initialize() call, a reference to the
  * proxy object should be saved at initialization.
@@ -60,7 +59,7 @@ import java.util.Map;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public interface ServiceMonitor {
-	
+
     /**
      * <P>
      * This method is called after the framework creates an instance of the
@@ -118,7 +117,8 @@ public interface ServiceMonitor {
      * scheduling.
      * </P>
      *
-     * @param svc TODO
+     * @param svc
+     *            TODO
      * @exception java.lang.RuntimeException
      *                Thrown if an unrecoverable error occurs that prevents the
      *                interface from being monitored.
@@ -139,7 +139,8 @@ public interface ServiceMonitor {
      * logged, but the interface will still be discarded for garbage collection.
      * </P>
      *
-     * @param svc TODO
+     * @param svc
+     *            TODO
      * @exception java.lang.RuntimeException
      *                Thrown if an unrecoverable error occurs that prevents the
      *                interface from being monitored.
@@ -161,7 +162,8 @@ public interface ServiceMonitor {
      * default events by setting the suppress event bit in the returned integer.
      * </P>
      *
-     * @param svc TODO
+     * @param svc
+     *            TODO
      * @param parameters
      *            The package parameters (timeout, retry, etc...) to be used for
      *            this poll.
@@ -176,6 +178,9 @@ public interface ServiceMonitor {
      * @see PollStatus#SERVICE_UNAVAILABLE
      */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters);
-    
+
     public PollerResponse poll(PollerRequest request);
+
+    public PollerConfigLoader getConfigLoader();
+
 }

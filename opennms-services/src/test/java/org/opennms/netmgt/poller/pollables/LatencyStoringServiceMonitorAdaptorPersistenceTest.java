@@ -48,6 +48,7 @@ import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockPollerConfig;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerConfigLoader;
 import org.opennms.netmgt.poller.PollerRequest;
 import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.ServiceMonitor;
@@ -179,6 +180,12 @@ public class LatencyStoringServiceMonitorAdaptorPersistenceTest {
 
         @Override
         public PollerResponse poll(PollerRequest request) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public PollerConfigLoader getConfigLoader() {
             // TODO Auto-generated method stub
             return null;
         }

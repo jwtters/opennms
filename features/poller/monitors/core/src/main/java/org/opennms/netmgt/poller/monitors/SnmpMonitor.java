@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller.monitors.snmp;
+package org.opennms.netmgt.poller.monitors;
 
 import java.net.InetAddress;
 import java.util.List;

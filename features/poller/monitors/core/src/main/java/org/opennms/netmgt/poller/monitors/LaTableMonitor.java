@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller.monitors.snmp;
+package org.opennms.netmgt.poller.monitors;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * <p>
- * Check for process via UCD-SNMP-MIB .
+ * Check for load average via UCD-SNMP-MIB .
  * </p>
  * <p>
  * This does SNMP and therefore relies on the SNMP configuration so it is not distributable.
@@ -61,12 +61,13 @@ import org.slf4j.LoggerFactory;
  */
 
 @Distributable(DistributionContext.DAEMON)
-final public class PrTableMonitor extends SnmpMonitorStrategy {
-    public static final Logger LOG = LoggerFactory.getLogger(PrTableMonitor.class);
-    private static final String m_serviceName = "Pr-Table";
+final public class LaTableMonitor extends SnmpMonitorStrategy {
+    public static final Logger LOG = LoggerFactory.getLogger(LaTableMonitor.class);
 
-    private static final String prTableErrorFlag = "1.3.6.1.4.1.2021.2.1.100";
-    private static final String prTableErrorMsg = "1.3.6.1.4.1.2021.2.1.101";
+    private static final String m_serviceName = "La-Table";
+
+    private static final String laTableErrorFlag = "1.3.6.1.4.1.2021.10.1.100";
+    private static final String laTableErrorMsg = "1.3.6.1.4.1.2021.10.1.101";
 
     /**
      * <P>
@@ -90,7 +91,7 @@ final public class PrTableMonitor extends SnmpMonitorStrategy {
      *                plug-in from functioning.
      */
     public void initialize(Map<String, Object> parameters) {
-        return;
+
     }
 
     /**
@@ -142,26 +143,26 @@ final public class PrTableMonitor extends SnmpMonitorStrategy {
 
         try {
             LOG.debug("PrTableMonitor.poll: SnmpAgentConfig address: {}", agentConfig);
-            SnmpObjId prTableErrorSnmpObject = SnmpObjId.get(prTableErrorFlag);
+            SnmpObjId laTableErrorSnmpObject = SnmpObjId.get(laTableErrorFlag);
 
-            Map<SnmpInstId, SnmpValue> flagResults = SnmpUtils.getOidValues(agentConfig, "PrTableMonitor", prTableErrorSnmpObject);
+            Map<SnmpInstId, SnmpValue> flagResults = SnmpUtils.getOidValues(agentConfig, "LaTableMonitor", laTableErrorSnmpObject);
 
             if(flagResults.size() == 0) {
-                LOG.debug("SNMP poll failed: no results, addr={} oid={}", hostAddress, prTableErrorSnmpObject);
+                LOG.debug("SNMP poll failed: no results, addr={} oid={}", hostAddress, laTableErrorSnmpObject);
                 return PollStatus.unavailable();
             }
 
             for (Map.Entry<SnmpInstId, SnmpValue> e : flagResults.entrySet()) { 
-                LOG.debug("poll: SNMPwalk poll succeeded, addr={} oid={} instance={} value={}", hostAddress, prTableErrorSnmpObject, e.getKey(), e.getValue());
+                LOG.debug("poll: SNMPwalk poll succeeded, addr={} oid={} instance={} value={}", hostAddress, laTableErrorSnmpObject, e.getKey(), e.getValue());
 
                 if (e.getValue().toString().equals("1")) {
-                    LOG.debug("PrTableMonitor.poll: found errorFlag=1");
+                    LOG.debug("LaTableMonitor.poll: found errorFlag=1");
 
-                    SnmpObjId prTableErrorMsgSnmpObject = SnmpObjId.get(prTableErrorMsg + "." + e.getKey().toString());
-                    String PrErrorMsg = SnmpUtils.get(agentConfig,prTableErrorMsgSnmpObject).toDisplayString();
+                    SnmpObjId laTableErrorMsgSnmpObject = SnmpObjId.get(laTableErrorMsg + "." + e.getKey().toString());
+                    String LaErrorMsg = SnmpUtils.get(agentConfig,laTableErrorMsgSnmpObject).toDisplayString();
 
                     //Stash the error in an ArrayList to then enumerate over later
-                    errorStringReturn.add(PrErrorMsg);
+                    errorStringReturn.add(LaErrorMsg);
                 }
             }
 
@@ -183,7 +184,7 @@ final public class PrTableMonitor extends SnmpMonitorStrategy {
             return PollStatus.unavailable(reason1);
         } catch (Throwable t) {
             String reason1 = "Unexpected exception during SNMP poll of interface " + hostAddress;
-            LOG.warn(reason1, t);
+            LOG.warn(reason1);
             return PollStatus.unavailable(reason1);
         }
 

@@ -26,11 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller.monitors.snmp;
-
+package org.opennms.netmgt.poller.monitors;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
@@ -49,38 +47,51 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <p>
- * Check for Log matches via UCD-SNMP-MIB .
- * </p>
+ * <P>
+ * This class is designed to be used by the service poller framework to test the
+ * status of PERC raid controllers on Dell Servers. The class implements
+ * the ServiceMonitor interface that allows it to be used along with other
+ * plug-ins by the service poller framework.
+ * </P>
  * <p>
  * This does SNMP and therefore relies on the SNMP configuration so it is not distributable.
  * </p>
  *
- * @author <A HREF="mailto:cliles@capario.com">Chris Liles</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</a>
- * @version $Id: $
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-
 @Distributable(DistributionContext.DAEMON)
-final public class LogMatchTableMonitor extends SnmpMonitorStrategy {
-    public static final Logger LOG = LoggerFactory.getLogger(LogMatchTableMonitor.class);
-
-    private static final String m_serviceName = "LogMatch-Table";
-
-    private static final String lmTableErrorFlag = "1.3.6.1.4.1.2021.16.2.1.100";
-    private static final String lmTableFileName = "1.3.6.1.4.1.2021.16.2.1.3";
-    private static final String lmTableRegEx = "1.3.6.1.4.1.2021.16.2.1.4";
-    private static final String lmTableCount = "1.3.6.1.4.1.2021.16.2.1.10";
+final public class PercMonitor extends SnmpMonitorStrategy {
+    
+    
+    public static final Logger LOG = LoggerFactory.getLogger(PercMonitor.class);
+    
+    /**
+     * Name of monitored service.
+     */
+    private static final String SERVICE_NAME = "PERC";
 
     /**
+     * The base OID for the logical device status information
+     */
+    private static final String LOGICAL_BASE_OID = ".1.3.6.1.4.1.3582.1.1.2.1.3";
+
+    /**
+     * The base OID for the physical device status information
+     */
+    private static final String PHYSICAL_BASE_OID = ".1.3.6.1.4.1.3582.1.1.3.1.4";
+
+    private static final String ARRAY_POSITION_BASE_OID = ".1.3.6.1.4.1.3582.1.1.3.1.5";
+    
+    /**
      * <P>
-     * Returns the name of the service that the plug-in monitors ("LogMatch-Table").
+     * Returns the name of the service that the plug-in monitors ("SNMP").
      * </P>
      *
      * @return The service that the plug-in monitors.
      */
     public String serviceName() {
-        return m_serviceName;
+        return SERVICE_NAME;
     }
 
     /**
@@ -93,8 +104,9 @@ final public class LogMatchTableMonitor extends SnmpMonitorStrategy {
      *                Thrown if an unrecoverable error occurs that prevents the
      *                plug-in from functioning.
      */
+    @Override
     public void initialize(Map<String, Object> parameters) {
-        return;
+ 
     }
 
     /**
@@ -109,6 +121,7 @@ final public class LogMatchTableMonitor extends SnmpMonitorStrategy {
      *                interface from being monitored.
      * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
      */
+    @Override
     public void initialize(MonitoredService svc) {
         super.initialize(svc);
         return;
@@ -124,76 +137,97 @@ final public class LogMatchTableMonitor extends SnmpMonitorStrategy {
      * @exception RuntimeException
      *                Thrown for any uncrecoverable errors.
      */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
 
-        PollStatus status = PollStatus.available();
+        PollStatus status = PollStatus.unavailable();
         InetAddress ipaddr = (InetAddress) iface.getAddress();
 
-        ArrayList<String> errorStringReturn = new ArrayList<String>();
-
         // Retrieve this interface's SNMP peer object
+        //
+        // Retrieve this interface's SNMP peer object
+        //
         SnmpAgentConfig agentConfig = getAgentConfig();
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
         final String hostAddress = InetAddressUtils.str(ipaddr);
-        LOG.debug("poll: setting SNMP peer attribute for interface {}", hostAddress);
+		LOG.debug("poll: setting SNMP peer attribute for interface {}", hostAddress);
 
+        // Get configuration parameters
+        //
+        // set timeout and retries on SNMP peer object
+        //
         agentConfig.setTimeout(ParameterMap.getKeyedInteger(parameters, "timeout", agentConfig.getTimeout()));
         agentConfig.setRetries(ParameterMap.getKeyedInteger(parameters, "retry", ParameterMap.getKeyedInteger(parameters, "retries", agentConfig.getRetries())));
         agentConfig.setPort(ParameterMap.getKeyedInteger(parameters, "port", agentConfig.getPort()));
+        
+        String arrayNumber = ParameterMap.getKeyedString(parameters,"array","0.0");
 
         LOG.debug("poll: service= SNMP address= {}", agentConfig);
 
+        // Establish SNMP session with interface
+        //
         try {
-            LOG.debug("PrTableMonitor.poll: SnmpAgentConfig address: {}", agentConfig);
-            SnmpObjId lmTableErrorSnmpObject = SnmpObjId.get(lmTableErrorFlag);
+            LOG.debug("PercMonitor.poll: SnmpAgentConfig address: {}", agentConfig);
+            SnmpObjId snmpObjectId = SnmpObjId.get(LOGICAL_BASE_OID + "." + arrayNumber);
 
-            Map<SnmpInstId, SnmpValue> flagResults = SnmpUtils.getOidValues(agentConfig, "LogMatchTableMonitor", lmTableErrorSnmpObject);
+            // First walk the physical OID Tree and check the returned values 
 
-            if(flagResults.size() == 0) {
-                LOG.debug("SNMP poll failed: no results, addr={} oid={}", hostAddress, lmTableErrorSnmpObject);
-                return PollStatus.unavailable();
+            String returnValue = ""; 
+          
+            SnmpValue value = SnmpUtils.get(agentConfig,snmpObjectId);
+            
+            if (value.toInt()!=2){
+            	LOG.debug("PercMonitor.poll: Bad Disk Found");
+            	returnValue = "log vol(" + arrayNumber + ") degraded"; // XXX should degraded be the virtualDiskState ?
+            	// array is bad
+            	// lets find out which disks are bad in the array
+            	
+            	// first we need to fetch the arrayPosition table.
+            	SnmpObjId arrayPositionSnmpObject = SnmpObjId.get(ARRAY_POSITION_BASE_OID);
+            	SnmpObjId diskStatesSnmpObject = SnmpObjId.get(PHYSICAL_BASE_OID); 
+            	
+            	Map<SnmpInstId,SnmpValue> arrayDisks = SnmpUtils.getOidValues(agentConfig, "PercMonitor", arrayPositionSnmpObject);
+            	Map<SnmpInstId,SnmpValue> diskStates = SnmpUtils.getOidValues(agentConfig, "PercMonitor", diskStatesSnmpObject);
+            	
+            	for (Map.Entry<SnmpInstId, SnmpValue> disk: arrayDisks.entrySet()) {
+            		
+            		if (disk.getValue().toString().contains("A" + arrayNumber + "-")) {
+            			// this is a member of the array
+            			
+            			if ( diskStates.get(disk.getKey()).toInt() !=3 ){
+            				// this is bad disk.
+            				
+            				returnValue  += "phy drv(" + disk.getKey() + ")";
+            				
+            			}
+            			
+            		}
+            
+            		return PollStatus.unavailable(returnValue);
+            	}
+            	
+            	
             }
-
-            for (Map.Entry<SnmpInstId, SnmpValue> e : flagResults.entrySet()) { 
-                LOG.debug("poll: SNMPwalk poll succeeded, addr={} oid={} instance={} value={}", hostAddress, lmTableErrorSnmpObject, e.getKey(), e.getValue());
-
-                if (e.getValue().toString().equals("1")) {
-                    LOG.debug("LogMatchTableMonitor.poll: found errorFlag=1");
-
-                    SnmpObjId lmTableFilenameSnmpObject = SnmpObjId.get(lmTableFileName + "." + e.getKey().toString());
-                    SnmpObjId lmTableRegExSnmpObject = SnmpObjId.get(lmTableRegEx + "." + e.getKey().toString());
-                    SnmpObjId lmTableCountSnmpObject = SnmpObjId.get(lmTableCount + "." + e.getKey().toString());
-
-                    String lmErrorMsg = "Rexeg " + SnmpUtils.get(agentConfig,lmTableRegExSnmpObject).toDisplayString() + ", for log file " + SnmpUtils.get(agentConfig,lmTableFilenameSnmpObject).toDisplayString() + " has matched " + SnmpUtils.get(agentConfig,lmTableCountSnmpObject).toDisplayString() + "time(s).";
-
-                    //Stash the error in an ArrayList to then enumerate over later
-                    errorStringReturn.add(lmErrorMsg);
-                }
-            }
-
-            //Check the arraylist and construct return value
-            if (errorStringReturn.size() > 0) {
-                return PollStatus.unavailable(errorStringReturn.toString());
-            }
-            else {
-                return status;
-            }
+        
+            status = PollStatus.available();
+            
 
         } catch (NumberFormatException e) {
-            String reason1 = "Number operator used on a non-number " + e.getMessage();
-            LOG.error(reason1, e);
-            return PollStatus.unavailable(reason1);
+            String reason = "Number operator used on a non-number " + e.getMessage();
+            LOG.debug(reason);
+            status = PollStatus.unavailable(reason);
         } catch (IllegalArgumentException e) {
-            String reason1 = "Invalid SNMP Criteria: " + e.getMessage();
-            LOG.error(reason1, e);
-            return PollStatus.unavailable(reason1);
+            String reason = "Invalid SNMP Criteria: " + e.getMessage();
+            LOG.debug(reason);
+            status = PollStatus.unavailable(reason);
         } catch (Throwable t) {
-            String reason1 = "Unexpected exception during SNMP poll of interface " + hostAddress;
-            LOG.warn(reason1, t);
-            return PollStatus.unavailable(reason1);
+            String reason = "Unexpected exception during SNMP poll of interface " + hostAddress;
+            LOG.debug(reason, t);
+            status = PollStatus.unavailable(reason);
         }
 
+        return status;
     }
 
 }

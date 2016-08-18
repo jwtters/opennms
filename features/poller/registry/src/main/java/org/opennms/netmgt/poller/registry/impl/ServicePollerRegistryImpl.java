@@ -51,9 +51,6 @@ public class ServicePollerRegistryImpl implements ServicePollerRegistry, Initial
 
     @Autowired(required = false)
     Set<ServiceMonitor> m_serviceMonitors;
-    
-    @Autowired(required = false)
-    Set<PollerConfigLoader> m_configLoaders;
 
     private final Map<String, ServiceMonitor> m_monitorsByClassName = new HashMap<>();
     
@@ -65,11 +62,8 @@ public class ServicePollerRegistryImpl implements ServicePollerRegistry, Initial
         if (m_serviceMonitors != null) {
             for (ServiceMonitor serviceMonitor : m_serviceMonitors) {
                 onBind(serviceMonitor, ImmutableMap.of(TYPE, serviceMonitor.getClass().getCanonicalName()));
-            }
-        }
-        if (m_serviceMonitors != null) {
-            for (PollerConfigLoader configLoader : m_configLoaders) {
-                m_configLoaderByPollerClassName.put(configLoader.getPollerClassName(), configLoader);
+                PollerConfigLoader configLoader = serviceMonitor.getConfigLoader();
+                m_configLoaderByPollerClassName.put(serviceMonitor.getClass().getCanonicalName(), configLoader);
             }
         }
         LOG.debug("Registered ServiceMonitors classes are: {}", getClassNames());
@@ -80,6 +74,7 @@ public class ServicePollerRegistryImpl implements ServicePollerRegistry, Initial
         LOG.debug("bind called with {}: {}", serviceMonitor, properties);
         if (serviceMonitor != null) {
             final String className = getClassName(properties);
+ 
             if (className == null) {
                 LOG.warn("Unable to determine the class name for monitor: {}, with properties: {}. The monitor will not be registered.",
                         serviceMonitor, properties);
@@ -100,6 +95,7 @@ public class ServicePollerRegistryImpl implements ServicePollerRegistry, Initial
                 return;
             }
             m_monitorsByClassName.remove(className, serviceMonitor);
+
         }
     }
 

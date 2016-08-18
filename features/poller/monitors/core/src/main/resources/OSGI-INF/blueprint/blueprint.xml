@@ -23,6 +23,22 @@
 		</service-properties>
 	</service>
 
+
+    <bean id="availabilityMonitor" class="org.opennms.netmgt.poller.monitors.AvailabilityMonitor" />
+    <service ref="availabilityMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+        <service-properties>
+            <entry key="type" value="org.opennms.netmgt.poller.monitors.AvailabilityMonitor" />
+        </service-properties>
+    </service>
+    
+    
+    <bean id="bgpSessionMonitor" class="org.opennms.netmgt.poller.monitors.BgpSessionMonitor" />
+    <service ref="bgpSessionMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+        <service-properties>
+            <entry key="type" value="org.opennms.netmgt.poller.monitors.BgpSessionMonitor" />
+        </service-properties>
+    </service>
+    
     <bean id="ftpMonitor" class="org.opennms.netmgt.poller.monitors.FtpMonitor" />
     <service ref="ftpMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
         <service-properties>
@@ -44,10 +60,10 @@
         </service-properties>
     </service>
 
-    <bean id="snmpMonitor" class="org.opennms.netmgt.poller.monitors.snmp.SnmpMonitor" />
+    <bean id="snmpMonitor" class="org.opennms.netmgt.poller.monitors.SnmpMonitor" />
     <service ref="snmpMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
         <service-properties>
-            <entry key="type" value="org.opennms.netmgt.poller.monitors.snmp.SnmpMonitor" />
+            <entry key="type" value="org.opennms.netmgt.poller.monitors.SnmpMonitor" />
         </service-properties>
     </service>
     
