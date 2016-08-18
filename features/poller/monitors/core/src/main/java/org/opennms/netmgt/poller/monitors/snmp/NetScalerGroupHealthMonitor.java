@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller.monitors;
+package org.opennms.netmgt.poller.monitors.snmp;
 
 import java.net.InetAddress;
 import java.util.HashMap;
@@ -34,7 +34,6 @@ import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -67,7 +66,7 @@ public class NetScalerGroupHealthMonitor extends SnmpMonitorStrategy {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
         InetAddress ipaddr = (InetAddress) iface.getAddress();
 
-        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
+        SnmpAgentConfig agentConfig = getAgentConfig();
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
 
         final String hostAddress = InetAddressUtils.str(ipaddr);

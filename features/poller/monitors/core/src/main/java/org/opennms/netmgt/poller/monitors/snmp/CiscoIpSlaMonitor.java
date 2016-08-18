@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller.monitors;
+package org.opennms.netmgt.poller.monitors.snmp;
 
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -35,7 +35,6 @@ import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -189,15 +188,6 @@ final public class CiscoIpSlaMonitor extends SnmpMonitorStrategy {
      */
     @Override
     public void initialize(Map<String,Object> parameters) {
-        // Initialize the SnmpPeerFactory
-        //
-        try {
-            SnmpPeerFactory.init();
-        } catch (IOException ex) {
-            LOG.error("initialize: Failed to load SNMP configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
-
         return;
     }
 
@@ -241,7 +231,7 @@ final public class CiscoIpSlaMonitor extends SnmpMonitorStrategy {
 
         // Retrieve this interface's SNMP peer object
         //
-        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
+        SnmpAgentConfig agentConfig = getAgentConfig();
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
         final String hostAddress = InetAddressUtils.str(ipaddr);
 		LOG.debug("poll: setting SNMP peer attribute for interface {}", hostAddress);

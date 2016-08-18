@@ -26,10 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller.monitors;
+package org.opennms.netmgt.poller.monitors.snmp;
 
-import java.io.IOException;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +37,6 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -51,6 +48,7 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * <P>
@@ -68,6 +66,7 @@ import org.slf4j.LoggerFactory;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 @Distributable(DistributionContext.DAEMON)
+@Component
 public class SnmpMonitor extends SnmpMonitorStrategy {
     
     public static final Logger LOG = LoggerFactory.getLogger(SnmpMonitor.class);
@@ -110,15 +109,6 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
      */
     @Override
     public void initialize(Map<String, Object> parameters) {
-        // Initialize the SnmpPeerFactory
-        //
-        try {
-            SnmpPeerFactory.init();
-        } catch (IOException ex) {
-        	LOG.error("initialize: Failed to load SNMP configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
-
         return;
     }
 
@@ -159,10 +149,9 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
 
         // Retrieve this interface's SNMP peer object
         //
-        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
+        SnmpAgentConfig agentConfig = getAgentConfig();
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
         final String hostAddress = InetAddressUtils.str(ipaddr);
-		LOG.debug("poll: setting SNMP peer attribute for interface {}", hostAddress);
 
         // Get configuration parameters
         //
@@ -199,12 +188,10 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
         svcParams.setProperty("port", String.valueOf(agentConfig.getPort()));
         svcParams.setProperty("hex", hexstr);
 
-        LOG.debug("poll: service= SNMP address= {}", agentConfig);
 
         // Establish SNMP session with interface
         //
         try {
-            LOG.debug("SnmpMonitor.poll: SnmpAgentConfig address: {}", agentConfig);
 
             TimeoutTracker tracker = new TimeoutTracker(parameters, agentConfig.getRetries(), agentConfig.getTimeout());
             tracker.reset();
@@ -248,7 +235,6 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
                 for(SnmpValue result : results) {
                     if (result != null) {
                         svcParams.setProperty("observedValue", getStringValue(result));
-                        LOG.debug("poll: SNMPwalk poll succeeded, addr={} oid={} value={}", hostAddress, oid, result);
                         if (meetsCriteria(result, operator, operand)) {
                             status = PollStatus.available(tracker.elapsedTimeInMillis());
                             if ("false".equals(matchstr)) {

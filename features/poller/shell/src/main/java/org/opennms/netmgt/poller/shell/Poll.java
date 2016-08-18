@@ -43,6 +43,7 @@ import org.apache.felix.gogo.commands.Option;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerResponse;
 
 @Command(scope = "poller", name = "poll", description = "Used to invoke a monitor against a host at a specified location")
 public class Poll extends OsgiCommandSupport {
@@ -63,15 +64,15 @@ public class Poll extends OsgiCommandSupport {
 
     @Override
     protected Object doExecute() throws Exception {
-        final CompletableFuture<PollStatus> future = locationAwarePollerClient.poll().withLocation(location)
+        final CompletableFuture<PollerResponse> future = locationAwarePollerClient.poll().withLocation(location)
                 .withClassName(className).withAddress(InetAddress.getByName(host))
                 .withAttributes(parse(attributes)).execute();
 
         while (true) {
             try {
                 try {
-                    PollStatus pollStatus = future.get(1, TimeUnit.SECONDS);
-                    if (pollStatus.getStatusCode() == PollStatus.SERVICE_AVAILABLE) {
+                    PollerResponse pollerResponse = future.get(1, TimeUnit.SECONDS);
+                    if (pollerResponse.getPollStatus().getStatusCode() == PollStatus.SERVICE_AVAILABLE) {
                         System.out.printf("Poll with %s was succesful on %s \n", className, host);
                     }else {
                         System.out.printf("Poll with %s failed on %s \n", className, host);

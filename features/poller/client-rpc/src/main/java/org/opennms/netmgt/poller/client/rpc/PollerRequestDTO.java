@@ -30,6 +30,7 @@ package org.opennms.netmgt.poller.client.rpc;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -43,10 +44,11 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.core.rpc.api.RpcRequest;
+import org.opennms.netmgt.poller.PollerRequest;
 
 @XmlRootElement(name = "poller-request")
 @XmlAccessorType(XmlAccessType.NONE)
-public class PollerRequestDTO implements RpcRequest {
+public class PollerRequestDTO implements RpcRequest, PollerRequest{
 
     @XmlAttribute(name = "location")
     private String location;
@@ -56,13 +58,16 @@ public class PollerRequestDTO implements RpcRequest {
 
     @XmlAttribute(name = "service-name")
     private String serviceName;
-    
+
     @XmlAttribute(name = "address")
     @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
     private InetAddress address;
 
     @XmlElement(name = "poller-attribute")
     private List<PollerAttributeDTO> pollerAttributes = new ArrayList<>();
+
+    @XmlElement(name = "runtime-attribute")
+    private List<PollerAttributeDTO> runtimeAttributes = new ArrayList<>();
 
     public String getLocation() {
         return location;
@@ -88,6 +93,7 @@ public class PollerRequestDTO implements RpcRequest {
         this.serviceName = serviceName;
     }
 
+    @Override
     public InetAddress getAddress() {
         return address;
     }
@@ -112,9 +118,31 @@ public class PollerRequestDTO implements RpcRequest {
         attributes.entrySet().stream().forEach(e -> this.addPollerAttribute(e.getKey(), e.getValue()));
     }
 
+    @Override
     public Map<String, String> getAttributeMap() {
         return pollerAttributes.stream()
                 .collect(Collectors.toMap(PollerAttributeDTO::getKey, PollerAttributeDTO::getValue));
+    }
+
+    public void setRuntimeAttributes(List<PollerAttributeDTO> attributes) {
+        this.runtimeAttributes = attributes;
+    }
+
+    public void addRuntimeAttribute(String key, String value) {
+        runtimeAttributes.add(new PollerAttributeDTO(key, value));
+    }
+
+    public void addRuntimeAttributes(Map<String, String> attributes) {
+        attributes.entrySet().stream().forEach(e -> this.addRuntimeAttribute(e.getKey(), e.getValue()));
+    }
+    
+    @Override
+    public Map<String, String> getRuntimeAttributes() {
+        Map<String, String> runtimeAttributeMap = new HashMap<String, String>();
+        for (PollerAttributeDTO agentAttribute : runtimeAttributes) {
+            runtimeAttributeMap.put(agentAttribute.getKey(), agentAttribute.getValue());
+        }
+        return runtimeAttributeMap;
     }
 
     @Override

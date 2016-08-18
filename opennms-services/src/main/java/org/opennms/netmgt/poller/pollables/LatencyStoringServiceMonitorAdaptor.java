@@ -50,6 +50,8 @@ import org.opennms.netmgt.poller.LatencyCollectionAttributeType;
 import org.opennms.netmgt.poller.LatencyCollectionResource;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerRequest;
+import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.threshd.LatencyThresholdingSet;
@@ -235,6 +237,12 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
     public void refreshThresholds() {
         if (m_thresholdingSet != null)
             m_thresholdingSet.reinitialize();
+    }
+
+    @Override
+    public PollerResponse poll(PollerRequest request) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

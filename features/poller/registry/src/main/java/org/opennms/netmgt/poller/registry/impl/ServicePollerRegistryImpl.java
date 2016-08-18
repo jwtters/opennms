@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.opennms.netmgt.poller.PollerConfigLoader;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.registry.api.ServicePollerRegistry;
 import org.slf4j.Logger;
@@ -50,8 +51,13 @@ public class ServicePollerRegistryImpl implements ServicePollerRegistry, Initial
 
     @Autowired(required = false)
     Set<ServiceMonitor> m_serviceMonitors;
+    
+    @Autowired(required = false)
+    Set<PollerConfigLoader> m_configLoaders;
 
     private final Map<String, ServiceMonitor> m_monitorsByClassName = new HashMap<>();
+    
+    private final Map<String, PollerConfigLoader> m_configLoaderByPollerClassName = new HashMap<>();
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -59,6 +65,11 @@ public class ServicePollerRegistryImpl implements ServicePollerRegistry, Initial
         if (m_serviceMonitors != null) {
             for (ServiceMonitor serviceMonitor : m_serviceMonitors) {
                 onBind(serviceMonitor, ImmutableMap.of(TYPE, serviceMonitor.getClass().getCanonicalName()));
+            }
+        }
+        if (m_serviceMonitors != null) {
+            for (PollerConfigLoader configLoader : m_configLoaders) {
+                m_configLoaderByPollerClassName.put(configLoader.getPollerClassName(), configLoader);
             }
         }
         LOG.debug("Registered ServiceMonitors classes are: {}", getClassNames());

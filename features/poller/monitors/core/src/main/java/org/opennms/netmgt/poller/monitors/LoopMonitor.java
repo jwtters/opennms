@@ -28,12 +28,16 @@
 
 package org.opennms.netmgt.poller.monitors;
 
+import java.net.InetAddress;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerRequest;
+import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.springframework.stereotype.Component;
 import org.opennms.netmgt.poller.monitors.support.LoopPlugin;
@@ -107,6 +111,18 @@ public class LoopMonitor implements ServiceMonitor {
         sb.append(ParameterMap.getKeyedString(parameters, "ip-match", "*.*.*.*"));
         
         return PollStatus.get(status, sb.toString());
+    }
+
+    @Override
+    public PollerResponse poll(PollerRequest request) {
+        InetAddress address = request.getAddress();
+        Map<String, String> params = request.getAttributeMap();
+        String pollerName = request.getClassName();
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.putAll(params);
+        SimpleMonitoredService svc = new SimpleMonitoredService(address, pollerName);
+        PollStatus pollStatus = poll(svc, parameters);
+        return new PollerResponseImpl(pollStatus);
     }
 
 }

@@ -1,20 +1,17 @@
 package org.opennms.netmgt.poller.client.rpc;
 
-import java.net.InetAddress;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 
 import org.opennms.core.rpc.xml.AbstractXmlRpcModule;
-import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.registry.api.ServicePollerRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-public class PollerClientRpcModule extends AbstractXmlRpcModule<PollerRequestDTO, PollStatus> {
+public class PollerClientRpcModule extends AbstractXmlRpcModule<PollerRequestDTO, PollerResponseDTO> {
 
     public static final String RPC_MODULE_ID = "Poller";
 
@@ -26,7 +23,7 @@ public class PollerClientRpcModule extends AbstractXmlRpcModule<PollerRequestDTO
     private Executor executor;
 
     public PollerClientRpcModule() {
-        super(PollerRequestDTO.class, PollStatus.class);
+        super(PollerRequestDTO.class, PollerResponseDTO.class);
     }
 
     public void setServicePollerRegistry(ServicePollerRegistry servicePollerRegistry) {
@@ -39,25 +36,20 @@ public class PollerClientRpcModule extends AbstractXmlRpcModule<PollerRequestDTO
     }
 
     @Override
-    public CompletableFuture<PollStatus> execute(PollerRequestDTO request) {
+    public CompletableFuture<PollerResponseDTO> execute(PollerRequestDTO request) {
         String className = request.getClassName();
-        String serviceName = request.getServiceName();
-        Map<String, String> attributeMap = request.getAttributeMap();
-        Map<String, Object> attributes = new HashMap<String, Object>();
-        attributes.putAll(attributeMap);
-        InetAddress address = request.getAddress();
+
         ServiceMonitor poller = servicePollerRegistry.getMonitorByClassName(className);
         if (poller == null) {
             throw new IllegalArgumentException("No poller found with class name '" + className + "'.");
         }
-        MonitoredServiceImpl svc = new MonitoredServiceImpl(address, serviceName);
 
-        return CompletableFuture.supplyAsync(new Supplier<PollStatus>() {
+        return CompletableFuture.supplyAsync(new Supplier<PollerResponseDTO>() {
 
             @Override
-            public PollStatus get() {
-                PollStatus pollstatus = poller.poll(svc, attributes);
-                return pollstatus;
+            public PollerResponseDTO get() {
+                PollerResponse pollerResponse = poller.poll(request);
+                return new PollerResponseDTO(pollerResponse.getPollStatus());
             }
 
         }, executor);

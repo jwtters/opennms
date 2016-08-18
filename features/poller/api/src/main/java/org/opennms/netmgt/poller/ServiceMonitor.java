@@ -176,4 +176,6 @@ public interface ServiceMonitor {
      * @see PollStatus#SERVICE_UNAVAILABLE
      */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters);
+    
+    public PollerResponse poll(PollerRequest request);
 }

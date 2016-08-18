@@ -26,9 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller.monitors;
+package org.opennms.netmgt.poller.monitors.snmp;
 
-import java.lang.reflect.UndeclaredThrowableException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -36,12 +35,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.opennms.core.spring.BeanUtils;
+
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.poller.Distributable;
@@ -55,6 +53,7 @@ import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpValueFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * <P>
@@ -231,8 +230,8 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
 			return sb.toString();
 		}
 	}
-	
-	private static NodeDao s_nodeDao = null;
+	@Autowired
+	private NodeDao s_nodeDao;
 	
     /**
      * Name of monitored service.
@@ -362,15 +361,6 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
      */
     @Override
     public void initialize(Map<String, Object> parameters) {
-        // Initialize the SnmpPeerFactory
-        //
-        try {
-            SnmpPeerFactory.init();
-        } catch (final Throwable ex) {
-		LOG.error("initialize: Failed to load SNMP configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
-
         return;
     }
 
@@ -388,14 +378,6 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
 
-        if (s_nodeDao == null) {
-            s_nodeDao = BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class);
-
-            if (s_nodeDao == null) {
-                LOG.error("Node dao should be a non-null value.");
-                return PollStatus.unknown();
-            }
-        }
 
         InetAddress targetIpAddr = (InetAddress) determineTargetAddress(svc, parameters);
     	
@@ -437,7 +419,7 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
         
         // Retrieve the *proxy* interface's SNMP peer object
         //
-        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(proxyIpAddr);
+        SnmpAgentConfig agentConfig = getAgentConfig();
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for proxy-ping interface " + proxyIpAddr);
         LOG.debug("poll: setting SNMP peer attribute for interface {}", proxyIpAddr.getHostAddress());
 

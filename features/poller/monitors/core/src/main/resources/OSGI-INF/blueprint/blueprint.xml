@@ -44,4 +44,11 @@
         </service-properties>
     </service>
 
+    <bean id="snmpMonitor" class="org.opennms.netmgt.poller.monitors.snmp.SnmpMonitor" />
+    <service ref="snmpMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+        <service-properties>
+            <entry key="type" value="org.opennms.netmgt.poller.monitors.snmp.SnmpMonitor" />
+        </service-properties>
+    </service>
+    
 </blueprint>

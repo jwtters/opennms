@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller.monitors;
+package org.opennms.netmgt.poller.monitors.snmp;
 
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -36,7 +36,6 @@ import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -52,7 +51,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * <p>
- * Check for Log matches via UCD-SNMP-MIB .
+ * Check for process via UCD-SNMP-MIB .
  * </p>
  * <p>
  * This does SNMP and therefore relies on the SNMP configuration so it is not distributable.
@@ -64,19 +63,16 @@ import org.slf4j.LoggerFactory;
  */
 
 @Distributable(DistributionContext.DAEMON)
-final public class LogMatchTableMonitor extends SnmpMonitorStrategy {
-    public static final Logger LOG = LoggerFactory.getLogger(LogMatchTableMonitor.class);
+final public class PrTableMonitor extends SnmpMonitorStrategy {
+    public static final Logger LOG = LoggerFactory.getLogger(PrTableMonitor.class);
+    private static final String m_serviceName = "Pr-Table";
 
-    private static final String m_serviceName = "LogMatch-Table";
-
-    private static final String lmTableErrorFlag = "1.3.6.1.4.1.2021.16.2.1.100";
-    private static final String lmTableFileName = "1.3.6.1.4.1.2021.16.2.1.3";
-    private static final String lmTableRegEx = "1.3.6.1.4.1.2021.16.2.1.4";
-    private static final String lmTableCount = "1.3.6.1.4.1.2021.16.2.1.10";
+    private static final String prTableErrorFlag = "1.3.6.1.4.1.2021.2.1.100";
+    private static final String prTableErrorMsg = "1.3.6.1.4.1.2021.2.1.101";
 
     /**
      * <P>
-     * Returns the name of the service that the plug-in monitors ("LogMatch-Table").
+     * Returns the name of the service that the plug-in monitors ("Pr-Table").
      * </P>
      *
      * @return The service that the plug-in monitors.
@@ -96,15 +92,6 @@ final public class LogMatchTableMonitor extends SnmpMonitorStrategy {
      *                plug-in from functioning.
      */
     public void initialize(Map<String, Object> parameters) {
-        // Initialize the SnmpPeerFactory
-        //
-        try {
-            SnmpPeerFactory.init();
-        } catch (IOException ex) {
-            LOG.error("initialize: Failed to load SNMP configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
-
         return;
     }
 
@@ -144,7 +131,7 @@ final public class LogMatchTableMonitor extends SnmpMonitorStrategy {
         ArrayList<String> errorStringReturn = new ArrayList<String>();
 
         // Retrieve this interface's SNMP peer object
-        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
+        SnmpAgentConfig agentConfig = getAgentConfig();
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
         final String hostAddress = InetAddressUtils.str(ipaddr);
         LOG.debug("poll: setting SNMP peer attribute for interface {}", hostAddress);
@@ -157,29 +144,26 @@ final public class LogMatchTableMonitor extends SnmpMonitorStrategy {
 
         try {
             LOG.debug("PrTableMonitor.poll: SnmpAgentConfig address: {}", agentConfig);
-            SnmpObjId lmTableErrorSnmpObject = SnmpObjId.get(lmTableErrorFlag);
+            SnmpObjId prTableErrorSnmpObject = SnmpObjId.get(prTableErrorFlag);
 
-            Map<SnmpInstId, SnmpValue> flagResults = SnmpUtils.getOidValues(agentConfig, "LogMatchTableMonitor", lmTableErrorSnmpObject);
+            Map<SnmpInstId, SnmpValue> flagResults = SnmpUtils.getOidValues(agentConfig, "PrTableMonitor", prTableErrorSnmpObject);
 
             if(flagResults.size() == 0) {
-                LOG.debug("SNMP poll failed: no results, addr={} oid={}", hostAddress, lmTableErrorSnmpObject);
+                LOG.debug("SNMP poll failed: no results, addr={} oid={}", hostAddress, prTableErrorSnmpObject);
                 return PollStatus.unavailable();
             }
 
             for (Map.Entry<SnmpInstId, SnmpValue> e : flagResults.entrySet()) { 
-                LOG.debug("poll: SNMPwalk poll succeeded, addr={} oid={} instance={} value={}", hostAddress, lmTableErrorSnmpObject, e.getKey(), e.getValue());
+                LOG.debug("poll: SNMPwalk poll succeeded, addr={} oid={} instance={} value={}", hostAddress, prTableErrorSnmpObject, e.getKey(), e.getValue());
 
                 if (e.getValue().toString().equals("1")) {
-                    LOG.debug("LogMatchTableMonitor.poll: found errorFlag=1");
+                    LOG.debug("PrTableMonitor.poll: found errorFlag=1");
 
-                    SnmpObjId lmTableFilenameSnmpObject = SnmpObjId.get(lmTableFileName + "." + e.getKey().toString());
-                    SnmpObjId lmTableRegExSnmpObject = SnmpObjId.get(lmTableRegEx + "." + e.getKey().toString());
-                    SnmpObjId lmTableCountSnmpObject = SnmpObjId.get(lmTableCount + "." + e.getKey().toString());
-
-                    String lmErrorMsg = "Rexeg " + SnmpUtils.get(agentConfig,lmTableRegExSnmpObject).toDisplayString() + ", for log file " + SnmpUtils.get(agentConfig,lmTableFilenameSnmpObject).toDisplayString() + " has matched " + SnmpUtils.get(agentConfig,lmTableCountSnmpObject).toDisplayString() + "time(s).";
+                    SnmpObjId prTableErrorMsgSnmpObject = SnmpObjId.get(prTableErrorMsg + "." + e.getKey().toString());
+                    String PrErrorMsg = SnmpUtils.get(agentConfig,prTableErrorMsgSnmpObject).toDisplayString();
 
                     //Stash the error in an ArrayList to then enumerate over later
-                    errorStringReturn.add(lmErrorMsg);
+                    errorStringReturn.add(PrErrorMsg);
                 }
             }
 

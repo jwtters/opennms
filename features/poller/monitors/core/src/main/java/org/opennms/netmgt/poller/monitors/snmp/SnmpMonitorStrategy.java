@@ -26,10 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller.monitors;
+package org.opennms.netmgt.poller.monitors.snmp;
 
 import java.math.BigInteger;
-import java.net.InetAddress;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -37,6 +36,8 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerRequest;
 import org.opennms.netmgt.poller.PollerResponse;
+import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
+import org.opennms.netmgt.poller.monitors.PollerResponseImpl;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.slf4j.Logger;
@@ -56,21 +57,23 @@ public abstract class SnmpMonitorStrategy extends AbstractServiceMonitor {
     /**
      * Constant for less-than operand
      */
-    protected static final String LESS_THAN = "<";
+    public static final String LESS_THAN = "<";
     /** Constant <code>GREATER_THAN=">"</code> */
-    protected static final String GREATER_THAN = ">";
+    public static final String GREATER_THAN = ">";
     /** Constant <code>LESS_THAN_EQUALS="<="</code> */
-    protected static final String LESS_THAN_EQUALS = "<=";
+    public static final String LESS_THAN_EQUALS = "<=";
     /** Constant <code>GREATER_THAN_EQUALS=">="</code> */
-    protected static final String GREATER_THAN_EQUALS = ">=";
+    public static final String GREATER_THAN_EQUALS = ">=";
     /** Constant <code>EQUALS="="</code> */
-    protected static final String EQUALS = "=";
+    public static final String EQUALS = "=";
     /** Constant <code>NOT_EQUAL="!="</code> */
-    protected static final String NOT_EQUAL = "!=";
+    public static final String NOT_EQUAL = "!=";
     /** Constant <code>MATCHES="~"</code> */
-    protected static final String MATCHES = "~";
+    public static final String MATCHES = "~";
     
-    boolean hex = false;
+    protected boolean hex = false;
+    
+    protected SnmpAgentConfig agentConfig;
     /*
      * TODO: Use it or loose it.
      * Commented out because it is not currently used in this monitor
@@ -80,14 +83,20 @@ public abstract class SnmpMonitorStrategy extends AbstractServiceMonitor {
     /** {@inheritDoc} */
     @Override
     public abstract PollStatus poll(MonitoredService svc, Map<String, Object> parameters);
-
     
+    @Override
     public PollerResponse poll(PollerRequest request) {
-        
-        return null;   
+
+        if (request.getRuntimeAttributes() != null) {
+            // All of the keys in the runtime attribute map are used to store the agent configuration
+            setAgentConfig(SnmpAgentConfig.fromMap(request.getRuntimeAttributes()));
+        } else {
+            setAgentConfig(new SnmpAgentConfig());
+        }
+
+        return new PollerResponseImpl(invokePoll(request));
     }
     
-
     public String getStringValue(SnmpValue result) {
     	if (hex)
     		return result.toHexString();
@@ -183,6 +192,16 @@ public abstract class SnmpMonitorStrategy extends AbstractServiceMonitor {
         } else {
             return null;
         }
+    }
+
+
+    public SnmpAgentConfig getAgentConfig() {
+        return agentConfig;
+    }
+
+
+    public void setAgentConfig(SnmpAgentConfig agentConfig) {
+        this.agentConfig = agentConfig;
     }
 
 }

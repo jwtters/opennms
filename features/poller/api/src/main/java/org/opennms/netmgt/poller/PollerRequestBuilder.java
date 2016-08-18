@@ -45,6 +45,6 @@ public interface PollerRequestBuilder {
 
 	PollerRequestBuilder withAttributes(Map<String, String> attributes);
 
-    CompletableFuture<PollStatus> execute();
+    CompletableFuture<PollerResponse> execute();
 
 }
