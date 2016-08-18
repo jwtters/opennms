@@ -44,6 +44,7 @@ import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.monitors.support.Ssh;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * This class is designed to be used by the service poller framework to test
@@ -55,6 +56,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
 @Distributable
+@Component
 public final class SshMonitor extends AbstractServiceMonitor {
 
     private static final Logger LOG = LoggerFactory.getLogger(SshMonitor.class);

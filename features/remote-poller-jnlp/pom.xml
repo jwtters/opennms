@@ -24,6 +24,7 @@
             <artifactId>webstart-maven-plugin</artifactId>
             <version>${webstartPluginVersion}</version>
             <configuration>
+<!--XXXSLOW
               <sign>
                 <keystore>${webstart.keystore}</keystore>
                 <keypass>${webstart.keypass}</keypass>
@@ -32,6 +33,7 @@
                 <dnameCn>${webstart.dnameCn}</dnameCn>
                 <verify>true</verify>
               </sign>
+XXXSLOW-->
             </configuration>
           </plugin>
         </plugins>

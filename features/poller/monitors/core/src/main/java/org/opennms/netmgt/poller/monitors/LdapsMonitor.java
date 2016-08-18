@@ -34,6 +34,7 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.SocketWrapper;
 import org.opennms.core.utils.SslSocketWrapper;
 import org.opennms.netmgt.poller.Distributable;
+import org.springframework.stereotype.Component;
 
 import com.novell.ldap.LDAPConnection;
 
@@ -48,6 +49,7 @@ import com.novell.ldap.LDAPConnection;
  * @author <A HREF="mailto:jason@opennms.org">Jason </A>
  */
 @Distributable
+@Component
 final public class LdapsMonitor extends LdapMonitor {
 
     @Override

@@ -38,7 +38,7 @@ import org.jolokia.client.exception.*;
 import org.opennms.netmgt.poller.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.springframework.stereotype.Component;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
@@ -55,6 +55,7 @@ import javax.management.MalformedObjectNameException;
  * @author <A HREF="http://www.opennms.org/">OpenNMS</a>
  */
 @Distributable(DistributionContext.DAEMON)
+@Component
 final public class JolokiaBeanMonitor extends AbstractServiceMonitor {
 
     /**

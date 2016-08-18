@@ -1011,6 +1011,7 @@
       <feature>opennms-core-web</feature>
       <feature>opennms-icmp-api</feature> 
       <feature>opennms-poller-api</feature>
+      <feature>opennms-dao-api</feature>
 
       <bundle>mvn:org.opennms.features.poller.monitors/org.opennms.features.poller.monitors.core/${project.version}</bundle>
     </feature>

@@ -121,4 +121,10 @@ public class ServicePollerRegistryImpl implements ServicePollerRegistry, Initial
         return null;
     }
 
+    @Override
+    public PollerConfigLoader getConfigLoaderByMonitorClassName(String ClassName) {
+        
+        return m_configLoaderByPollerClassName.get(ClassName);
+    }
+
 }

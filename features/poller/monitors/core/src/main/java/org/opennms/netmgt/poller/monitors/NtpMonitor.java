@@ -47,6 +47,7 @@ import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.monitors.support.NtpMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * <P>
@@ -61,6 +62,7 @@ import org.slf4j.LoggerFactory;
  */
 
 @Distributable
+@Component
 final public class NtpMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(NtpMonitor.class);
     /**

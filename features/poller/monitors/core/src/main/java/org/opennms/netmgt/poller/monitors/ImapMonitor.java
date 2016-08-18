@@ -42,6 +42,7 @@ import java.util.Map;
 import org.opennms.core.utils.ParameterMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -76,6 +77,7 @@ import org.opennms.netmgt.poller.PollStatus;
  * @version CVS 1.1.1.1
  */
 @Distributable
+@Component
 final public class ImapMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(ImapMonitor.class);
 

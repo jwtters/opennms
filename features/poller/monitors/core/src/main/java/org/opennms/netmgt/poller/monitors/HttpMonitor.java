@@ -60,6 +60,7 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.PollStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * This class is designed to be used by the service poller framework to test the availability
@@ -72,6 +73,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
 @Distributable
+@Component
 public class HttpMonitor extends AbstractServiceMonitor {
     
     public static final Logger LOG = LoggerFactory.getLogger(HttpMonitor.class);

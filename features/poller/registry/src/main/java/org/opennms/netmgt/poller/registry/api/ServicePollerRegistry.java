@@ -30,6 +30,7 @@ package org.opennms.netmgt.poller.registry.api;
 
 import java.util.Set;
 
+import org.opennms.netmgt.poller.PollerConfigLoader;
 import org.opennms.netmgt.poller.ServiceMonitor;
 
 public interface ServicePollerRegistry {
@@ -38,4 +39,5 @@ public interface ServicePollerRegistry {
 
     Set<String> getClassNames();
 
+    PollerConfigLoader getConfigLoaderByMonitorClassName(String ClassName);
 }

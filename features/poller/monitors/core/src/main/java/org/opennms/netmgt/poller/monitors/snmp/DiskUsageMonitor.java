@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.poller.monitors.snmp;
 
-import java.io.IOException;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.util.Map;
 import java.util.regex.Pattern;

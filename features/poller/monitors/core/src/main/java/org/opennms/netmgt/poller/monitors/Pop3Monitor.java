@@ -50,6 +50,7 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.PollStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * <P>
@@ -64,6 +65,7 @@ import org.slf4j.LoggerFactory;
  */
 
 @Distributable
+@Component
 final public class Pop3Monitor extends AbstractServiceMonitor {
     
     public static final Logger LOG = LoggerFactory.getLogger(Pop3Monitor.class);

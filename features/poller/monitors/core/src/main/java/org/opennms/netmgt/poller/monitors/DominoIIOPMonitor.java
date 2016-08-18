@@ -41,6 +41,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -61,6 +62,7 @@ import org.opennms.netmgt.poller.PollStatus;
  * @author <A HREF="weave@oculan.com">Weave </A>
  */
 @Distributable
+@Component
 final public class DominoIIOPMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(DominoIIOPMonitor.class);
 

@@ -41,6 +41,7 @@ import java.util.Map;
 import org.opennms.core.utils.InetAddressUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
@@ -68,6 +69,7 @@ import org.xbill.DNS.Type;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 @Distributable
+@Component
 final public class DnsMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(DnsMonitor.class);
     /**

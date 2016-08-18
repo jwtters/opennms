@@ -49,6 +49,7 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.PollStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * This class implements a basic JDBC monitoring framework; The idea is than
@@ -68,6 +69,7 @@ import org.slf4j.LoggerFactory;
 
 // NOTE: This requires that the JDBC Drivers for the dbs be included with the remote poller
 @Distributable
+@Component
 public class JDBCMonitor extends AbstractServiceMonitor {
     
     

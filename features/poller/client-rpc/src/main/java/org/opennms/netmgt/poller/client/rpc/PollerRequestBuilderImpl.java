@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.poller.client.rpc;
 
 import java.net.InetAddress;
@@ -12,22 +40,22 @@ import org.opennms.netmgt.poller.PollerResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PollerRequestBuilderImpl implements PollerRequestBuilder{
+public class PollerRequestBuilderImpl implements PollerRequestBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(PollerRequestBuilderImpl.class);
-    
+
     private String location;
-    
+
     private String serviceName;
-    
+
     private String className;
-    
+
     private InetAddress address;
-    
+
     private LocationAwarePollerClientImpl client;
-    
+
     private Map<String, String> attributes = new HashMap<>();
-    
+
     public PollerRequestBuilderImpl(LocationAwarePollerClientImpl client) {
         this.client = client;
     }
@@ -69,21 +97,23 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder{
         } else if (className == null) {
             throw new IllegalArgumentException("Poller class name is required.");
         }
-        PollerConfigLoader configLoader = client.getConfigLoader();
-        
+        PollerConfigLoader configLoader = client.getRegistry().getConfigLoaderByMonitorClassName(className);
+
         final PollerRequestDTO dto = new PollerRequestDTO();
         dto.setAddress(address);
         dto.setClassName(className);
         dto.setLocation(location);
         dto.addPollerAttributes(attributes);
         dto.setServiceName(serviceName);
-        dto.addRuntimeAttributes(configLoader.getRuntimeAttributes(location, address));
-        
+        if (configLoader != null) {
+            dto.addRuntimeAttributes(configLoader.getRuntimeAttributes(location, address));
+        }
+
         // Execute the request
         return client.getDelegate().execute(dto).thenApply(results -> {
             if (results.getPollStatus().getStatusCode() == PollStatus.SERVICE_AVAILABLE) {
                 LOG.info(" {} is available", serviceName);
-            }else {
+            } else {
                 throw new RuntimeException(results.getPollStatus().getReason());
             }
             return results;

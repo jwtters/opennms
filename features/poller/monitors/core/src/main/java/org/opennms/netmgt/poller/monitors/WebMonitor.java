@@ -51,6 +51,7 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * <p>WebMonitor class.</p>
@@ -60,6 +61,7 @@ import org.slf4j.LoggerFactory;
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
 @Distributable
+@Component
 public class WebMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(WebMonitor.class);
     static Integer DEFAULT_TIMEOUT = 3000;

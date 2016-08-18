@@ -41,6 +41,7 @@ import org.opennms.core.utils.CollectionMath;
 import org.opennms.core.utils.ParameterMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.opennms.netmgt.icmp.PingConstants;
 import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.poller.Distributable;
@@ -62,6 +63,7 @@ import org.opennms.netmgt.poller.PollStatus;
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
 @Distributable
+@Component
 final public class StrafePingMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(StrafePingMonitor.class);
     private static final int DEFAULT_MULTI_PING_COUNT = 20;
