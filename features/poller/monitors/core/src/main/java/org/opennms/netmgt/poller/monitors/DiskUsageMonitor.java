@@ -46,6 +46,7 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * Check for disks via HOST-RESOURCES-MIB. This should be extended to
@@ -57,6 +58,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:ronald.roskens@gmail.com">Ronald Roskens</a>
  */
 @Distributable(DistributionContext.DAEMON)
+@Component
 final public class DiskUsageMonitor extends SnmpMonitorStrategy {
 
     public static final Logger LOG = LoggerFactory.getLogger(DiskUsageMonitor.class);

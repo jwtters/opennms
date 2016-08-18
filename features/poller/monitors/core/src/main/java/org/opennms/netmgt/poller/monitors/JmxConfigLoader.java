@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,20 +28,30 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import org.opennms.netmgt.jmx.connection.JmxConnectors;
-import org.opennms.netmgt.poller.Distributable;
+import java.net.InetAddress;
+import java.util.Map;
 
-@Distributable
-/**
- * <p>JMXSecureMonitor class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
-public class JMXSecureMonitor extends JMXMonitor {
+import org.opennms.core.spring.BeanUtils;
+import org.opennms.netmgt.dao.jmx.JmxConfigDao;
+import org.opennms.netmgt.poller.PollerConfigLoader;
+import org.opennms.netmgt.snmp.InetAddrUtils;
+
+public class JmxConfigLoader implements PollerConfigLoader {
+
+    protected JmxConfigDao m_jmxConfigDao;
+    
 
     @Override
-    protected JmxConnectors getConnectionName() {
-        return JmxConnectors.jmx_secure;
+    public Map<String, String> getRuntimeAttributes(String location, InetAddress address, String port) {
+        
+        if (m_jmxConfigDao == null) {
+            m_jmxConfigDao = BeanUtils.getBean("daoContext", "jmxConfigDao", JmxConfigDao.class);
+        }
+        if (port == null) {
+            throw new IllegalArgumentException("Need to specify port number in the form of port=number for Jsr160Monitor");
+        }
+        return m_jmxConfigDao.getConfig().lookupMBeanServer(InetAddrUtils.str(address), port).getParameterMap();
+
     }
+
 }

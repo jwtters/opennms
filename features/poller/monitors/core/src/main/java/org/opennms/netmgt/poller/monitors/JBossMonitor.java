@@ -29,19 +29,21 @@
 package org.opennms.netmgt.poller.monitors;
 
 import org.opennms.netmgt.jmx.connection.JmxConnectors;
+import org.springframework.stereotype.Component;
 
 /**
- * The class is responsible for getting the connection to the remote jmx server.  The
- * super class (JMXMonitor) performs the checking to see if the service exists and
+ * The class is responsible for getting the connection to the JBoss server.  The
+ * super class (JMXMonitor) performs the checking to see if the service exists and 
  * how long it took to make the connection.
- *
+ * 
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public class MX4JMonitor extends JMXMonitor {
+@Component
+public class JBossMonitor extends JMXMonitor {
 
     @Override
     protected JmxConnectors getConnectionName() {
-        return JmxConnectors.mx4j;
+        return JmxConnectors.jboss;
     }
 }

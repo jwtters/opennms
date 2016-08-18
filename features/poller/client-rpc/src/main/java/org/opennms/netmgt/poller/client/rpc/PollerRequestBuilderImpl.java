@@ -54,6 +54,8 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
 
     private LocationAwarePollerClientImpl client;
 
+    private static final String PORT = "port";
+
     private Map<String, String> attributes = new HashMap<>();
 
     public PollerRequestBuilderImpl(LocationAwarePollerClientImpl client) {
@@ -105,8 +107,9 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
         dto.setLocation(location);
         dto.addPollerAttributes(attributes);
         dto.setServiceName(serviceName);
+        final String port = attributes.get(PORT);
         if (configLoader != null) {
-            dto.addRuntimeAttributes(configLoader.getRuntimeAttributes(location, address));
+            dto.addRuntimeAttributes(configLoader.getRuntimeAttributes(location, address, port));
         }
 
         // Execute the request

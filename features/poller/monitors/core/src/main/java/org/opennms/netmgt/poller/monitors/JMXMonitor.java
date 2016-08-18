@@ -29,6 +29,7 @@
 package org.opennms.netmgt.poller.monitors;
 
 import java.net.InetAddress;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.jexl2.Expression;
@@ -36,11 +37,8 @@ import org.apache.commons.jexl2.JexlContext;
 import org.apache.commons.jexl2.JexlEngine;
 import org.apache.commons.jexl2.MapContext;
 import org.apache.commons.jexl2.ReadonlyContext;
-import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.netmgt.config.jmx.MBeanServer;
-import org.opennms.netmgt.dao.jmx.JmxConfigDao;
 import org.opennms.netmgt.jmx.JmxUtils;
 import org.opennms.netmgt.jmx.connection.JmxConnectionManager;
 import org.opennms.netmgt.jmx.connection.JmxConnectors;
@@ -51,8 +49,10 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerConfigLoader;
+import org.opennms.netmgt.poller.PollerRequest;
+import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.jmx.wrappers.ObjectNameWrapper;
-import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,9 +60,8 @@ import com.google.common.collect.Maps;
 
 @Distributable
 /**
- * This class computes the response time of making a connection to
- * the remote server.  If the connection is successful the reponse time
- * RRD is updated.
+ * This class computes the response time of making a connection to the remote
+ * server. If the connection is successful the reponse time RRD is updated.
  *
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
@@ -72,7 +71,7 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(JMXMonitor.class);
 
     private static final JexlEngine JEXL_ENGINE;
-    
+
     public static final String PARAM_BEAN_PREFIX = "beans.";
     public static final String PARAM_TEST_PREFIX = "tests.";
     public static final String PARAM_TEST = "test";
@@ -83,8 +82,6 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
         JEXL_ENGINE.setLenient(false);
         JEXL_ENGINE.setStrict(true);
     }
-
-    protected JmxConfigDao m_jmxConfigDao = null;
 
     private class Timer {
 
@@ -105,29 +102,41 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
 
     protected abstract JmxConnectors getConnectionName();
 
+    @Override
+    public PollerConfigLoader getConfigLoader() {
+        return new JmxConfigLoader();
+    };
+
+    public PollerResponse poll(PollerRequest request) {
+        
+        InetAddress address = request.getAddress();
+        Map<String, String> params = request.getAttributeMap();
+        String pollerName = request.getClassName();
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.putAll(params);
+        SimpleMonitoredService svc = new SimpleMonitoredService(address, pollerName);
+
+        if (request.getRuntimeAttributes() != null) {
+            parameters.putAll(request.getRuntimeAttributes());
+        }
+        PollStatus pollstatus = poll(svc, parameters);
+        return new PollerResponseImpl(pollstatus);
+    };
+
     /**
      * {@inheritDoc}
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> map) {
-        if (m_jmxConfigDao == null) {
-            m_jmxConfigDao = BeanUtils.getBean("daoContext", "jmxConfigDao", JmxConfigDao.class);
-        }
 
         final NetworkInterface<InetAddress> iface = svc.getNetInterface();
         final InetAddress ipv4Addr = iface.getAddress();
 
-        if (map.containsKey(PARAM_PORT)) {
-            MBeanServer mBeanServer = m_jmxConfigDao.getConfig().lookupMBeanServer(InetAddrUtils.str(ipv4Addr), ParameterMap.getKeyedInteger(map, "port", -1));
-            if (mBeanServer != null) {
-                map.putAll(mBeanServer.getParameterMap());
-            }
-        }
-
         PollStatus serviceStatus = PollStatus.unavailable();
         try {
             final Timer timer = new Timer();
-            final JmxConnectionManager connectionManager = new DefaultConnectionManager(ParameterMap.getKeyedInteger(map, "retry", 3));
+            final JmxConnectionManager connectionManager = new DefaultConnectionManager(
+                    ParameterMap.getKeyedInteger(map, "retry", 3));
             final JmxConnectionManager.RetryCallback retryCallback = new JmxConnectionManager.RetryCallback() {
                 @Override
                 public void onRetry() {
@@ -135,15 +144,14 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
                 }
             };
 
-            try (JmxServerConnectionWrapper connection = connectionManager.connect(getConnectionName(),
-                                                                                   ipv4Addr,
-                                                                                   JmxUtils.convertToStringMap(map),
-                                                                                   retryCallback)) {
+            try (JmxServerConnectionWrapper connection = connectionManager.connect(getConnectionName(), ipv4Addr,
+                    JmxUtils.convertToStringMap(map), retryCallback)) {
 
                 // Start with simple communication
                 connection.getMBeanServerConnection().getMBeanCount();
 
-                // Take time just here to get not influenced by test execution time
+                // Take time just here to get not influenced by test execution
+                // time
                 final long nanoResponseTime = System.nanoTime() - timer.getStartTime();
 
                 // Find all variable definitions
@@ -162,8 +170,7 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
 
                     // Store wrapper for variable definition
                     variables.put(variable,
-                                  ObjectNameWrapper.create(connection.getMBeanServerConnection(),
-                                                           definition));
+                            ObjectNameWrapper.create(connection.getMBeanServerConnection(), definition));
                 }
 
                 // Find all test definitions
@@ -184,8 +191,7 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
                     final Expression expression = JEXL_ENGINE.createExpression(definition);
 
                     // Store expressions
-                    tests.put(variable,
-                              expression);
+                    tests.put(variable, expression);
                 }
 
                 // Also handle a single test
@@ -205,8 +211,8 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
                 serviceStatus = PollStatus.up(nanoResponseTime / 1000000.0);
 
                 // Execute all tests
-                for (final Map.Entry<String, Expression> e: tests.entrySet()) {
-                    if (! (boolean) e.getValue().evaluate(context)) {
+                for (final Map.Entry<String, Expression> e : tests.entrySet()) {
+                    if (!(boolean) e.getValue().evaluate(context)) {
                         serviceStatus = PollStatus.down("Test failed: " + e.getKey());
                         break;
                     }

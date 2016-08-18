@@ -52,6 +52,7 @@ import org.opennms.netmgt.snmp.SnmpWalker;
 import org.opennms.netmgt.snmp.TableTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import antlr.StringUtils;
 
@@ -77,6 +78,7 @@ import antlr.StringUtils;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 @Distributable(DistributionContext.DAEMON)
+@Component
 public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
     
     private static final Logger LOG = LoggerFactory.getLogger(HostResourceSwRunMonitor.class);

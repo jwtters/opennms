@@ -54,6 +54,7 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * <p>OmsaStorageMonitor class.</p>
@@ -65,6 +66,7 @@ import org.slf4j.LoggerFactory;
  * @version $Id: $
  */
 @Distributable(DistributionContext.DAEMON)
+@Component
 final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
     
     public static final Logger LOG = LoggerFactory.getLogger(OmsaStorageMonitor.class);

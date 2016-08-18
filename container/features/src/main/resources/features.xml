@@ -1013,6 +1013,7 @@
       <feature>opennms-poller-api</feature>
       <feature>opennms-dao-api</feature>
       <feature>opennms-config</feature>
+      <feature>commons-jexl</feature>
 
       <bundle>mvn:org.opennms.features.poller.monitors/org.opennms.features.poller.monitors.core/${project.version}</bundle>
     </feature>

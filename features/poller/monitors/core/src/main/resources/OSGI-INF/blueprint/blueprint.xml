@@ -39,6 +39,58 @@
         </service-properties>
     </service>
     
+    <bean id="ciscoIpSlaMonitor" class="org.opennms.netmgt.poller.monitors.CiscoIpSlaMonitor" />
+    <service ref="ciscoIpSlaMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+        <service-properties>
+            <entry key="type" value="org.opennms.netmgt.poller.monitors.CiscoIpSlaMonitor" />
+        </service-properties>
+    </service>
+    
+        
+    <bean id="citrixMonitor" class="org.opennms.netmgt.poller.monitors.CitrixMonitor" />
+    <service ref="citrixMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+        <service-properties>
+            <entry key="type" value="org.opennms.netmgt.poller.monitors.CitrixMonitor" />
+        </service-properties>
+    </service>
+    
+    <bean id="diskUsageMonitor" class="org.opennms.netmgt.poller.monitors.DiskUsageMonitor" />
+    <service ref="diskUsageMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+        <service-properties>
+            <entry key="type" value="org.opennms.netmgt.poller.monitors.DiskUsageMonitor" />
+        </service-properties>
+    </service>
+        
+    <bean id="dnsMonitor" class="org.opennms.netmgt.poller.monitors.DnsMonitor" />
+    <service ref="dnsMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+        <service-properties>
+            <entry key="type" value="org.opennms.netmgt.poller.monitors.DnsMonitor" />
+        </service-properties>
+    </service>
+        
+    <bean id="dnsResolutionMonitor" class="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" />
+    <service ref="dnsResolutionMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+        <service-properties>
+            <entry key="type" value="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" />
+        </service-properties>
+    </service>
+    
+        
+    <bean id="dominoIIOPMonitor" class="org.opennms.netmgt.poller.monitors.DominoIIOPMonitor" />
+    <service ref="dominoIIOPMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+        <service-properties>
+            <entry key="type" value="org.opennms.netmgt.poller.monitors.DominoIIOPMonitor" />
+        </service-properties>
+    </service>
+    
+            
+    <bean id="dskTableMonitor" class="org.opennms.netmgt.poller.monitors.DskTableMonitor" />
+    <service ref="dskTableMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+        <service-properties>
+            <entry key="type" value="org.opennms.netmgt.poller.monitors.DskTableMonitor" />
+        </service-properties>
+    </service>
+    
     <bean id="ftpMonitor" class="org.opennms.netmgt.poller.monitors.FtpMonitor" />
     <service ref="ftpMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
         <service-properties>
@@ -64,6 +116,20 @@
     <service ref="snmpMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
         <service-properties>
             <entry key="type" value="org.opennms.netmgt.poller.monitors.SnmpMonitor" />
+        </service-properties>
+    </service>
+    
+    <bean id="jsr160Monitor" class="org.opennms.netmgt.poller.monitors.Jsr160Monitor" />
+    <service ref="jsr160Monitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+        <service-properties>
+            <entry key="type" value="org.opennms.netmgt.poller.monitors.Jsr160Monitor" />
+        </service-properties>
+    </service>
+    
+    <bean id="jbossMonitor" class="org.opennms.netmgt.poller.monitors.JBossMonitor" />
+    <service ref="jbossMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+        <service-properties>
+            <entry key="type" value="org.opennms.netmgt.poller.monitors.JBossMonitor" />
         </service-properties>
     </service>
     

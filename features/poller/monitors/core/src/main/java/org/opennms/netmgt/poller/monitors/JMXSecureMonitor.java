@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,26 +28,22 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import java.io.IOException;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.net.InetAddress;
-import java.util.Map;
+import org.opennms.netmgt.jmx.connection.JmxConnectors;
+import org.opennms.netmgt.poller.Distributable;
+import org.springframework.stereotype.Component;
 
-import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.poller.PollerConfigLoader;
-
-
-public class SnmpConfigLoader implements PollerConfigLoader {
+@Distributable
+/**
+ * <p>JMXSecureMonitor class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
+@Component
+public class JMXSecureMonitor extends JMXMonitor {
 
     @Override
-    public Map<String, String> getRuntimeAttributes(String location, InetAddress address, String port) {
-        try {
-            SnmpPeerFactory.init();
-        } catch (IOException e) {
-            throw new UndeclaredThrowableException(e);
-        }
-        return SnmpPeerFactory.getInstance().getAgentConfig(address).toMap();
+    protected JmxConnectors getConnectionName() {
+        return JmxConnectors.jmx_secure;
     }
-
-
 }

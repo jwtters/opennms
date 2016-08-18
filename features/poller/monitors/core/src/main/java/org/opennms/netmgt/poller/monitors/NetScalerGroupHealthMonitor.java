@@ -51,6 +51,7 @@ import org.opennms.netmgt.snmp.TableTracker;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * <p>NetScalerGroupHealthMonitor class.</p>
@@ -58,6 +59,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 @Distributable(DistributionContext.DAEMON)
+@Component
 public class NetScalerGroupHealthMonitor extends SnmpMonitorStrategy {
     private static final String SVC_GRP_MEMBER_STATE = ".1.3.6.1.4.1.5951.4.1.2.7.1.6";
     private static final Logger LOG = LoggerFactory.getLogger(NetScalerGroupHealthMonitor.class);

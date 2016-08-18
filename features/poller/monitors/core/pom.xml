@@ -90,5 +90,24 @@
       <artifactId>opennms-config-api</artifactId>
       <scope>provided</scope>
     </dependency>
+	<dependency>
+		<groupId>org.opennms.core.jmx</groupId>
+		<artifactId>org.opennms.core.jmx.api</artifactId>
+		<version>${project.version}</version>
+	</dependency>
+    <dependency>
+		<groupId>org.opennms.core.jmx</groupId>
+		<artifactId>org.opennms.core.jmx.impl</artifactId>
+		<version>${project.version}</version>
+	</dependency>
+	<dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-jexl</artifactId>
+    </dependency>
+	<dependency>
+		<groupId>com.google.guava</groupId>
+		<artifactId>guava</artifactId>
+		<version>${guavaVersion}</version>
+	</dependency>
   </dependencies>
 </project>

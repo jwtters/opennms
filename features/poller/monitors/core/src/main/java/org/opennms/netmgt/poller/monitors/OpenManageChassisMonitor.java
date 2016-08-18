@@ -44,6 +44,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * <p>
@@ -58,6 +59,7 @@ import org.slf4j.LoggerFactory;
  * @author <A HREF="mailto:r.trommer@open-factory.org">Ronny Trommer</A>
  */
 @Distributable(DistributionContext.DAEMON)
+@Component
 final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
     
     
