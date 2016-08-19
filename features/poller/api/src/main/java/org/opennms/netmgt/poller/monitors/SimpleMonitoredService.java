@@ -126,4 +126,9 @@ public class SimpleMonitoredService implements MonitoredService {
     public InetAddress getAddress() {
         return ipAddress;
     }
+
+    @Override
+    public String getNodeLocation() {
+        return null;
+    }
 }

@@ -117,10 +117,8 @@ public class LoopMonitor implements ServiceMonitor {
     @Override
     public PollerResponse poll(PollerRequest request) {
         InetAddress address = request.getAddress();
-        Map<String, String> params = request.getAttributeMap();
+        Map<String, Object> parameters = request.getAttributeMap();
         String pollerName = request.getClassName();
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.putAll(params);
         SimpleMonitoredService svc = new SimpleMonitoredService(address, pollerName);
         PollStatus pollStatus = poll(svc, parameters);
         return new PollerResponseImpl(pollStatus);

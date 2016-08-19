@@ -38,17 +38,13 @@ public interface PollerRequest {
      */
     InetAddress getAddress();
 
+    Map<String, Object> getAttributeMap();
+
     /**
      * @return additional attributes stored outside of the detector's configuration that
      * may be required when running the detector.
      */
     Map<String, String> getRuntimeAttributes();
 
-    /**
-     * @return additional attributes stored outside of the detector's configuration that
-     * may be required when running the detector.
-     */
-    Map<String, String> getAttributeMap();
-    
     String getClassName();
 }

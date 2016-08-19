@@ -236,6 +236,11 @@ public class MockService extends MockElement implements MonitoredService {
         return getNode().getLabel();
     }
 
+    @Override
+    public String getNodeLocation() {
+        return getNode().getLocation();
+    }
+
     // stats
     /**
      * <p>getPollCount</p>
@@ -266,7 +271,7 @@ public class MockService extends MockElement implements MonitoredService {
     public SvcMgmtStatus getMgmtStatus() {
         return m_mgmtStatus;
     }
-    
+
     /**
      * <p>setMgmtStatus</p>
      *

@@ -32,9 +32,12 @@ import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlValue;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.opennms.core.xml.JaxbClassObjectAdapter;
 
 @XmlRootElement(name = "poller-attribute")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -43,8 +46,12 @@ public class PollerAttributeDTO {
     @XmlAttribute(name = "key")
     private String key;
 
-    @XmlValue
+    @XmlAttribute(name="value")
     private String value;
+
+    @XmlAnyElement(lax=false)
+    @XmlJavaTypeAdapter(JaxbClassObjectAdapter.class)
+    private Object contents;
 
     public PollerAttributeDTO() {
 
@@ -53,6 +60,11 @@ public class PollerAttributeDTO {
     public PollerAttributeDTO(String key, String value) {
         this.key = key;
         this.value = value;
+    }
+
+    public PollerAttributeDTO(String key, Object contents) {
+        this.key = key;
+        this.contents = contents;
     }
 
     public String getKey() {
@@ -71,9 +83,17 @@ public class PollerAttributeDTO {
         this.value = value;
     }
 
+    public Object getContents() {
+        return contents;
+    }
+
+    public void setContents(Object contents) {
+        this.contents = contents;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(key, value);
+        return Objects.hash(key, value, contents);
     }
 
     @Override
@@ -85,6 +105,8 @@ public class PollerAttributeDTO {
         if (getClass() != obj.getClass())
             return false;
         final PollerAttributeDTO other = (PollerAttributeDTO) obj;
-        return Objects.equals(this.key, other.key) && Objects.equals(this.value, other.value);
+        return Objects.equals(this.key, other.key)
+                && Objects.equals(this.value, other.value)
+                && Objects.equals(this.contents, other.contents);
     }
 }

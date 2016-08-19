@@ -38,6 +38,8 @@ import org.opennms.core.rpc.api.RpcResponse;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerResponse;
 
+import com.google.common.base.Objects;
+
 @XmlRootElement(name = "poller-response")
 @XmlAccessorType(XmlAccessType.NONE)
 public class PollerResponseDTO implements RpcResponse, PollerResponse {
@@ -79,11 +81,7 @@ public class PollerResponseDTO implements RpcResponse, PollerResponse {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((failureMesage == null) ? 0 : failureMesage.hashCode());
-        result = prime * result + ((pollStatus == null) ? 0 : pollStatus.hashCode());
-        return result;
+        return Objects.hashCode(failureMesage, pollStatus);
     }
 
     @Override
@@ -95,17 +93,8 @@ public class PollerResponseDTO implements RpcResponse, PollerResponse {
         if (getClass() != obj.getClass())
             return false;
         PollerResponseDTO other = (PollerResponseDTO) obj;
-        if (failureMesage == null) {
-            if (other.failureMesage != null)
-                return false;
-        } else if (!failureMesage.equals(other.failureMesage))
-            return false;
-        if (pollStatus == null) {
-            if (other.pollStatus != null)
-                return false;
-        } else if (!pollStatus.equals(other.pollStatus))
-            return false;
-        return true;
+        return Objects.equal(this.failureMesage, other.failureMesage)
+                && Objects.equal(this.pollStatus, other.pollStatus);
     }
 
 }

@@ -110,10 +110,8 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
     public PollerResponse poll(PollerRequest request) {
         
         InetAddress address = request.getAddress();
-        Map<String, String> params = request.getAttributeMap();
+        Map<String, Object> parameters = request.getAttributeMap();
         String pollerName = request.getClassName();
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.putAll(params);
         SimpleMonitoredService svc = new SimpleMonitoredService(address, pollerName);
 
         if (request.getRuntimeAttributes() != null) {

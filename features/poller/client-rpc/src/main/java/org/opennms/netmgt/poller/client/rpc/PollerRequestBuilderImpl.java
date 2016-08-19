@@ -30,6 +30,8 @@ package org.opennms.netmgt.poller.client.rpc;
 
 import java.net.InetAddress;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -37,18 +39,16 @@ import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerConfigLoader;
 import org.opennms.netmgt.poller.PollerRequestBuilder;
 import org.opennms.netmgt.poller.PollerResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
 
 public class PollerRequestBuilderImpl implements PollerRequestBuilder {
-
-    private static final Logger LOG = LoggerFactory.getLogger(PollerRequestBuilderImpl.class);
 
     private String location;
 
     private String serviceName;
 
-    private String className;
+    private ServiceMonitor serviceMonitor;
 
     private InetAddress address;
 
@@ -56,7 +56,9 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
 
     private static final String PORT = "port";
 
-    private Map<String, String> attributes = new HashMap<>();
+    private final Map<String, Object> attributes = new HashMap<>();
+
+    private final List<ServiceMonitorAdaptor> adaptors = new LinkedList<>();
 
     public PollerRequestBuilderImpl(LocationAwarePollerClientImpl client) {
         this.client = client;
@@ -69,8 +71,14 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
     }
 
     @Override
+    public PollerRequestBuilder withMonitor(ServiceMonitor serviceMonitor) {
+        this.serviceMonitor = serviceMonitor;
+        return this;
+    }
+
+    @Override
     public PollerRequestBuilder withClassName(String className) {
-        this.className = className;
+        this.serviceMonitor = client.getRegistry().getMonitorByClassName(className);
         return this;
     }
 
@@ -81,14 +89,26 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
     }
 
     @Override
-    public PollerRequestBuilder withAttribute(String key, String value) {
+    public PollerRequestBuilder withAttribute(String key, Object value) {
         this.attributes.put(key, value);
         return this;
     }
 
     @Override
-    public PollerRequestBuilder withAttributes(Map<String, String> attributes) {
+    public PollerRequestBuilder withAttributes(Map<String, Object> attributes) {
         this.attributes.putAll(attributes);
+        return this;
+    }
+
+    @Override
+    public PollerRequestBuilder withAdaptor(ServiceMonitorAdaptor adaptor) {
+        adaptors.add(adaptor);
+        return this;
+    }
+
+    @Override
+    public PollerRequestBuilder withServiceName(String serviceName) {
+        this.serviceName = serviceName;
         return this;
     }
 
@@ -96,29 +116,31 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
     public CompletableFuture<PollerResponse> execute() {
         if (address == null) {
             throw new IllegalArgumentException("Address is required.");
-        } else if (className == null) {
-            throw new IllegalArgumentException("Poller class name is required.");
+        } else if (serviceMonitor == null) {
+            throw new IllegalArgumentException("Monitor or monitor class name is required.");
         }
-        PollerConfigLoader configLoader = client.getRegistry().getConfigLoaderByMonitorClassName(className);
 
+        final PollerConfigLoader configLoader = serviceMonitor.getConfigLoader();
         final PollerRequestDTO dto = new PollerRequestDTO();
         dto.setAddress(address);
-        dto.setClassName(className);
+        dto.setClassName(serviceMonitor.getClass().getCanonicalName());
         dto.setLocation(location);
         dto.addPollerAttributes(attributes);
         dto.setServiceName(serviceName);
-        final String port = attributes.get(PORT);
+        // JW: TODO: FIXME: Unsafe
+        final String port = (String)attributes.get(PORT);
         if (configLoader != null) {
             dto.addRuntimeAttributes(configLoader.getRuntimeAttributes(location, address, port));
         }
 
         // Execute the request
         return client.getDelegate().execute(dto).thenApply(results -> {
-            if (results.getPollStatus().getStatusCode() == PollStatus.SERVICE_AVAILABLE) {
-                LOG.info(" {} is available", serviceName);
-            } else {
-                throw new RuntimeException(results.getPollStatus().getReason());
+            PollStatus pollStatus = results.getPollStatus();
+            for (ServiceMonitorAdaptor adaptor : adaptors) {
+                // JW: TODO: FIXME: Pass the appropriate parms.
+                pollStatus = adaptor.handlePollResult(null, null, pollStatus);
             }
+            results.setPollStatus(pollStatus);
             return results;
         });
     }

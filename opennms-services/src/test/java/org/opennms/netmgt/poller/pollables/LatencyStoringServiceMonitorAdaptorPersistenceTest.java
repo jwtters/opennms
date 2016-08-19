@@ -110,7 +110,7 @@ public class LatencyStoringServiceMonitorAdaptorPersistenceTest {
         pollerConfig.setRRAList(pkg, Lists.newArrayList("RRA:AVERAGE:0.5:1:2016"));
 
         LatencyStoringServiceMonitorAdaptor lssma = new LatencyStoringServiceMonitorAdaptor(
-                serviceMonitor, pollerConfig, pkg, m_persisterFactory, m_resourceStorageDao);
+                pollerConfig, pkg, m_persisterFactory, m_resourceStorageDao);
 
         MonitoredService monitoredService = new MockMonitoredService(3, "Firewall",
                 InetAddress.getByName("192.168.1.5"), "SMTP");
@@ -144,7 +144,7 @@ public class LatencyStoringServiceMonitorAdaptorPersistenceTest {
         EasyMock.replay(m_rrdStrategy);
 
         // Trigger the poll
-        lssma.poll(monitoredService, params);
+        lssma.handlePollResult(monitoredService, params, serviceMonitor.poll(monitoredService, params));
 
         // Verify
         EasyMock.verify(m_rrdStrategy);

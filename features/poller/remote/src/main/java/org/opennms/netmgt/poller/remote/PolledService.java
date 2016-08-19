@@ -60,9 +60,10 @@ public class PolledService implements MonitoredService, Serializable, Comparable
     private final Integer m_serviceId;
     private final Integer m_nodeId;
     private final String m_nodeLabel;
+    private final String m_nodeLocation;
     private final String m_svcName;
     private final Set<String> m_applications;
-	
+
 	/**
 	 * <p>Constructor for PolledService.</p>
 	 *
@@ -74,6 +75,7 @@ public class PolledService implements MonitoredService, Serializable, Comparable
         m_serviceId = monitoredService.getId();
         m_nodeId = monitoredService.getNodeId();
         m_nodeLabel = monitoredService.getIpInterface().getNode().getLabel();
+        m_nodeLocation = monitoredService.getIpInterface().getNode().getLocation().getLocationName();
         m_svcName = monitoredService.getServiceName();
         m_netInterface = new InetNetworkInterface(monitoredService.getIpInterface().getIpAddress());
 		m_monitorConfiguration = monitorConfiguration;
@@ -139,6 +141,11 @@ public class PolledService implements MonitoredService, Serializable, Comparable
     @Override
     public String getNodeLabel() {
         return m_nodeLabel;
+    }
+
+    @Override
+    public String getNodeLocation() {
+        return m_nodeLocation;
     }
 
     /**

@@ -88,6 +88,10 @@ public class AvailabilityMonitorTest {
             public String getSvcUrl() {
                 return null;
             }
+            @Override
+            public String getNodeLocation() {
+                return null;
+            }
             
         };
         PollStatus status = sm.poll(svc, parameters);

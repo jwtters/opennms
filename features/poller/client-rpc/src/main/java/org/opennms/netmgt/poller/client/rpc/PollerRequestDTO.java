@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -142,14 +143,23 @@ public class PollerRequestDTO implements RpcRequest, PollerRequest{
         pollerAttributes.add(new PollerAttributeDTO(key, value));
     }
 
-    public void addPollerAttributes(Map<String, String> attributes) {
+    public void addPollerAttribute(String key, Object value) {
+        pollerAttributes.add(new PollerAttributeDTO(key, value));
+    }
+
+    public void addPollerAttributes(Map<String, Object> attributes) {
         attributes.entrySet().stream().forEach(e -> this.addPollerAttribute(e.getKey(), e.getValue()));
     }
 
     @Override
-    public Map<String, String> getAttributeMap() {
+    public Map<String, Object> getAttributeMap() {
         return pollerAttributes.stream()
-                .collect(Collectors.toMap(PollerAttributeDTO::getKey, PollerAttributeDTO::getValue));
+                .collect(Collectors.toMap(PollerAttributeDTO::getKey, e -> {
+                    if (e.getContents() != null) {
+                        return e.getContents();
+                    }
+                    return e.getValue();
+                }));
     }
 
     public void setRuntimeAttributes(List<PollerAttributeDTO> attributes) {
@@ -180,13 +190,8 @@ public class PollerRequestDTO implements RpcRequest, PollerRequest{
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((address == null) ? 0 : address.hashCode());
-        result = prime * result + ((className == null) ? 0 : className.hashCode());
-        result = prime * result + ((location == null) ? 0 : location.hashCode());
-        result = prime * result + ((pollerAttributes == null) ? 0 : pollerAttributes.hashCode());
-        return result;
+        return Objects.hash(address, className, location, pollerAttributes,
+                runtimeAttributes, serviceName);
     }
 
     @Override
@@ -198,27 +203,12 @@ public class PollerRequestDTO implements RpcRequest, PollerRequest{
         if (getClass() != obj.getClass())
             return false;
         PollerRequestDTO other = (PollerRequestDTO) obj;
-        if (address == null) {
-            if (other.address != null)
-                return false;
-        } else if (!address.equals(other.address))
-            return false;
-        if (className == null) {
-            if (other.className != null)
-                return false;
-        } else if (!className.equals(other.className))
-            return false;
-        if (location == null) {
-            if (other.location != null)
-                return false;
-        } else if (!location.equals(other.location))
-            return false;
-        if (pollerAttributes == null) {
-            if (other.pollerAttributes != null)
-                return false;
-        } else if (!pollerAttributes.equals(other.pollerAttributes))
-            return false;
-        return true;
+        return Objects.equals(this.address, other.address)
+                && Objects.equals(this.className, other.className)
+                && Objects.equals(this.location, other.location)
+                && Objects.equals(this.pollerAttributes, other.pollerAttributes)
+                && Objects.equals(this.runtimeAttributes, other.runtimeAttributes)
+                && Objects.equals(this.serviceName, other.serviceName);
     }
 
 }

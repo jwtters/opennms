@@ -36,8 +36,6 @@ import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.config.PollOutagesConfig;
@@ -47,11 +45,11 @@ import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
-import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.scheduler.Timer;
 
-@RunWith(MockitoJUnitRunner.class)
 public class PollableServiceConfigTest {
+
     @Test
     public void testPollableServiceConfig() throws Exception {
         final FilterDao fd = mock(FilterDao.class);
@@ -65,6 +63,8 @@ public class PollableServiceConfigTest {
         PersisterFactory persisterFactory = null;
         ResourceStorageDao resourceStorageDao = new FilesystemResourceStorageDao();
 
+        LocationAwarePollerClient locationAwarePollerClient = null;
+
         final PollContext context = mock(PollContext.class);
         final PollableNetwork network = new PollableNetwork(context);
         final PollableNode node = network.createNodeIfNecessary(1, "foo");
@@ -74,11 +74,9 @@ public class PollableServiceConfigTest {
         final Package pkg = factory.getPackage("MapQuest");
         final Timer timer = mock(Timer.class);
         final PollableServiceConfig psc = new PollableServiceConfig(svc, factory, pollOutagesConfig, pkg, timer,
-                persisterFactory, resourceStorageDao);
-
-        final ServiceMonitor sm = mock(ServiceMonitor.class);
-        psc.setServiceMonitor(sm);
-
+                persisterFactory, resourceStorageDao, locationAwarePollerClient);
         psc.poll();
+
+        // JW: TODO: FIXME: NPE here, we should assert something.
     }
 }

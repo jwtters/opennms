@@ -96,8 +96,8 @@ public class Poll extends OsgiCommandSupport {
         this.locationAwarePollerClient = locationAwarePollerClient;
     }
 
-    private Map<String, String> parse(List<String> attributeList) {
-        Map<String, String> properties = new HashMap<>();
+    private Map<String, Object> parse(List<String> attributeList) {
+        final Map<String, Object> properties = new HashMap<>();
         if (attributeList != null) {
             for (String keyValue : attributeList) {
                 int splitAt = keyValue.indexOf("=");

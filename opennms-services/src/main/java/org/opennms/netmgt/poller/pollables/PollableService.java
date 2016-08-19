@@ -153,6 +153,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     public int getNodeId() {
         return getInterface().getNodeId();
     }
+
     
     /**
      * <p>getNodeLabel</p>
@@ -164,6 +165,10 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
         return getInterface().getNodeLabel();
     }
 
+    public String getNodeLocation() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
     /** {@inheritDoc} */
     @Override

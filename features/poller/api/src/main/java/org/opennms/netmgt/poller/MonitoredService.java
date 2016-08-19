@@ -72,6 +72,8 @@ public interface MonitoredService {
      */
     String getNodeLabel();
 
+    String getNodeLocation();
+
     /**
      * Returns the {@link NetworkInterface} object for this service.  This {@link NetworkInterface} object is
      * guaranteed to be the same each time init or poll is called.

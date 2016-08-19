@@ -44,7 +44,9 @@ public class SimpleMonitoredService implements MonitoredService {
     
     /** The node label. */
     private String nodeLabel;
-    
+
+    private String nodeLocation;
+
     /** The service name. */
     private String svcName;
 
@@ -107,6 +109,12 @@ public class SimpleMonitoredService implements MonitoredService {
      */
     public String getNodeLabel() {
         return nodeLabel;
+    }
+
+    @Override
+    public String getNodeLocation() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     /* (non-Javadoc)

@@ -29,7 +29,6 @@
 package org.opennms.netmgt.poller.monitors;
 
 import java.net.InetAddress;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.netmgt.poller.MonitoredService;
@@ -38,8 +37,6 @@ import org.opennms.netmgt.poller.PollerConfigLoader;
 import org.opennms.netmgt.poller.PollerRequest;
 import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.ServiceMonitor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -54,7 +51,6 @@ import org.slf4j.LoggerFactory;
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
 public abstract class AbstractServiceMonitor implements ServiceMonitor {
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractServiceMonitor.class);
 
     /**
      * {@inheritDoc}
@@ -160,10 +156,8 @@ public abstract class AbstractServiceMonitor implements ServiceMonitor {
     public PollStatus invokePoll(PollerRequest request) {
 
         InetAddress address = request.getAddress();
-        Map<String, String> params = request.getAttributeMap();
+        Map<String, Object> parameters = request.getAttributeMap();
         String pollerName = request.getClassName();
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.putAll(params);
         SimpleMonitoredService svc = new SimpleMonitoredService(address, pollerName);
         PollStatus pollstatus = poll(svc, parameters);
 

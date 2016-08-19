@@ -116,6 +116,9 @@ public class Poller extends AbstractServiceDaemon {
     @Autowired
     private ResourceStorageDao m_resourceStorageDao;
 
+    @Autowired
+    private LocationAwarePollerClient m_locationAwarePollerClient;
+
     public void setPersisterFactory(PersisterFactory persisterFactory) {
         m_persisterFactory = persisterFactory;
     }
@@ -545,7 +548,7 @@ public class Poller extends AbstractServiceDaemon {
 
         PollableService svc = getNetwork().createService(nodeId, nodeLabel, addr, serviceName);
         PollableServiceConfig pollConfig = new PollableServiceConfig(svc, m_pollerConfig, m_pollOutagesConfig, pkg,
-                getScheduler(), m_persisterFactory, m_resourceStorageDao);
+                getScheduler(), m_persisterFactory, m_resourceStorageDao, m_locationAwarePollerClient);
         svc.setPollConfig(pollConfig);
         synchronized(svc) {
             if (svc.getSchedule() == null) {

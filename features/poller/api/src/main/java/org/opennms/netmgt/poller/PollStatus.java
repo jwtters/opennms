@@ -404,22 +404,12 @@ public class PollStatus implements Serializable {
         return getStatusName();
     }
 
-    /**
-     * <p>getTimestamp</p>
-     *
-     * @return a {@link java.util.Date} object.
-     */
     @XmlAttribute(name="time")
     @Column(name="statusTime", nullable=false)
     public Date getTimestamp() {
         return m_timestamp;
     }
 
-    /**
-     * <p>setTimestamp</p>
-     *
-     * @param timestamp a {@link java.util.Date} object.
-     */
     public void setTimestamp(final Date timestamp) {
         m_timestamp = timestamp;
     }

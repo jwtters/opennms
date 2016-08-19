@@ -36,13 +36,19 @@ public interface PollerRequestBuilder {
 
 	PollerRequestBuilder withLocation(String location);
 
+    PollerRequestBuilder withMonitor(ServiceMonitor serviceMonitor);
+
 	PollerRequestBuilder withClassName(String className);
 
 	PollerRequestBuilder withAddress(InetAddress address);
 
-	PollerRequestBuilder withAttribute(String key, String value);
+	PollerRequestBuilder withAttribute(String key, Object value);
 
-	PollerRequestBuilder withAttributes(Map<String, String> attributes);
+	PollerRequestBuilder withAttributes(Map<String, Object> attributes);
+
+    PollerRequestBuilder withAdaptor(ServiceMonitorAdaptor adaptor);
+
+    PollerRequestBuilder withServiceName(String serviceName);
 
     CompletableFuture<PollerResponse> execute();
 
