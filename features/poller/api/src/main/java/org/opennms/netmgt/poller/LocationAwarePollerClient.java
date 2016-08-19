@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.poller;
 
-public interface LocationAwarePollerClient{
-	
-		PollerRequestBuilder poll();
+public interface LocationAwarePollerClient {
+
+    PollerRequestBuilder poll();
 
 }

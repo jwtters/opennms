@@ -32,9 +32,8 @@ import java.net.InetAddress;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-
 public interface PollerRequestBuilder {
-	
+
 	PollerRequestBuilder withLocation(String location);
 
 	PollerRequestBuilder withClassName(String className);
