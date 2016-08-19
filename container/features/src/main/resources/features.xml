@@ -544,6 +544,26 @@
       <bundle>mvn:org.opennms/opennms-config/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-core-ipc-sink" description="OpenNMS :: Core :: IPC :: Sink" version="${project.version}">
+      <feature>org.json</feature>
+      <feature>javax.mail</feature>
+      <feature>opennms-core-camel</feature>
+      <feature>camel-blueprint</feature>
+      <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.xml/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.camel-impl/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-core-ipc-rpc" description="OpenNMS :: Core :: IPC :: RPC" version="${project.version}">
+      <feature>org.json</feature>
+      <feature>javax.mail</feature>
+      <feature>opennms-core-camel</feature>
+      <feature>camel-blueprint</feature>
+      <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.xml/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.camel-impl/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-dao-api" description="OpenNMS :: DAO :: API" version="${project.version}">
       <feature>opennms-core</feature>
       <feature>opennms-model</feature>
@@ -656,7 +676,7 @@
       <feature>hibernate36</feature>
 
       <feature>opennms-core</feature>
-      <feature>opennms-core-rpc-xml</feature>
+      <feature>opennms-core-ipc-rpc</feature>
       <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.api/${project.version}</bundle>
     </feature>
 
@@ -706,14 +726,6 @@
       <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.model/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.repository/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.sdo/${project.version}</bundle>
-    </feature>
-
-    <feature name="opennms-core-rpc-api" description="OpenNMS :: Core :: RPC :: API" version="${project.version}">
-      <bundle>mvn:org.opennms.core.rpc/org.opennms.core.rpc.api/${project.version}</bundle>
-    </feature>
-
-    <feature name="opennms-core-rpc-xml" description="OpenNMS :: Core :: RPC :: XML" version="${project.version}">
-      <bundle>mvn:org.opennms.core.rpc/org.opennms.core.rpc.xml/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-rrd-api" description="OpenNMS :: RRD :: API" version="${project.version}">

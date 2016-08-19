@@ -5,7 +5,7 @@ opennms-syslogd-handler-minion
 opennms-trapd-listener
 opennms-trapd-handler-minion
 minion-shell
-minion-heartbeat
+minion-heartbeat-producer
 minion-snmp-proxy
 minion-provisiond-detectors
 minion-poller
