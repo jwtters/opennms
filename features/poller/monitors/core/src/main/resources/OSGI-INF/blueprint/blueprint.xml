@@ -217,13 +217,6 @@
         </service-properties>
     </service>
     
-    <bean id="loopMonitor" class="org.opennms.netmgt.poller.monitors.LoopMonitor" />
-    <service ref="loopMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
-        <service-properties>
-            <entry key="type" value="org.opennms.netmgt.poller.monitors.LoopMonitor" />
-        </service-properties>
-    </service>
-    
     <bean id="memcachedMonitor" class="org.opennms.netmgt.poller.monitors.MemcachedMonitor" />
     <service ref="memcachedMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
         <service-properties>
