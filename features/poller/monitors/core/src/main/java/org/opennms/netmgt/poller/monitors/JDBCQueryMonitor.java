@@ -39,6 +39,7 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.PollStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 
 
@@ -48,6 +49,7 @@ import org.slf4j.LoggerFactory;
  * @author ranger
  * @version $Id: $
  */
+@Component
 public final class JDBCQueryMonitor extends JDBCMonitor {
     
     
