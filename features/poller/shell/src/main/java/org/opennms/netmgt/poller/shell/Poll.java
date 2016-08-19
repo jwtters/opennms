@@ -73,9 +73,18 @@ public class Poll extends OsgiCommandSupport {
                 try {
                     PollerResponse pollerResponse = future.get(1, TimeUnit.SECONDS);
                     if (pollerResponse.getPollStatus().getStatusCode() == PollStatus.SERVICE_AVAILABLE) {
-                        System.out.printf("Poll with %s was succesful on %s \n", className, host);
-                    }else {
-                        System.out.printf("Poll with %s failed on %s \n", className, host);
+                        System.out.printf("\n%s was successful on %s:\n", className, host);
+                        final Map<String, Number> properties = pollerResponse.getPollStatus().getProperties();
+                        if (properties.size() > 0) {
+                            properties.entrySet().stream().forEach(e -> {
+                                System.out.printf("\t%s: %.4f\n", e.getKey(), e.getValue());
+                            });
+                        } else {
+                            System.out.printf("(No properties were returned by the monitor.\n");
+                        }
+
+                    } else {
+                        System.out.printf("\n%s failed on %s\n", className, host);
                     }
                 } catch (InterruptedException e) {
                     System.out.println("\nInterrupted.");
