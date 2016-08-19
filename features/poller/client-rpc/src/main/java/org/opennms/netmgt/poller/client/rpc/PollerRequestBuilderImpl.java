@@ -82,8 +82,8 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
 
     @Override
     public PollerRequestBuilder withAttribute(String key, String value) {
-        // TODO Auto-generated method stub
-        return null;
+        this.attributes.put(key, value);
+        return this;
     }
 
     @Override
