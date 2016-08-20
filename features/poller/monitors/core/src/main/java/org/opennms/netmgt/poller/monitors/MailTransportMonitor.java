@@ -46,6 +46,7 @@ import javax.mail.search.SubjectTerm;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.javamail.JavaMailer;
 import org.opennms.javamail.JavaMailerException;
@@ -73,6 +74,7 @@ import org.opennms.netmgt.poller.PollStatus;
  * @version $Id: $
  */
 @Distributable
+@Component
 public class MailTransportMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(MailTransportMonitor.class);
 

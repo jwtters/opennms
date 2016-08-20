@@ -34,6 +34,7 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.SocketWrapper;
 import org.opennms.core.utils.SslSocketWrapper;
 import org.opennms.netmgt.poller.Distributable;
+import org.springframework.stereotype.Component;
 
 /**
  * This class is designed to be used by the service poller framework to test the
@@ -43,6 +44,7 @@ import org.opennms.netmgt.poller.Distributable;
  *
  */
 @Distributable
+@Component
 final public class ImapsMonitor extends ImapMonitor {
 
     /**

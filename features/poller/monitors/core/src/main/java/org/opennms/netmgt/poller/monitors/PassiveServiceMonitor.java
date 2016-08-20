@@ -39,6 +39,7 @@ import org.opennms.netmgt.poller.PollerConfigLoader;
 import org.opennms.netmgt.poller.PollerRequest;
 import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.springframework.stereotype.Component;
 /**
  * <p>PassiveServiceMonitor class.</p>
  *
@@ -48,6 +49,7 @@ import org.opennms.netmgt.poller.ServiceMonitor;
 
 // this retrieves data from the deamon so it is not Distribuable
 @Distributable(DistributionContext.DAEMON)
+@Component
 public class PassiveServiceMonitor implements ServiceMonitor {
 
     /* (non-Javadoc)

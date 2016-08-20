@@ -86,6 +86,7 @@ import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.utils.DnsUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * This class is designed to be used by the service poller framework to test the availability
@@ -95,6 +96,7 @@ import org.slf4j.LoggerFactory;
  * @author <a mailto:brozow@opennms.org>Mathew Brozowski</a>
  */
 @Distributable
+@Component
 public class PageSequenceMonitor extends AbstractServiceMonitor {
 
     private static final Logger LOG = LoggerFactory.getLogger(PageSequenceMonitor.class);

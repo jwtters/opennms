@@ -44,6 +44,7 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.PollStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * <P>
@@ -61,6 +62,7 @@ import org.slf4j.LoggerFactory;
 
 // I this thise needs a jcifs.properties file so we can't distribute it now
 @Distributable(DistributionContext.DAEMON)
+@Component
 final public class SmbMonitor extends AbstractServiceMonitor {
     
     public static final Logger LOG = LoggerFactory.getLogger(SmbMonitor.class);
