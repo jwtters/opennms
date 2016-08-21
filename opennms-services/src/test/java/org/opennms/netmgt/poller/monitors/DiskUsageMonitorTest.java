@@ -75,6 +75,10 @@ public class DiskUsageMonitorTest implements InitializingBean {
 
     @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
+    
+    private DiskUsageMonitor monitor;
+    
+    
     private boolean m_ignoreWarnings = false;
 
     @Override
@@ -87,7 +91,9 @@ public class DiskUsageMonitorTest implements InitializingBean {
         System.out.println("------------ begin test " + m_test.getMethodName() + " ------------");
         m_ignoreWarnings = false;
         MockLogAppender.setupLogging();
+        monitor = new DiskUsageMonitor();
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
+        monitor.setAgentConfig(m_snmpPeerFactory.getAgentConfig(InetAddressUtils.getInetAddress(TEST_IP_ADDRESS)));
     }
 
     @After
@@ -100,7 +106,6 @@ public class DiskUsageMonitorTest implements InitializingBean {
 
     @Test(expected = RuntimeException.class)
     public void testDiskNull() throws Exception {
-        DiskUsageMonitor monitor = new DiskUsageMonitor();
         Map<String, Object> parameters = createBasicParams();
         parameters.remove("disk");
         PollStatus status = monitor.poll(createMonitor(), parameters);
@@ -109,7 +114,6 @@ public class DiskUsageMonitorTest implements InitializingBean {
 
     @Test(expected = RuntimeException.class)
     public void testInvalidMatchTypeParameter() throws Exception {
-        DiskUsageMonitor monitor = new DiskUsageMonitor();
         Map<String, Object> parameters = createBasicParams();
         parameters.put("match-type", "invalid");
         PollStatus status = monitor.poll(createMonitor(), parameters);
@@ -118,7 +122,6 @@ public class DiskUsageMonitorTest implements InitializingBean {
 
     @Test(expected = RuntimeException.class)
     public void testInvalidRequireTypeParameter() throws Exception {
-        DiskUsageMonitor monitor = new DiskUsageMonitor();
         Map<String, Object> parameters = createBasicParams();
         parameters.put("require-type", "invalid");
         PollStatus status = monitor.poll(createMonitor(), parameters);
@@ -127,7 +130,6 @@ public class DiskUsageMonitorTest implements InitializingBean {
 
     @Test
     public void testParameters() throws Exception {
-        DiskUsageMonitor monitor = new DiskUsageMonitor();
         Map<String, Object> parameters = createBasicParams();
         PollStatus status = monitor.poll(createMonitor(), parameters);
         Assert.assertTrue(status.isAvailable());
@@ -135,7 +137,6 @@ public class DiskUsageMonitorTest implements InitializingBean {
 
     @Test
     public void testInvalidDiskRegex() throws Exception {
-        DiskUsageMonitor monitor = new DiskUsageMonitor();
         Map<String, Object> parameters = createBasicParams();
         parameters.put("disk", "^[A-Z:");
         parameters.put("match-type", "regex");
@@ -146,7 +147,6 @@ public class DiskUsageMonitorTest implements InitializingBean {
 
     @Test
     public void testAllDisks() throws Exception {
-        DiskUsageMonitor monitor = new DiskUsageMonitor();
         Map<String, Object> parameters = createBasicParams();
         parameters.put("match-type", "startswith");
         parameters.put("require-type", "all");
@@ -156,7 +156,6 @@ public class DiskUsageMonitorTest implements InitializingBean {
 
     @Test
     public void testDiskCase1() throws Exception {
-        DiskUsageMonitor monitor = new DiskUsageMonitor();
         Map<String, Object> parameters = createBasicParams();
         parameters.put("free", "25");
         PollStatus status = monitor.poll(createMonitor(), parameters);
@@ -165,7 +164,6 @@ public class DiskUsageMonitorTest implements InitializingBean {
 
     @Test
     public void testDiskNotFound() throws Exception {
-        DiskUsageMonitor monitor = new DiskUsageMonitor();
         Map<String, Object> parameters = createBasicParams();
         parameters.put("disk", "/data");
         PollStatus status = monitor.poll(createMonitor(), parameters);
@@ -175,7 +173,6 @@ public class DiskUsageMonitorTest implements InitializingBean {
 
     @Test
     public void testDiskRegex() throws Exception {
-        DiskUsageMonitor monitor = new DiskUsageMonitor();
         Map<String, Object> parameters = createBasicParams();
         parameters.put("disk", "^/$");
         parameters.put("match-type", "regex");

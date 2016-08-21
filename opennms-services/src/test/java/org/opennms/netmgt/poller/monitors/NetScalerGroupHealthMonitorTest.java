@@ -69,6 +69,8 @@ public class NetScalerGroupHealthMonitorTest implements InitializingBean {
 
     @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
+    
+    private NetScalerGroupHealthMonitor monitor;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -78,7 +80,9 @@ public class NetScalerGroupHealthMonitorTest implements InitializingBean {
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
+        monitor = new NetScalerGroupHealthMonitor();
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
+        monitor.setAgentConfig(m_snmpPeerFactory.getAgentConfig(InetAddressUtils.getInetAddress(TEST_IP_ADDRESS)));
     }
 
     @After
@@ -88,14 +92,12 @@ public class NetScalerGroupHealthMonitorTest implements InitializingBean {
 
     @Test
     public void testAvailable() throws Exception {
-        NetScalerGroupHealthMonitor monitor = new NetScalerGroupHealthMonitor();
         PollStatus status = monitor.poll(createMonitor(), createBasicParams());
         Assert.assertTrue(status.isAvailable());
     }
 
     @Test
     public void testUnavailable() throws Exception {
-        NetScalerGroupHealthMonitor monitor = new NetScalerGroupHealthMonitor();
         Map<String, Object> parameters =  createBasicParams();
         parameters.put("group-health", 70);
         PollStatus status = monitor.poll(createMonitor(), parameters);

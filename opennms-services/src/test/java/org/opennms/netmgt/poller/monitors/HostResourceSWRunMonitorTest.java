@@ -73,6 +73,9 @@ public class HostResourceSWRunMonitorTest implements InitializingBean {
 
     @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
+ 
+    private HostResourceSwRunMonitor monitor;
+    
     private boolean m_ignoreWarnings = false;
 
     @Override
@@ -84,7 +87,9 @@ public class HostResourceSWRunMonitorTest implements InitializingBean {
     public void setUp() throws Exception {
         m_ignoreWarnings = false;
         MockLogAppender.setupLogging();
+        monitor = new HostResourceSwRunMonitor();
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
+        monitor.setAgentConfig(m_snmpPeerFactory.getAgentConfig(InetAddressUtils.getInetAddress(TEST_IP_ADDRESS)));
     }
 
     @After
@@ -96,7 +101,7 @@ public class HostResourceSWRunMonitorTest implements InitializingBean {
 
     @Test
     public void testUnknownService() throws Exception {
-        HostResourceSwRunMonitor monitor = new HostResourceSwRunMonitor();
+        monitor.setAgentConfig(m_snmpPeerFactory.getAgentConfig(InetAddressUtils.getInetAddress(TEST_IP_ADDRESS)));
         Map<String, Object> parameters = createBasicParams();
         parameters.put("service-name", "this service does not exist!");
         PollStatus status = monitor.poll(createMonitor(), parameters);
@@ -106,7 +111,6 @@ public class HostResourceSWRunMonitorTest implements InitializingBean {
 
     @Test
     public void testMonitorWithRegex() throws Exception {
-        HostResourceSwRunMonitor monitor = new HostResourceSwRunMonitor();
         Map<String, Object> parameters = createBasicParams();
         PollStatus status = monitor.poll(createMonitor(), parameters);
         Assert.assertTrue(status.isAvailable());
@@ -114,7 +118,6 @@ public class HostResourceSWRunMonitorTest implements InitializingBean {
 
     @Test
     public void testMonitorWithoutRegex() throws Exception {
-        HostResourceSwRunMonitor monitor = new HostResourceSwRunMonitor();
         Map<String, Object> parameters = createBasicParams();
         parameters.put("service-name", "eclipse");
         PollStatus status = monitor.poll(createMonitor(), parameters);
@@ -123,7 +126,6 @@ public class HostResourceSWRunMonitorTest implements InitializingBean {
 
     @Test
     public void testMinServices() throws Exception {
-        HostResourceSwRunMonitor monitor = new HostResourceSwRunMonitor();
         Map<String, Object> parameters = createBasicParams();
         parameters.put("min-services", "2");
         PollStatus status = monitor.poll(createMonitor(), parameters);
@@ -132,7 +134,6 @@ public class HostResourceSWRunMonitorTest implements InitializingBean {
 
     @Test
     public void testInvalidMinServices() throws Exception {
-        HostResourceSwRunMonitor monitor = new HostResourceSwRunMonitor();
         Map<String, Object> parameters = createBasicParams();
         parameters.put("min-services", "5");
         PollStatus status = monitor.poll(createMonitor(), parameters);
@@ -142,7 +143,6 @@ public class HostResourceSWRunMonitorTest implements InitializingBean {
 
     @Test
     public void testMaxServices() throws Exception {
-        HostResourceSwRunMonitor monitor = new HostResourceSwRunMonitor();
         Map<String, Object> parameters = createBasicParams();
         parameters.put("max-services", "5");
         PollStatus status = monitor.poll(createMonitor(), parameters);
@@ -151,7 +151,6 @@ public class HostResourceSWRunMonitorTest implements InitializingBean {
 
     @Test
     public void testInvalidMaxServices() throws Exception {
-        HostResourceSwRunMonitor monitor = new HostResourceSwRunMonitor();
         Map<String, Object> parameters = createBasicParams();
         parameters.put("max-services", "3");
         PollStatus status = monitor.poll(createMonitor(), parameters);
@@ -161,7 +160,6 @@ public class HostResourceSWRunMonitorTest implements InitializingBean {
 
     @Test
     public void testServicesRange() throws Exception {
-        HostResourceSwRunMonitor monitor = new HostResourceSwRunMonitor();
         Map<String, Object> parameters = createBasicParams();
         parameters.put("min-services", "2");
         parameters.put("max-services", "5");
@@ -172,7 +170,6 @@ public class HostResourceSWRunMonitorTest implements InitializingBean {
     @Test
     public void testInvalidRange() throws Exception {
         m_ignoreWarnings = true; // warning is expected here, skip the assert in tearDown()
-        HostResourceSwRunMonitor monitor = new HostResourceSwRunMonitor();
         Map<String, Object> parameters = createBasicParams();
         parameters.put("min-services", "8");
         parameters.put("max-services", "5");
@@ -183,7 +180,6 @@ public class HostResourceSWRunMonitorTest implements InitializingBean {
 
     @Test
     public void testServicesRangeWithoutMatchAll() throws Exception {
-        HostResourceSwRunMonitor monitor = new HostResourceSwRunMonitor();
         Map<String, Object> parameters = createBasicParams();
         parameters.put("min-services", "1");
         parameters.put("max-services", "3");
@@ -194,7 +190,6 @@ public class HostResourceSWRunMonitorTest implements InitializingBean {
 
     @Test
     public void testInvalidServicesRange() throws Exception {
-        HostResourceSwRunMonitor monitor = new HostResourceSwRunMonitor();
         Map<String, Object> parameters = createBasicParams();
         parameters.put("min-services", "1");
         parameters.put("max-services", "3");
