@@ -54,7 +54,7 @@ public class PollerAttributeDTO {
     private Object contents;
 
     public PollerAttributeDTO() {
-
+        // no-arg constructor for JAXB
     }
 
     public PollerAttributeDTO(String key, String value) {

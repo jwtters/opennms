@@ -425,10 +425,11 @@ public class Poller extends AbstractServiceDaemon {
      *
      * @param nodeId a int.
      * @param nodeLabel a {@link java.lang.String} object.
+     * @param nodeLocation a {@link java.lang.String} object.
      * @param ipAddr a {@link java.lang.String} object.
      * @param svcName a {@link java.lang.String} object.
      */
-    public void scheduleService(final int nodeId, final String nodeLabel, final String ipAddr, final String svcName) {
+    public void scheduleService(final int nodeId, final String nodeLabel, final String nodeLocation, final String ipAddr, final String svcName) {
         final String normalizedAddress = InetAddressUtils.normalize(ipAddr);
         try {
             /*
@@ -439,7 +440,7 @@ public class Poller extends AbstractServiceDaemon {
             synchronized (getNetwork()) {
                 node = getNetwork().getNode(nodeId);
                 if (node == null) {
-                    node = getNetwork().createNode(nodeId, nodeLabel);
+                    node = getNetwork().createNode(nodeId, nodeLabel, nodeLocation);
                 }
             }
 
@@ -459,8 +460,9 @@ public class Poller extends AbstractServiceDaemon {
                             closeOutageIfSvcLostEventIsMissing(outage);
 
                             if (scheduleService(
-                                                service.getNodeId(), 
-                                                iface.getNode().getLabel(), 
+                                                service.getNodeId(),
+                                                iface.getNode().getLabel(),
+                                                iface.getNode().getLocation().getLocationName(),
                                                 InetAddressUtils.str(iface.getIpAddress()), 
                                                 service.getServiceName(), 
                                                 "A".equals(service.getStatus()), 
@@ -502,6 +504,7 @@ public class Poller extends AbstractServiceDaemon {
                     scheduleService(
                             service.getNodeId(),
                             iface.getNode().getLabel(),
+                            iface.getNode().getLocation().getLocationName(),
                             InetAddressUtils.str(iface.getIpAddress()),
                             service.getServiceName(),
                             "A".equals(service.getStatus()),
@@ -515,7 +518,7 @@ public class Poller extends AbstractServiceDaemon {
         });
     }
 
-    private boolean scheduleService(int nodeId, String nodeLabel, String ipAddr, String serviceName, boolean active, Number svcLostEventId, Date ifLostService, String svcLostUei) {
+    private boolean scheduleService(int nodeId, String nodeLabel, String nodeLocation, String ipAddr, String serviceName, boolean active, Number svcLostEventId, Date ifLostService, String svcLostUei) {
         // We don't want to adjust the management state of the service if we're
         // on a machine that uses multiple servers with access to the same database
         // so check the value of OpennmsServerConfigFactory.getInstance().verifyServer()
@@ -546,7 +549,7 @@ public class Poller extends AbstractServiceDaemon {
             return false;
         }
 
-        PollableService svc = getNetwork().createService(nodeId, nodeLabel, addr, serviceName);
+        PollableService svc = getNetwork().createService(nodeId, nodeLabel, nodeLocation, addr, serviceName);
         PollableServiceConfig pollConfig = new PollableServiceConfig(svc, m_pollerConfig, m_pollOutagesConfig, pkg,
                 getScheduler(), m_persisterFactory, m_resourceStorageDao, m_locationAwarePollerClient);
         svc.setPollConfig(pollConfig);

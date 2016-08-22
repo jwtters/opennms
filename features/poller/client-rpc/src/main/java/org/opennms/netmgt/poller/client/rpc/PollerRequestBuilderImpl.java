@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerConfigLoader;
 import org.opennms.netmgt.poller.PollerRequestBuilder;
@@ -47,6 +48,8 @@ import org.slf4j.LoggerFactory;
 public class PollerRequestBuilderImpl implements PollerRequestBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(PollerRequestBuilderImpl.class);
+
+    private MonitoredService service;
 
     private String location;
 
@@ -69,6 +72,17 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
     }
 
     @Override
+    public PollerRequestBuilder withService(MonitoredService service) {
+        this.service = service;
+        if (service != null) {
+            this.location = service.getNodeLocation();
+            this.address = service.getAddress();
+            this.serviceName = service.getSvcName();
+        }
+        return this;
+    }
+
+    @Override
     public PollerRequestBuilder withLocation(String location) {
         this.location = location;
         return this;
@@ -81,7 +95,7 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
     }
 
     @Override
-    public PollerRequestBuilder withClassName(String className) {
+    public PollerRequestBuilder withMonitorClassName(String className) {
         this.serviceMonitor = client.getRegistry().getMonitorByClassName(className);
         return this;
     }
@@ -156,8 +170,7 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
         return client.getDelegate().execute(dto).thenApply(results -> {
             PollStatus pollStatus = results.getPollStatus();
             for (ServiceMonitorAdaptor adaptor : adaptors) {
-                // JW: TODO: FIXME: Pass the appropriate parms.
-                pollStatus = adaptor.handlePollResult(null, null, pollStatus);
+                pollStatus = adaptor.handlePollResult(service, attributes, pollStatus);
             }
             results.setPollStatus(pollStatus);
             return results;

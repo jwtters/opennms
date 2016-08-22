@@ -65,7 +65,7 @@ public class Poll extends OsgiCommandSupport {
     @Override
     protected Object doExecute() throws Exception {
         final CompletableFuture<PollerResponse> future = locationAwarePollerClient.poll().withLocation(location)
-                .withClassName(className).withAddress(InetAddress.getByName(host))
+                .withMonitorClassName(className).withAddress(InetAddress.getByName(host))
                 .withAttributes(parse(attributes)).execute();
 
         while (true) {
