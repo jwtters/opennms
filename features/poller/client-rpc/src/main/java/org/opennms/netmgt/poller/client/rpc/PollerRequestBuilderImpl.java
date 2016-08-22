@@ -35,14 +35,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerConfigLoader;
 import org.opennms.netmgt.poller.PollerRequestBuilder;
 import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PollerRequestBuilderImpl implements PollerRequestBuilder {
+
+    private static final Logger LOG = LoggerFactory.getLogger(PollerRequestBuilderImpl.class);
+
+    private MonitoredService service;
 
     private String location;
 
@@ -65,6 +72,17 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
     }
 
     @Override
+    public PollerRequestBuilder withService(MonitoredService service) {
+        this.service = service;
+        if (service != null) {
+            this.location = service.getNodeLocation();
+            this.address = service.getAddress();
+            this.serviceName = service.getSvcName();
+        }
+        return this;
+    }
+
+    @Override
     public PollerRequestBuilder withLocation(String location) {
         this.location = location;
         return this;
@@ -77,7 +95,7 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
     }
 
     @Override
-    public PollerRequestBuilder withClassName(String className) {
+    public PollerRequestBuilder withMonitorClassName(String className) {
         this.serviceMonitor = client.getRegistry().getMonitorByClassName(className);
         return this;
     }
@@ -120,15 +138,30 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
             throw new IllegalArgumentException("Monitor or monitor class name is required.");
         }
 
-        final PollerConfigLoader configLoader = serviceMonitor.getConfigLoader();
         final PollerRequestDTO dto = new PollerRequestDTO();
         dto.setAddress(address);
         dto.setClassName(serviceMonitor.getClass().getCanonicalName());
         dto.setLocation(location);
         dto.addPollerAttributes(attributes);
         dto.setServiceName(serviceName);
-        // JW: TODO: FIXME: Unsafe
-        final String port = (String)attributes.get(PORT);
+
+        // Attempt to extract the port from the list of attributes
+        Integer port = null;
+        final Object portObj = attributes.get(PORT);
+        if (portObj != null) {
+            if (portObj instanceof String) {
+                final String portString = (String)portObj;
+                try {
+                    port = Integer.parseInt(portString);
+                } catch (NumberFormatException nfe) {
+                    LOG.warn("Failed to parse port as integer from: ", portString);
+                }
+            } else {
+                LOG.warn("Port attribute is not a string.");
+            }
+        }
+
+        final PollerConfigLoader configLoader = serviceMonitor.getConfigLoader();
         if (configLoader != null) {
             dto.addRuntimeAttributes(configLoader.getRuntimeAttributes(location, address, port));
         }
@@ -137,8 +170,7 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
         return client.getDelegate().execute(dto).thenApply(results -> {
             PollStatus pollStatus = results.getPollStatus();
             for (ServiceMonitorAdaptor adaptor : adaptors) {
-                // JW: TODO: FIXME: Pass the appropriate parms.
-                pollStatus = adaptor.handlePollResult(null, null, pollStatus);
+                pollStatus = adaptor.handlePollResult(service, attributes, pollStatus);
             }
             results.setPollStatus(pollStatus);
             return results;

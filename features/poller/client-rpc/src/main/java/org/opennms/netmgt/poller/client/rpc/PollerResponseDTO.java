@@ -50,8 +50,8 @@ public class PollerResponseDTO implements RpcResponse, PollerResponse {
     @XmlAttribute(name = "failure-message")
     private String failureMesage;
 
-    PollerResponseDTO() {
-
+    public PollerResponseDTO() {
+        // no-arg constructor for JAXB
     }
     
     public PollerResponseDTO(Throwable t) {

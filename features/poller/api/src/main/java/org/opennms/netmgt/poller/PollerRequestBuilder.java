@@ -34,17 +34,19 @@ import java.util.concurrent.CompletableFuture;
 
 public interface PollerRequestBuilder {
 
-	PollerRequestBuilder withLocation(String location);
+    PollerRequestBuilder withService(MonitoredService service);
+
+    PollerRequestBuilder withLocation(String location);
 
     PollerRequestBuilder withMonitor(ServiceMonitor serviceMonitor);
 
-	PollerRequestBuilder withClassName(String className);
+    PollerRequestBuilder withMonitorClassName(String className);
 
-	PollerRequestBuilder withAddress(InetAddress address);
+    PollerRequestBuilder withAddress(InetAddress address);
 
-	PollerRequestBuilder withAttribute(String key, Object value);
+    PollerRequestBuilder withAttribute(String key, Object value);
 
-	PollerRequestBuilder withAttributes(Map<String, Object> attributes);
+    PollerRequestBuilder withAttributes(Map<String, Object> attributes);
 
     PollerRequestBuilder withAdaptor(ServiceMonitorAdaptor adaptor);
 

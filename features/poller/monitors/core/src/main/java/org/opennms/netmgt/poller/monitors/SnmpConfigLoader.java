@@ -40,7 +40,7 @@ import org.opennms.netmgt.poller.PollerConfigLoader;
 public class SnmpConfigLoader implements PollerConfigLoader {
 
     @Override
-    public Map<String, String> getRuntimeAttributes(String location, InetAddress address, String port) {
+    public Map<String, String> getRuntimeAttributes(String location, InetAddress address, Integer port) {
         try {
             SnmpPeerFactory.init();
         } catch (IOException e) {
@@ -48,6 +48,5 @@ public class SnmpConfigLoader implements PollerConfigLoader {
         }
         return SnmpPeerFactory.getInstance().getAgentConfig(address).toMap();
     }
-
 
 }

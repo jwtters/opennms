@@ -117,10 +117,8 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
             LOG.debug("Polling {} using pkg {}", m_service, packageName);
 
             PollStatus result = m_locationAwarePollerClient.poll()
-                .withLocation(m_service.getNodeLocation())
-                .withAddress(m_service.getAddress())
+                .withService(m_service)
                 .withMonitor(m_serviceMonitor)
-                .withServiceName(m_service.getSvcName())
                 .withAttributes(getParameters())
                 .withAdaptor(m_latencyStoringServiceMonitorAdaptor)
                 .withAdaptor(m_invertedStatusServiceMonitorAdaptor)
@@ -262,8 +260,6 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
                 }
             }
         }
-
-        //return outageFound;
         return false;
     }
 

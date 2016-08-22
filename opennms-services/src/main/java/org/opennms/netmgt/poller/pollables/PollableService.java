@@ -166,8 +166,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     }
 
     public String getNodeLocation() {
-        // TODO Auto-generated method stub
-        return null;
+        return getInterface().getNodeLocation();
     }
 
     /** {@inheritDoc} */
@@ -290,7 +289,10 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      * @return a {@link java.lang.String} object.
      */
     @Override
-    public String toString() { return "PollableService [" + getInterface()+":"+getSvcName() + "]"; }
+    public String toString() {
+        return String.format("PollableService[location=%s, interface=%s, svcName=%s]",
+                getNodeLocation(), getInterface(), getSvcName());
+    }
 
     /** {@inheritDoc} */
     @Override

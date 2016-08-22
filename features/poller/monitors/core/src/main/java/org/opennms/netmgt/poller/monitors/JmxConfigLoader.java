@@ -39,10 +39,9 @@ import org.opennms.netmgt.snmp.InetAddrUtils;
 public class JmxConfigLoader implements PollerConfigLoader {
 
     protected JmxConfigDao m_jmxConfigDao;
-    
 
     @Override
-    public Map<String, String> getRuntimeAttributes(String location, InetAddress address, String port) {
+    public Map<String, String> getRuntimeAttributes(String location, InetAddress address, Integer port) {
         
         if (m_jmxConfigDao == null) {
             m_jmxConfigDao = BeanUtils.getBean("daoContext", "jmxConfigDao", JmxConfigDao.class);
@@ -50,7 +49,7 @@ public class JmxConfigLoader implements PollerConfigLoader {
         if (port == null) {
             throw new IllegalArgumentException("Need to specify port number in the form of port=number for Jsr160Monitor");
         }
-        return m_jmxConfigDao.getConfig().lookupMBeanServer(InetAddrUtils.str(address), port).getParameterMap();
+        return m_jmxConfigDao.getConfig().lookupMBeanServer(InetAddrUtils.str(address), port.toString()).getParameterMap();
 
     }
 

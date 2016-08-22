@@ -67,7 +67,7 @@ public class PollableServiceConfigTest {
 
         final PollContext context = mock(PollContext.class);
         final PollableNetwork network = new PollableNetwork(context);
-        final PollableNode node = network.createNodeIfNecessary(1, "foo");
+        final PollableNode node = network.createNodeIfNecessary(1, "foo", null);
         final PollableInterface iface = new PollableInterface(node, InetAddressUtils.addr("127.0.0.1"));
         final PollableService svc = new PollableService(iface, "MQ_API_DirectRte_v2");
         final PollOutagesConfig pollOutagesConfig = mock(PollOutagesConfig.class);
