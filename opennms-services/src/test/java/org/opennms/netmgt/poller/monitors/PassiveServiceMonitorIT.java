@@ -25,7 +25,6 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 package org.opennms.netmgt.poller.monitors;
 
 import static org.junit.Assert.assertEquals;
@@ -57,7 +56,7 @@ public class PassiveServiceMonitorIT extends PassiveStatusKeeperIT {
         
         MonitoredService ms = createMonitoredService(1, "localhost", null, "127.0.0.1", "my-passive-service");
         PollStatus ps = sm.poll(ms, new HashMap<String, Object>());
-        assertEquals(PollStatus.down(), ps);
+        assertEquals(PollStatus.down("fail."), ps);
 
         psk.setStatus("localhost", "127.0.0.1", "my-passive-service", PollStatus.get(PollStatus.SERVICE_AVAILABLE, "testing failure"));
         ps = sm.poll(ms, new HashMap<String, Object>());
