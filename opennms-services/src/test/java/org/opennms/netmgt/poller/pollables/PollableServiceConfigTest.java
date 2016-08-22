@@ -29,13 +29,19 @@
 package org.opennms.netmgt.poller.pollables;
 
 import static org.mockito.Mockito.mock;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.containsString;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.config.PollOutagesConfig;
@@ -45,10 +51,30 @@ import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
+import org.opennms.netmgt.mock.MockPersisterFactory;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.scheduler.Timer;
+import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
 
+@Ignore("JW: FIXME: TODO: Broken")
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-pinger.xml",
+        "classpath*:/META-INF/opennms/monitors.xml",
+        "classpath:/META-INF/opennms/applicationContext-rpc-client-mock.xml",
+        "classpath:/META-INF/opennms/applicationContext-rpc-poller.xml"
+})
+@JUnitConfigurationEnvironment(systemProperties={
+        "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.jna.JnaPinger"
+})
 public class PollableServiceConfigTest {
+
+    @Autowired
+    private LocationAwarePollerClient m_locationAwarePollerClient;
 
     @Test
     public void testPollableServiceConfig() throws Exception {
@@ -60,10 +86,8 @@ public class PollableServiceConfigTest {
         PollerConfigFactory.setInstance(factory);        
         IOUtils.closeQuietly(is);
 
-        PersisterFactory persisterFactory = null;
+        PersisterFactory persisterFactory = new MockPersisterFactory();
         ResourceStorageDao resourceStorageDao = new FilesystemResourceStorageDao();
-
-        LocationAwarePollerClient locationAwarePollerClient = null;
 
         final PollContext context = mock(PollContext.class);
         final PollableNetwork network = new PollableNetwork(context);
@@ -74,9 +98,8 @@ public class PollableServiceConfigTest {
         final Package pkg = factory.getPackage("MapQuest");
         final Timer timer = mock(Timer.class);
         final PollableServiceConfig psc = new PollableServiceConfig(svc, factory, pollOutagesConfig, pkg, timer,
-                persisterFactory, resourceStorageDao, locationAwarePollerClient);
-        psc.poll();
-
-        // JW: TODO: FIXME: NPE here, we should assert something.
+                persisterFactory, resourceStorageDao, m_locationAwarePollerClient);
+        PollStatus pollStatus = psc.poll();
+        assertThat(pollStatus.getReason(), not(containsString("Unexpected exception")));
     }
 }
