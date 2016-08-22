@@ -25,6 +25,7 @@
      <constructor-arg>
        <list>
          <value>META-INF/opennms/applicationContext-pollerd.xml</value>
+         <value>classpath*:/META-INF/opennms/monitors.xml</value>
          <value>META-INF/opennms/applicationContext-rpc-poller.xml</value>
        </list>
      </constructor-arg>

@@ -1,5 +1,7 @@
 package org.opennms.netmgt.poller.client.rpc;
 
+import java.util.Objects;
+
 import org.opennms.core.rpc.api.RpcClient;
 import org.opennms.core.rpc.api.RpcClientFactory;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
@@ -21,6 +23,12 @@ public class LocationAwarePollerClientImpl implements LocationAwarePollerClient,
 
     private RpcClient<PollerRequestDTO, PollerResponseDTO> delegate;
 
+    public LocationAwarePollerClientImpl() { }
+
+    public LocationAwarePollerClientImpl(RpcClientFactory rpcClientFactory) {
+        this.rpcClientFactory = Objects.requireNonNull(rpcClientFactory);
+        afterPropertiesSet();
+    }
 
     @Override
     public void afterPropertiesSet() {

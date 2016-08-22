@@ -42,14 +42,13 @@ import org.opennms.netmgt.poller.PollerRequestBuilder;
 import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
 
 public class PollerRequestBuilderImpl implements PollerRequestBuilder {
 
-    private static final Logger LOG = LoggerFactory.getLogger(PollerRequestBuilderImpl.class);
-
     private MonitoredService service;
+
+    private Integer nodeId;
 
     private String location;
 
@@ -75,10 +74,17 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
     public PollerRequestBuilder withService(MonitoredService service) {
         this.service = service;
         if (service != null) {
+            this.nodeId = service.getNodeId();
             this.location = service.getNodeLocation();
             this.address = service.getAddress();
             this.serviceName = service.getSvcName();
         }
+        return this;
+    }
+
+    @Override
+    public PollerRequestBuilder withNodeId(Integer nodeId) {
+        this.nodeId = nodeId;
         return this;
     }
 
@@ -145,25 +151,10 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
         dto.addPollerAttributes(attributes);
         dto.setServiceName(serviceName);
 
-        // Attempt to extract the port from the list of attributes
-        Integer port = null;
-        final Object portObj = attributes.get(PORT);
-        if (portObj != null) {
-            if (portObj instanceof String) {
-                final String portString = (String)portObj;
-                try {
-                    port = Integer.parseInt(portString);
-                } catch (NumberFormatException nfe) {
-                    LOG.warn("Failed to parse port as integer from: ", portString);
-                }
-            } else {
-                LOG.warn("Port attribute is not a string.");
-            }
-        }
-
         final PollerConfigLoader configLoader = serviceMonitor.getConfigLoader();
         if (configLoader != null) {
-            dto.addRuntimeAttributes(configLoader.getRuntimeAttributes(location, address, port));
+            final Integer port = AbstractServiceMonitor.getKeyedInteger(attributes, PORT, null);
+            dto.addRuntimeAttributes(configLoader.getRuntimeAttributes(nodeId, location, address, port));
         }
 
         // Execute the request

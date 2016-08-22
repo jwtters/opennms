@@ -159,9 +159,8 @@ public abstract class AbstractServiceMonitor implements ServiceMonitor {
         Map<String, Object> parameters = request.getAttributeMap();
         String pollerName = request.getClassName();
         SimpleMonitoredService svc = new SimpleMonitoredService(address, pollerName);
-        PollStatus pollstatus = poll(svc, parameters);
 
-        return pollstatus;
+        return poll(svc, parameters);
     }
     
     public static Object getKeyedObject(final Map<String, Object> parameterMap, final String key, final Object defaultValue) {

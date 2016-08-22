@@ -40,7 +40,7 @@ import org.opennms.netmgt.poller.PollerConfigLoader;
 public class SnmpConfigLoader implements PollerConfigLoader {
 
     @Override
-    public Map<String, String> getRuntimeAttributes(String location, InetAddress address, Integer port) {
+    public Map<String, String> getRuntimeAttributes(Integer nodeId, String location, InetAddress address, Integer port) {
         try {
             SnmpPeerFactory.init();
         } catch (IOException e) {

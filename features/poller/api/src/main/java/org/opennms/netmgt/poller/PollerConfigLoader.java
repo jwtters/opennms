@@ -33,7 +33,6 @@ import java.util.Map;
 
 public interface PollerConfigLoader {
     
-    public Map<String, String> getRuntimeAttributes(String location, InetAddress address, Integer port);
-    
+    public Map<String, String> getRuntimeAttributes(Integer nodeId, String location, InetAddress address, Integer port);
 
 }

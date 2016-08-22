@@ -41,7 +41,7 @@ public class JmxConfigLoader implements PollerConfigLoader {
     protected JmxConfigDao m_jmxConfigDao;
 
     @Override
-    public Map<String, String> getRuntimeAttributes(String location, InetAddress address, Integer port) {
+    public Map<String, String> getRuntimeAttributes(Integer nodeId, String location, InetAddress address, Integer port) {
         
         if (m_jmxConfigDao == null) {
             m_jmxConfigDao = BeanUtils.getBean("daoContext", "jmxConfigDao", JmxConfigDao.class);

@@ -36,6 +36,8 @@ public interface PollerRequestBuilder {
 
     PollerRequestBuilder withService(MonitoredService service);
 
+    PollerRequestBuilder withNodeId(Integer nodeId);
+
     PollerRequestBuilder withLocation(String location);
 
     PollerRequestBuilder withMonitor(ServiceMonitor serviceMonitor);

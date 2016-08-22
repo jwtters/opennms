@@ -29,6 +29,7 @@
 package org.opennms.netmgt.poller.pollables;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.TimeUnit;
 
@@ -85,7 +86,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         m_pkg = pkg;
         m_timer = timer;
         m_configService = findService(pkg);
-        m_locationAwarePollerClient = locationAwarePollerClient;
+        m_locationAwarePollerClient = Objects.requireNonNull(locationAwarePollerClient);
         m_latencyStoringServiceMonitorAdaptor = new LatencyStoringServiceMonitorAdaptor(pollerConfig, pkg, persisterFactory, resourceStorageDao);
         m_serviceMonitor = pollerConfig.getServiceMonitor(svc.getSvcName());
     }

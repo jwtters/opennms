@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.mock;
 
+import java.net.InetAddress;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.netmgt.poller.Distributable;
@@ -35,8 +37,9 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerConfigLoader;
 import org.opennms.netmgt.poller.PollerRequest;
-import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
+import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,10 +47,9 @@ import org.slf4j.LoggerFactory;
  *  Mark this as {@link Distributable} so that we can reuse it for the remote poller tests.
  */
 @Distributable
-public class MockMonitor implements ServiceMonitor {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(MockMonitor.class);
+public class MockMonitor extends AbstractServiceMonitor {
 
+	private static final Logger LOG = LoggerFactory.getLogger(MockMonitor.class);
 
     private MockNetwork m_network;
 
@@ -71,49 +73,47 @@ public class MockMonitor implements ServiceMonitor {
     }
 
     @Override
-    public void initialize(MonitoredService svc) {
-    }
-
-    @Override
-    public void initialize(Map<String, Object> parameters) {
-    }
-
-    @Override
-    public PollStatus poll(MonitoredService monSvc, Map<String, Object> parameters) {
-        synchronized(m_network) {
-            int nodeId = monSvc.getNodeId();
-            String ipAddr = monSvc.getIpAddr();
-            MockService svc = m_network.getService(nodeId, ipAddr, m_svcName);
-            if (svc == null) {
-                LOG.info("Invalid Poll: {}/{}", ipAddr, m_svcName);
-                m_network.receivedInvalidPoll(ipAddr, m_svcName);
-                return PollStatus.unknown();
-            } else {
-                LOG.info("Poll: [{}/{}/{}]", svc.getInterface().getNode().getLabel(), ipAddr, m_svcName);
-                PollStatus pollStatus = svc.poll();
-                return PollStatus.get(pollStatus.getStatusCode(), pollStatus.getReason());
-            }
+    public PollStatus invokePoll(PollerRequest request) {
+        final String ipAddr = InetAddrUtils.str(request.getAddress());
+        if ("invalid".equals(request.getRuntimeAttributes().get("status"))) {
+            LOG.info("Invalid Poll: {}/{}", ipAddr, m_svcName);
+            m_network.receivedInvalidPoll(ipAddr, m_svcName);
+            return PollStatus.unknown("Mock.");
+        } else {
+            int statusCode = Integer.valueOf(request.getRuntimeAttributes().get("status"));
+            String reason = request.getRuntimeAttributes().get("reason");
+            return PollStatus.get(statusCode, reason);
         }
     }
 
     @Override
-    public void release() {
-    }
-
-    @Override
-    public void release(MonitoredService svc) {
-    }
-
-    @Override
-    public PollerResponse poll(PollerRequest request) {
-        // TODO Auto-generated method stub
-        return null;
+    public PollStatus poll(MonitoredService monSvc, Map<String, Object> parameters) {
+        throw new RuntimeException("Should never be called.");
     }
 
     @Override
     public PollerConfigLoader getConfigLoader() {
-        // TODO Auto-generated method stub
-        return null;
+        // JW: TODO: Clean this up!
+        return new PollerConfigLoader() {
+            @Override
+            public Map<String, String> getRuntimeAttributes(Integer nodeId, String location, InetAddress address, Integer port) {
+                Map<String, String> attributes = new HashMap<>();
+                synchronized(m_network) {
+                    final String ipAddr = InetAddrUtils.str(address);
+                    MockService svc = m_network.getService(nodeId, ipAddr, m_svcName);
+                    if (svc == null) {
+                        LOG.info("Invalid Poll: {}/{}", ipAddr, m_svcName);
+                        m_network.receivedInvalidPoll(ipAddr, m_svcName);
+                        attributes.put("status", "invalid");
+                    } else {
+                        LOG.info("Poll: [{}/{}/{}]", svc.getInterface().getNode().getLabel(), ipAddr, m_svcName);
+                        PollStatus pollStatus = svc.poll();
+                        attributes.put("status", Integer.toString(pollStatus.getStatusCode()));
+                        attributes.put("reason", pollStatus.getReason());
+                    }
+                }
+                return attributes;
+            }
+        };
     }
-
 }

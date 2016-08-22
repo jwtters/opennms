@@ -53,7 +53,7 @@ public class ServicePollerRegistryImpl implements ServicePollerRegistry, Initial
     Set<ServiceMonitor> m_serviceMonitors;
 
     private final Map<String, ServiceMonitor> m_monitorsByClassName = new HashMap<>();
-    
+
     private final Map<String, PollerConfigLoader> m_configLoaderByPollerClassName = new HashMap<>();
 
     @Override

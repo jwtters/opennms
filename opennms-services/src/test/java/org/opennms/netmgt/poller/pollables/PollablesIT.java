@@ -51,7 +51,9 @@ import javax.sql.DataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.Querier;
@@ -82,15 +84,29 @@ import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.ScheduleTimer;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.DaoTestConfigBean;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
 
 /**
  * Represents a PollablesTest 
  *
  * @author brozow
  */
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-pinger.xml",
+        "classpath*:/META-INF/opennms/monitors.xml",
+        "classpath:/META-INF/opennms/applicationContext-rpc-client-mock.xml",
+        "classpath:/META-INF/opennms/applicationContext-rpc-poller.xml"
+})
+@JUnitConfigurationEnvironment(systemProperties={
+        "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.jna.JnaPinger"
+})
 public class PollablesIT {
     private static final Logger LOG = LoggerFactory.getLogger(PollablesIT.class);
 
@@ -136,6 +152,8 @@ public class PollablesIT {
 
     private PersisterFactory m_persisterFactory = null;
     private ResourceStorageDao m_resourceStorageDao = new FilesystemResourceStorageDao();
+
+    @Autowired
     private LocationAwarePollerClient m_locationAwarePollerClient;
 
     private int m_lockCount = 0;
@@ -175,9 +193,7 @@ public class PollablesIT {
         m_db = new MockDatabase();
         m_db.populate(m_mockNetwork);
 
-
         m_outageAnticipator = new OutageAnticipator(m_db);
-
 
         m_eventMgr = new MockEventIpcManager();
         m_eventMgr.setEventWriter(m_db);
