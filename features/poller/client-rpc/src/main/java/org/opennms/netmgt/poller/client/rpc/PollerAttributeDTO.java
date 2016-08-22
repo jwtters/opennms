@@ -64,7 +64,11 @@ public class PollerAttributeDTO {
 
     public PollerAttributeDTO(String key, Object contents) {
         this.key = key;
-        this.contents = contents;
+        if (contents != null && contents instanceof String) {
+            this.value = (String)contents;
+        } else {
+            this.contents = contents;
+        }
     }
 
     public String getKey() {
