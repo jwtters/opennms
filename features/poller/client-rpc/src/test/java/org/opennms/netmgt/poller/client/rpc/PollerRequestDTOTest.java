@@ -46,18 +46,31 @@ public class PollerRequestDTOTest extends XmlTestNoCastor<PollerRequestDTO> {
     public static Collection<Object[]> data() throws Exception {
         return Arrays.asList(new Object[][] {
             {
-                getPollerRequest(),
+                getPollerRequestWithString(),
                 "<?xml version=\"1.0\"?>\n" +
-                "<poller-request location=\"MINION\" class-name=\"org.opennms.netmgt.poller.monitors.IcmpMonitor\" address=\"127.0.0.1\"/>"
+                        "<poller-request location=\"MINION\" class-name=\"org.opennms.netmgt.poller.monitors.IcmpMonitor\" address=\"127.0.0.1\">\n" +
+                          "<poller-attribute key=\"port\" value=\"18980\"/>\n" +
+                        "</poller-request>"
             }
         });
     }
 
-    public static PollerRequestDTO getPollerRequest() throws UnknownHostException {
+    public static PollerRequestDTO getPollerRequestWithObject() throws UnknownHostException {
         PollerRequestDTO dto = new PollerRequestDTO();
         dto.setLocation("MINION");
         dto.setClassName("org.opennms.netmgt.poller.monitors.IcmpMonitor");
         dto.setAddress(InetAddress.getByName("127.0.0.1"));
+        Object object = "18980";
+        dto.addPollerAttribute("port", object);
+        return dto;
+    }
+    
+    public static PollerRequestDTO getPollerRequestWithString() throws UnknownHostException {
+        PollerRequestDTO dto = new PollerRequestDTO();
+        dto.setLocation("MINION");
+        dto.setClassName("org.opennms.netmgt.poller.monitors.IcmpMonitor");
+        dto.setAddress(InetAddress.getByName("127.0.0.1"));
+        dto.addPollerAttribute("port", "18980");
         return dto;
     }
 }
