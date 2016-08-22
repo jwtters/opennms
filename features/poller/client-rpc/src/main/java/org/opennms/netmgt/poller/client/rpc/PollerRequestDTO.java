@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -74,6 +73,7 @@ import org.opennms.core.rpc.api.RpcRequest;
  *******************************************************************************/
 
 import org.opennms.netmgt.poller.PollerRequest;
+
 
 @XmlRootElement(name = "poller-request")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -153,13 +153,16 @@ public class PollerRequestDTO implements RpcRequest, PollerRequest{
 
     @Override
     public Map<String, Object> getAttributeMap() {
-        return pollerAttributes.stream()
-                .collect(Collectors.toMap(PollerAttributeDTO::getKey, e -> {
-                    if (e.getContents() != null) {
-                        return e.getContents();
-                    }
-                    return e.getValue();
-                }));
+
+        Map<String, Object> pollerAttributeMap = new HashMap<>();
+        for (PollerAttributeDTO attribute : pollerAttributes) {
+            if (attribute.getContents() != null) {
+                pollerAttributeMap.put(attribute.getKey(), attribute.getContents());
+            } else {
+                pollerAttributeMap.put(attribute.getKey(), attribute.getValue());
+            }
+        }
+        return pollerAttributeMap;
     }
 
     public void setRuntimeAttributes(List<PollerAttributeDTO> attributes) {
