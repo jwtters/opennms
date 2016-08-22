@@ -262,8 +262,6 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
                 }
             }
         }
-
-        //return outageFound;
         return false;
     }
 

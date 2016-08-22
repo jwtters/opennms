@@ -41,8 +41,12 @@ import org.opennms.netmgt.poller.PollerRequestBuilder;
 import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PollerRequestBuilderImpl implements PollerRequestBuilder {
+
+    private static final Logger LOG = LoggerFactory.getLogger(PollerRequestBuilderImpl.class);
 
     private String location;
 
@@ -120,15 +124,30 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
             throw new IllegalArgumentException("Monitor or monitor class name is required.");
         }
 
-        final PollerConfigLoader configLoader = serviceMonitor.getConfigLoader();
         final PollerRequestDTO dto = new PollerRequestDTO();
         dto.setAddress(address);
         dto.setClassName(serviceMonitor.getClass().getCanonicalName());
         dto.setLocation(location);
         dto.addPollerAttributes(attributes);
         dto.setServiceName(serviceName);
-        // JW: TODO: FIXME: Unsafe
-        final String port = (String)attributes.get(PORT);
+
+        // Attempt to extract the port from the list of attributes
+        Integer port = null;
+        final Object portObj = attributes.get(PORT);
+        if (portObj != null) {
+            if (portObj instanceof String) {
+                final String portString = (String)portObj;
+                try {
+                    port = Integer.parseInt(portString);
+                } catch (NumberFormatException nfe) {
+                    LOG.warn("Failed to parse port as integer from: ", portString);
+                }
+            } else {
+                LOG.warn("Port attribute is not a string.");
+            }
+        }
+
+        final PollerConfigLoader configLoader = serviceMonitor.getConfigLoader();
         if (configLoader != null) {
             dto.addRuntimeAttributes(configLoader.getRuntimeAttributes(location, address, port));
         }
