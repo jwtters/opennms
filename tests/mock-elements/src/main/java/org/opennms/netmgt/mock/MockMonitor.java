@@ -88,7 +88,21 @@ public class MockMonitor extends AbstractServiceMonitor {
 
     @Override
     public PollStatus poll(MonitoredService monSvc, Map<String, Object> parameters) {
-        throw new RuntimeException("Should never be called.");
+        // JW: TODO: Deduplicate.
+        synchronized(m_network) {
+            int nodeId = monSvc.getNodeId();
+            String ipAddr = monSvc.getIpAddr();
+            MockService svc = m_network.getService(nodeId, ipAddr, m_svcName);
+            if (svc == null) {
+                LOG.info("Invalid Poll: {}/{}", ipAddr, m_svcName);
+                m_network.receivedInvalidPoll(ipAddr, m_svcName);
+                return PollStatus.unknown("Mock.");
+            } else {
+                LOG.info("Poll: [{}/{}/{}]", svc.getInterface().getNode().getLabel(), ipAddr, m_svcName);
+                PollStatus pollStatus = svc.poll();
+                return PollStatus.get(pollStatus.getStatusCode(), pollStatus.getReason());
+            }
+        }
     }
 
     @Override

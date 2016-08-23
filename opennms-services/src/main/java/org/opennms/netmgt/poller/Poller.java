@@ -279,6 +279,10 @@ public class Poller extends AbstractServiceDaemon {
         m_scheduler = scheduler;
     }
 
+    public void setLocationAwarePollerClient(LocationAwarePollerClient locationAwarePollerClient) {
+        m_locationAwarePollerClient = locationAwarePollerClient;
+    }
+
     /**
      * <p>onInit</p>
      */
