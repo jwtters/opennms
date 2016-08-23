@@ -33,6 +33,7 @@ import java.util.Map;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.dao.jmx.JmxConfigDao;
+import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollerConfigLoader;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 
@@ -41,15 +42,17 @@ public class JmxConfigLoader implements PollerConfigLoader {
     protected JmxConfigDao m_jmxConfigDao;
 
     @Override
-    public Map<String, String> getRuntimeAttributes(Integer nodeId, String location, InetAddress address, Integer port) {
-        
+    public Map<String, String> getRuntimeAttributes(Integer nodeId, String location, InetAddress address, Integer port,
+            Map<String, Object> parameters, MonitoredService svc) {
+
         if (m_jmxConfigDao == null) {
             m_jmxConfigDao = BeanUtils.getBean("daoContext", "jmxConfigDao", JmxConfigDao.class);
         }
         if (port == null) {
             throw new IllegalArgumentException("Need to specify port number in the form of port=number for JMXMonitor");
         }
-        return m_jmxConfigDao.getConfig().lookupMBeanServer(InetAddrUtils.str(address), port.toString()).getParameterMap();
+        return m_jmxConfigDao.getConfig().lookupMBeanServer(InetAddrUtils.str(address), port.toString())
+                .getParameterMap();
 
     }
 

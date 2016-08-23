@@ -44,23 +44,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *  Mark this as {@link Distributable} so that we can reuse it for the remote poller tests.
+ * Mark this as {@link Distributable} so that we can reuse it for the remote
+ * poller tests.
  */
 @Distributable
 public class MockMonitor extends AbstractServiceMonitor {
 
-	private static final Logger LOG = LoggerFactory.getLogger(MockMonitor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MockMonitor.class);
 
     private MockNetwork m_network;
 
     private String m_svcName;
 
     /**
-     * Simple constructor so that the MockMonitor can be used as a placeholder {@link ServiceMonitor}
-     * inside config files.
+     * Simple constructor so that the MockMonitor can be used as a placeholder
+     * {@link ServiceMonitor} inside config files.
      */
     public MockMonitor() {
-        m_network = new MockNetwork(); // So that this can be use in synchronized() statements
+        m_network = new MockNetwork(); // So that this can be use in
+                                       // synchronized() statements
     }
 
     /**
@@ -89,7 +91,7 @@ public class MockMonitor extends AbstractServiceMonitor {
     @Override
     public PollStatus poll(MonitoredService monSvc, Map<String, Object> parameters) {
         // JW: TODO: Deduplicate.
-        synchronized(m_network) {
+        synchronized (m_network) {
             int nodeId = monSvc.getNodeId();
             String ipAddr = monSvc.getIpAddr();
             MockService svc = m_network.getService(nodeId, ipAddr, m_svcName);
@@ -110,9 +112,10 @@ public class MockMonitor extends AbstractServiceMonitor {
         // JW: TODO: Clean this up!
         return new PollerConfigLoader() {
             @Override
-            public Map<String, String> getRuntimeAttributes(Integer nodeId, String location, InetAddress address, Integer port) {
+            public Map<String, String> getRuntimeAttributes(Integer nodeId, String location, InetAddress address,
+                    Integer port, Map<String, Object> parameters, MonitoredService service) {
                 Map<String, String> attributes = new HashMap<>();
-                synchronized(m_network) {
+                synchronized (m_network) {
                     final String ipAddr = InetAddrUtils.str(address);
                     MockService svc = m_network.getService(nodeId, ipAddr, m_svcName);
                     if (svc == null) {
@@ -128,6 +131,7 @@ public class MockMonitor extends AbstractServiceMonitor {
                 }
                 return attributes;
             }
+
         };
     }
 }

@@ -90,6 +90,10 @@
 		<artifactId>opennms-config-api</artifactId>
 		<scope>provided</scope>
 	</dependency>
+    <dependency>
+		<groupId>org.opennms</groupId>
+		<artifactId>opennms-dao-api</artifactId>
+	</dependency>
 	<dependency>
 		<groupId>org.opennms.core.jmx</groupId>
 		<artifactId>org.opennms.core.jmx.api</artifactId>

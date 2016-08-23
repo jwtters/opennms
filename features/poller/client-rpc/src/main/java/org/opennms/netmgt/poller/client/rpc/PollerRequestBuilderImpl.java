@@ -154,7 +154,7 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
         final PollerConfigLoader configLoader = serviceMonitor.getConfigLoader();
         if (configLoader != null) {
             final Integer port = AbstractServiceMonitor.getKeyedInteger(attributes, PORT, null);
-            dto.addRuntimeAttributes(configLoader.getRuntimeAttributes(nodeId, location, address, port));
+            dto.addRuntimeAttributes(configLoader.getRuntimeAttributes(nodeId, location, address, port, attributes, service));
         }
 
         // Execute the request

@@ -34,13 +34,14 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollerConfigLoader;
-
 
 public class SnmpConfigLoader implements PollerConfigLoader {
 
     @Override
-    public Map<String, String> getRuntimeAttributes(Integer nodeId, String location, InetAddress address, Integer port) {
+    public Map<String, String> getRuntimeAttributes(Integer nodeId, String location, InetAddress address, Integer port,
+            Map<String, Object> parameters, MonitoredService svc) {
         try {
             SnmpPeerFactory.init();
         } catch (IOException e) {

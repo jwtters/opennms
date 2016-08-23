@@ -43,6 +43,13 @@
 		</service-properties>
 	</service>
 
+	<bean id="ciscoPingMibMonitor" class="org.opennms.netmgt.poller.monitors.CiscoPingMibMonitor" />
+	<service ref="ciscoPingMibMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type"
+				value="org.opennms.netmgt.poller.monitors.CiscoPingMibMonitor" />
+		</service-properties>
+	</service>
 
 	<bean id="citrixMonitor" class="org.opennms.netmgt.poller.monitors.CitrixMonitor" />
 	<service ref="citrixMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
