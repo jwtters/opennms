@@ -316,16 +316,6 @@
 		</service-properties>
 	</service>
 
-
-	<bean id="passiveServiceMonitor"
-		class="org.opennms.netmgt.poller.monitors.PassiveServiceMonitor" />
-	<service ref="passiveServiceMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
-		<service-properties>
-			<entry key="type"
-				value="org.opennms.netmgt.poller.monitors.PassiveServiceMonitor" />
-		</service-properties>
-	</service>
-
 	<bean id="percMonitor" class="org.opennms.netmgt.poller.monitors.PercMonitor" />
 	<service ref="percMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
 		<service-properties>
