@@ -47,7 +47,7 @@ public class JmxConfigLoader implements PollerConfigLoader {
             m_jmxConfigDao = BeanUtils.getBean("daoContext", "jmxConfigDao", JmxConfigDao.class);
         }
         if (port == null) {
-            throw new IllegalArgumentException("Need to specify port number in the form of port=number for Jsr160Monitor");
+            throw new IllegalArgumentException("Need to specify port number in the form of port=number for JMXMonitor");
         }
         return m_jmxConfigDao.getConfig().lookupMBeanServer(InetAddrUtils.str(address), port.toString()).getParameterMap();
 

@@ -41,8 +41,10 @@ import org.opennms.core.utils.CollectionMath;
 import org.opennms.core.utils.ParameterMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.opennms.netmgt.icmp.PingConstants;
+import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -69,6 +71,9 @@ final public class StrafePingMonitor extends AbstractServiceMonitor {
     private static final int DEFAULT_MULTI_PING_COUNT = 20;
     private static final long DEFAULT_PING_INTERVAL = 50;
     private static final int DEFAULT_FAILURE_PING_COUNT = 20;
+
+    @Autowired
+    private Pinger pinger;
 
     /**
      * Constructs a new monitor.
@@ -114,7 +119,7 @@ final public class StrafePingMonitor extends AbstractServiceMonitor {
             long pingInterval = ParameterMap.getKeyedLong(parameters, "wait-interval", DEFAULT_PING_INTERVAL);
             int failurePingCount = ParameterMap.getKeyedInteger(parameters, "failure-ping-count", DEFAULT_FAILURE_PING_COUNT);
             
-            responseTimes = new ArrayList<Number>(PingerFactory.getInstance().parallelPing(host, count, timeout, pingInterval));
+            responseTimes = new ArrayList<Number>(pinger.parallelPing(host, count, timeout, pingInterval));
 
             if (CollectionMath.countNull(responseTimes) >= failurePingCount) {
 		LOG.debug("Service {} on interface {} is down, but continuing to gather latency data", svc.getSvcName(), svc.getIpAddr());
@@ -154,6 +159,10 @@ final public class StrafePingMonitor extends AbstractServiceMonitor {
         }
 
         return serviceStatus;
+    }
+
+    public void setPinger(Pinger pinger) {
+        this.pinger = pinger;
     }
 
 }

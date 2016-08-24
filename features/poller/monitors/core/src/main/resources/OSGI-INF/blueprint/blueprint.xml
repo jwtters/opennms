@@ -373,7 +373,9 @@
 		</service-properties>
 	</service>
 
-	<bean id="strafePingMonitor" class="org.opennms.netmgt.poller.monitors.StrafePingMonitor" />
+	<bean id="strafePingMonitor" class="org.opennms.netmgt.poller.monitors.StrafePingMonitor" >
+		<property name="pinger" ref="pinger" />
+	</bean>
 	<service ref="strafePingMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
 		<service-properties>
 			<entry key="type"
