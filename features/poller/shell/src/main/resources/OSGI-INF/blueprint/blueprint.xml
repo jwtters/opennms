@@ -5,7 +5,7 @@
     <reference id="locationAwarePollerClient" interface="org.opennms.netmgt.poller.LocationAwarePollerClient" availability="mandatory"/>
     <reference id="servicePollerRegistry" interface="org.opennms.netmgt.poller.registry.api.ServicePollerRegistry" availability="mandatory"/>
 
-    <bean id="pollerNameCompleter" class="org.opennms.netmgt.poller.shell.MonitorClassNameCompleter">
+    <bean id="monitorNameCompleter" class="org.opennms.netmgt.poller.shell.MonitorClassNameCompleter">
         <property name="servicePollerRegistry" ref="servicePollerRegistry" />
     </bean>
 
@@ -15,9 +15,17 @@
               <property name="locationAwarePollerClient" ref="locationAwarePollerClient"/>
             </action>
             <completers>
-                <ref component-id="pollerNameCompleter"/>
+                <ref component-id="monitorNameCompleter"/>
                 <null/>
             </completers>
+        </command>
+    </command-bundle>
+
+    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
+        <command name="poller/list-monitors">
+            <action class="org.opennms.netmgt.poller.shell.ListMonitors">
+              <property name="registry" ref="servicePollerRegistry"/>
+            </action>
         </command>
     </command-bundle>
 
