@@ -35,7 +35,7 @@ import java.util.Set;
 
 import org.opennms.netmgt.poller.PollerConfigLoader;
 import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.netmgt.poller.registry.api.ServicePollerRegistry;
+import org.opennms.netmgt.poller.registry.api.ServiceMonitorRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -43,9 +43,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.ImmutableMap;
 
-public class ServicePollerRegistryImpl implements ServicePollerRegistry, InitializingBean {
+public class ServiceMonitorRegistryImpl implements ServiceMonitorRegistry, InitializingBean {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ServicePollerRegistryImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ServiceMonitorRegistryImpl.class);
 
     private static final String TYPE = "type";
 
@@ -66,7 +66,7 @@ public class ServicePollerRegistryImpl implements ServicePollerRegistry, Initial
                 m_configLoaderByPollerClassName.put(serviceMonitor.getClass().getCanonicalName(), configLoader);
             }
         }
-        LOG.debug("Registered ServiceMonitors classes are: {}", getClassNames());
+        LOG.debug("Registered ServiceMonitors classes are: {}", getMonitorClassNames());
     }
 
     @SuppressWarnings({ "rawtypes" })
@@ -105,7 +105,7 @@ public class ServicePollerRegistryImpl implements ServicePollerRegistry, Initial
     }
 
     @Override
-    public Set<String> getClassNames() {
+    public Set<String> getMonitorClassNames() {
         return Collections.unmodifiableSet(m_monitorsByClassName.keySet());
     }
 

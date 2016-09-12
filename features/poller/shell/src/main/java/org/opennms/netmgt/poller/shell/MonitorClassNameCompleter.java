@@ -32,21 +32,21 @@ import java.util.List;
 
 import org.apache.karaf.shell.console.Completer;
 import org.apache.karaf.shell.console.completer.StringsCompleter;
-import org.opennms.netmgt.poller.registry.api.ServicePollerRegistry;
+import org.opennms.netmgt.poller.registry.api.ServiceMonitorRegistry;
 
 public class MonitorClassNameCompleter implements Completer{
 
-    private ServicePollerRegistry servicePollerRegistry;
-    
+    private ServiceMonitorRegistry registry;
+
     @Override
     public int complete(String buffer, int cursor, List<String> candidates) {
         StringsCompleter serviceNames = new StringsCompleter();
-        serviceNames.getStrings().addAll(servicePollerRegistry.getClassNames());
+        serviceNames.getStrings().addAll(registry.getMonitorClassNames());
         return serviceNames.complete(buffer, cursor, candidates);
     }
 
-    public void setServicePollerRegistry(ServicePollerRegistry servicePollerRegistry) {
-        this.servicePollerRegistry = servicePollerRegistry;
+    public void setServicePollerRegistry(ServiceMonitorRegistry registry) {
+        this.registry = registry;
     }
 
 }

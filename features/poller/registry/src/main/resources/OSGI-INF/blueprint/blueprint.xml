@@ -11,8 +11,8 @@
 ">
 
     <!-- Service Poller Registry -->
-    <bean id="servicePollerRegistry" class="org.opennms.netmgt.poller.registry.impl.ServicePollerRegistryImpl" />
-    <service interface="org.opennms.netmgt.poller.registry.api.ServicePollerRegistry" ref="servicePollerRegistry" />
+    <bean id="servicePollerRegistry" class="org.opennms.netmgt.poller.registry.impl.ServiceMonitorRegistryImpl" />
+    <service interface="org.opennms.netmgt.poller.registry.api.ServiceMonitorRegistry" ref="servicePollerRegistry" />
 
     <reference-list interface="org.opennms.netmgt.poller.ServiceMonitor" availability="optional">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="servicePollerRegistry" />

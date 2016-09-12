@@ -11,7 +11,7 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-    <reference id="servicePollerRegistry" interface="org.opennms.netmgt.poller.registry.api.ServicePollerRegistry" availability="mandatory"/>
+    <reference id="servicePollerRegistry" interface="org.opennms.netmgt.poller.registry.api.ServiceMonitorRegistry" availability="mandatory"/>
 
     <bean id="pollerExecutor" class="java.util.concurrent.Executors" factory-method="newCachedThreadPool"/>
     

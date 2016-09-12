@@ -35,7 +35,7 @@ import java.util.function.Supplier;
 import org.opennms.core.rpc.xml.AbstractXmlRpcModule;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.netmgt.poller.registry.api.ServicePollerRegistry;
+import org.opennms.netmgt.poller.registry.api.ServiceMonitorRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -44,7 +44,7 @@ public class PollerClientRpcModule extends AbstractXmlRpcModule<PollerRequestDTO
     public static final String RPC_MODULE_ID = "Poller";
 
     @Autowired
-    private ServicePollerRegistry servicePollerRegistry;
+    private ServiceMonitorRegistry servicePollerRegistry;
 
     @Autowired
     @Qualifier("pollerExecutor")
@@ -54,7 +54,7 @@ public class PollerClientRpcModule extends AbstractXmlRpcModule<PollerRequestDTO
         super(PollerRequestDTO.class, PollerResponseDTO.class);
     }
 
-    public void setServicePollerRegistry(ServicePollerRegistry servicePollerRegistry) {
+    public void setServicePollerRegistry(ServiceMonitorRegistry servicePollerRegistry) {
         this.servicePollerRegistry = servicePollerRegistry;
     }
 

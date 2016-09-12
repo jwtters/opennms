@@ -32,10 +32,10 @@ import java.util.Set;
 
 import org.opennms.netmgt.poller.ServiceMonitor;
 
-public interface ServicePollerRegistry {
+public interface ServiceMonitorRegistry {
 
     ServiceMonitor getMonitorByClassName(String className);
 
-    Set<String> getClassNames();
+    Set<String> getMonitorClassNames();
 
 }

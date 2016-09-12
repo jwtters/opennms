@@ -34,14 +34,14 @@ import org.opennms.core.rpc.api.RpcClient;
 import org.opennms.core.rpc.api.RpcClientFactory;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.PollerRequestBuilder;
-import org.opennms.netmgt.poller.registry.api.ServicePollerRegistry;
+import org.opennms.netmgt.poller.registry.api.ServiceMonitorRegistry;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class LocationAwarePollerClientImpl implements LocationAwarePollerClient, InitializingBean {
 
     @Autowired
-    private ServicePollerRegistry registry;
+    private ServiceMonitorRegistry registry;
 
     @Autowired
     private PollerClientRpcModule pollerClientRpcModule;
@@ -72,11 +72,11 @@ public class LocationAwarePollerClientImpl implements LocationAwarePollerClient,
         return new PollerRequestBuilderImpl(this);
     }
 
-    public ServicePollerRegistry getRegistry() {
+    public ServiceMonitorRegistry getRegistry() {
         return registry;
     }
 
-    public void setRegistry(ServicePollerRegistry registry) {
+    public void setRegistry(ServiceMonitorRegistry registry) {
         this.registry = registry;
     }
 
