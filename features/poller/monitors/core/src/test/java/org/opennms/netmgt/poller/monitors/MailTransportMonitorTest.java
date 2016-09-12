@@ -73,7 +73,6 @@ public class MailTransportMonitorTest {
         System.setProperty("opennms.home", homeDir.getAbsolutePath());
 
         m_monitor = new MailTransportMonitor();
-        m_monitor.initialize(new HashMap<String,Object>());
 
         m_params = new HashMap<String, Object>();
         m_params.put("timeout", "3000");
@@ -203,10 +202,7 @@ public class MailTransportMonitorTest {
     }
     
     protected MonitoredService getMailService(String hostname, InetAddress ip) throws Exception {
-        MonitoredService svc = new MockMonitoredService(1, hostname, ip, "MAIL");
-        m_monitor.initialize(svc);
-        return svc;
+        return new MockMonitoredService(1, hostname, ip, "MAIL");
     }
-
 
 }

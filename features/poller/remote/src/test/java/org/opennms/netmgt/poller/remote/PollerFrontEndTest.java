@@ -551,7 +551,6 @@ public class PollerFrontEndTest extends TestCase {
     }
 
     private void anticipatePolledServicesInitialized() {
-        m_pollService.initialize(isA(PolledService.class));
         expectLastCall().times(pollConfig().getPolledServices().length);
     }
 

@@ -41,7 +41,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -1051,8 +1050,6 @@ abstract public class PollerConfigManager implements PollerConfig {
         return mc;
     }
 
-
-
     /**
      * <p>getNextOutageIdSql</p>
      *
@@ -1068,20 +1065,4 @@ abstract public class PollerConfigManager implements PollerConfig {
         }
     }
 
-	/**
-	 * <p>releaseAllServiceMonitors</p>
-	 */
-    @Override
-	public void releaseAllServiceMonitors() {
-	    try {
-	        getWriteLock().lock();
-    		Iterator<ServiceMonitor> iter = getServiceMonitors().values().iterator();
-    	    while (iter.hasNext()) {
-    	        ServiceMonitor sm = iter.next();
-    	        sm.release();
-    	    }
-	    } finally {
-	        getWriteLock().unlock();
-	    }
-	}
 }

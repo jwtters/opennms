@@ -35,7 +35,6 @@
 package org.opennms.netmgt.config;
 
 import java.io.Serializable;
-import java.util.Map;
 
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
@@ -75,7 +74,6 @@ public class DefaultServiceMonitorLocator implements ServiceMonitorLocator, Seri
     public ServiceMonitor getServiceMonitor() {
         try {
             ServiceMonitor mon = m_serviceClass.newInstance();
-            mon.initialize((Map<String,Object>)null);
             return mon;
         } catch (InstantiationException e) {
             throw new ConfigObjectRetrievalFailureException("Unable to instantiate monitor for service "

@@ -66,52 +66,8 @@ import org.springframework.stereotype.Component;
 final public class DskTableMonitor extends SnmpMonitorStrategy {
     public static final Logger LOG = LoggerFactory.getLogger(DskTableMonitor.class);
 
-    private static final String m_serviceName = "Dsk-Table";
-
     private static final String dskTableErrorFlag = "1.3.6.1.4.1.2021.9.1.100";
     private static final String dskTableErrorMsg = "1.3.6.1.4.1.2021.9.1.101";
-
-    /**
-     * <P>
-     * Returns the name of the service that the plug-in monitors ("Dsk-Table").
-     * </P>
-     *
-     * @return The service that the plug-in monitors.
-     */
-    public String serviceName() {
-        return m_serviceName;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <P>
-     * Initialize the service monitor.
-     * </P>
-     * @exception RuntimeException
-     *                Thrown if an unrecoverable error occurs that prevents the
-     *                plug-in from functioning.
-     */
-    public void initialize(Map<String, Object> parameters) {
-        return;
-    }
-
-    /**
-     * <P>
-     * Called by the poller framework when an interface is being added to the
-     * scheduler. Here we perform any necessary initialization to prepare the
-     * NetworkInterface object for polling.
-     * </P>
-     *
-     * @exception RuntimeException
-     *                Thrown if an unrecoverable error occurs that prevents the
-     *                interface from being monitored.
-     * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
-     */
-    public void initialize(MonitoredService svc) {
-        super.initialize(svc);
-        return;
-    }
 
     /**
      * {@inheritDoc}

@@ -65,14 +65,7 @@ public class DNSResolutionMonitorTest {
         MockMonitoredService neither = new MockMonitoredService(1, "no-such-name.example.com", InetAddress.getLocalHost(), "RESOLVE");
         
         DNSResolutionMonitor monitor = new DNSResolutionMonitor();
-        monitor.initialize(Collections.<String, Object>emptyMap());
-        
-        monitor.initialize(dual);
-        monitor.initialize(v4only);
-        monitor.initialize(v6only);
-        monitor.initialize(neither);
-        
-        
+
         Map<String, Object> v4Parms = Collections.<String, Object>singletonMap(PARM_RESOLUTION_TYPE,
                                                                                PARM_RESOLUTION_TYPE_V4);
         Map<String, Object> v6Parms = Collections.<String, Object>singletonMap(PARM_RESOLUTION_TYPE,
@@ -102,13 +95,6 @@ public class DNSResolutionMonitorTest {
         assertEquals(PollStatus.unavailable(), monitor.poll(neither, v6Parms));
         assertEquals(PollStatus.unavailable(), monitor.poll(neither, bothParms));
         assertEquals(PollStatus.unavailable(), monitor.poll(neither, eitherParms));
-        
-        monitor.release(dual);
-        monitor.release(v4only);
-        monitor.release(v6only);
-        monitor.release(neither);
-        
-        monitor.release();
 
     }
 

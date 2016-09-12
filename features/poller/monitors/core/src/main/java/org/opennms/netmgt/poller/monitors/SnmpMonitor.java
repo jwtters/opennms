@@ -70,11 +70,6 @@ import org.springframework.stereotype.Component;
 public class SnmpMonitor extends SnmpMonitorStrategy {
     
     public static final Logger LOG = LoggerFactory.getLogger(SnmpMonitor.class);
-    
-    /**
-     * Name of monitored service.
-     */
-    private static final String SERVICE_NAME = "SNMP";
 
     /**
      * Default object to collect if "oid" property not available.
@@ -85,50 +80,6 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
                                                                                 // Id
 
     private static final String DEFAULT_REASON_TEMPLATE = "Observed value '${observedValue}' does not meet criteria '${operator} ${operand}'";
-
-    /**
-     * <P>
-     * Returns the name of the service that the plug-in monitors ("SNMP").
-     * </P>
-     *
-     * @return The service that the plug-in monitors.
-     */
-    public String serviceName() {
-        return SERVICE_NAME;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <P>
-     * Initialize the service monitor.
-     * </P>
-     * @exception RuntimeException
-     *                Thrown if an unrecoverable error occurs that prevents the
-     *                plug-in from functioning.
-     */
-    @Override
-    public void initialize(Map<String, Object> parameters) {
-        return;
-    }
-
-    /**
-     * <P>
-     * Called by the poller framework when an interface is being added to the
-     * scheduler. Here we perform any necessary initialization to prepare the
-     * NetworkInterface object for polling.
-     * </P>
-     *
-     * @exception RuntimeException
-     *                Thrown if an unrecoverable error occurs that prevents the
-     *                interface from being monitored.
-     * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
-     */
-    @Override
-    public void initialize(MonitoredService svc) {
-        super.initialize(svc);
-        return;
-    }
 
     /**
      * {@inheritDoc}

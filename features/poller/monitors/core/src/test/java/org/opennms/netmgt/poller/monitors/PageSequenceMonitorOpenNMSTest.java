@@ -69,7 +69,6 @@ public class PageSequenceMonitorOpenNMSTest {
         MockLogAppender.setupLogging();
 
         m_monitor = new PageSequenceMonitor();
-        m_monitor.initialize(Collections.<String, Object>emptyMap());
 
         m_params = new HashMap<String, Object>();
         m_params.put("timeout", "8000");
@@ -82,11 +81,8 @@ public class PageSequenceMonitorOpenNMSTest {
     }
 
     protected MonitoredService getHttpService(String hostname, InetAddress inetAddress) throws Exception {
-        MonitoredService svc = new MockMonitoredService(1, hostname, inetAddress, "HTTP");
-        m_monitor.initialize(svc);
-        return svc;
+        return new MockMonitoredService(1, hostname, inetAddress, "HTTP");
     }
-
 
     @After
     public void tearDown() throws Exception {

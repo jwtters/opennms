@@ -67,18 +67,6 @@ public class DefaultPollService implements PollService {
         m_monitors = monitors;
     }
 
-    /**
-     * This method will initialize the {@link ServiceMonitor} for the
-     * {@link PolledService}.
-     */
-    @Override
-    public void initialize(PolledService polledService) {
-        ServiceMonitor monitor = getServiceMonitor(polledService);
-        if (monitor != null) {
-            monitor.initialize(polledService);
-        }
-    }
-
     /** {@inheritDoc} */
     @Override
     public PollStatus poll(PolledService polledService) {
@@ -99,12 +87,4 @@ public class DefaultPollService implements PollService {
         return monitor;
     }
 
-    // FIXME: this is never called but should be
-    // also monitor.release() isn't called either
-    /** {@inheritDoc} */
-    @Override
-    public void release(PolledService polledService) {
-        ServiceMonitor monitor = getServiceMonitor(polledService);
-        monitor.release(polledService);
-    }
 }

@@ -82,11 +82,6 @@ import antlr.StringUtils;
 public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
     
     private static final Logger LOG = LoggerFactory.getLogger(HostResourceSwRunMonitor.class);
-    
-    /**
-     * Name of monitored service.
-     */
-    private static final String SERVICE_NAME = "HOST-RESOURCES";
 
     /**
      * Default OID for the table that represents the name of the software running.
@@ -97,50 +92,6 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
      * Default OID for the table that represents the status of the software running.
      */
     private static final String HOSTRESOURCE_SW_STATUS_OID = ".1.3.6.1.2.1.25.4.2.1.7";
-
-    /**
-     * <P>
-     * Returns the name of the service that the plug-in monitors ("SNMP").
-     * </P>
-     *
-     * @return The service that the plug-in monitors.
-     */
-    public String serviceName() {
-        return SERVICE_NAME;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <P>
-     * Initialize the service monitor.
-     * </P>
-     * @exception RuntimeException
-     *                Thrown if an unrecoverable error occurs that prevents the
-     *                plug-in from functioning.
-     */
-    @Override
-    public void initialize(Map<String, Object> parameters) {
-        return;
-    }
-
-    /**
-     * <P>
-     * Called by the poller framework when an interface is being added to the
-     * scheduler. Here we perform any necessary initialization to prepare the
-     * NetworkInterface object for polling.
-     * </P>
-     *
-     * @exception RuntimeException
-     *                Thrown if an unrecoverable error occurs that prevents the
-     *                interface from being monitored.
-     * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
-     */
-    @Override
-    public void initialize(MonitoredService svc) {
-        super.initialize(svc);
-        return;
-    }
 
     /**
      * {@inheritDoc}

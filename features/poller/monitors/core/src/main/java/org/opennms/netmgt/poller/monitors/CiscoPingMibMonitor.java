@@ -365,21 +365,6 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
      * {@inheritDoc}
      *
      * <P>
-     * Initialize the service monitor.
-     * </P>
-     * @exception RuntimeException
-     *                Thrown if an unrecoverable error occurs that prevents the
-     *                plug-in from functioning.
-     */
-    @Override
-    public void initialize(Map<String, Object> parameters) {
-        return;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <P>
      * The poll() method is responsible for setting up and following up the IOS
      * ping entry that proxies monitoring of the specified address for ICMP
      * service availability.

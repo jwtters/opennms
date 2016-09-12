@@ -100,58 +100,6 @@ public class JDBCMonitor extends AbstractServiceMonitor {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * This method is called after the framework loads the plugin.
-	 */
-        @Override
-	public void initialize(Map<String, Object> parameters) {
-		super.initialize(parameters);
-		LOG.debug("Calling init");
-	}
-
-	/**
-	 * Release any used services by the plugin,normally during framework exit
-	 * For now this method is just an 'adaptor', does nothing
-	 *
-	 * @throws java.lang.RuntimeException
-	 *             Thrown if an error occurs during deallocation.
-	 */
-        @Override
-	public void release() {
-		LOG.debug("Shuting down plugin");
-	}
-
-	/**
-	 * This method is called when an interface that support the service is added
-	 * to the scheduling service.
-	 *
-	 * @throws java.lang.RuntimeException
-	 *             Thrown if an unrecoverable error occurs that prevents the
-	 *             interface from being monitored.
-	 * @throws org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException
-	 *             Thrown if the passed interface is invalid for this monitor.
-	 * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
-	 */
-        @Override
-	public void initialize(MonitoredService svc) {
-		super.initialize(svc);
-		LOG.debug("initialize");
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <P>
-	 * This method is the called whenever an interface is being removed from the
-	 * scheduler. For now this method is just an 'adaptor', does nothing
-	 */
-        @Override
-	public void release(MonitoredService svc) {
-		LOG.debug("Shuting down plugin");
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
 	 * Network interface to poll for a given service. Make sure you're using the
 	 * latest (at least 5.5) <a
 	 * href="http://www.sybase.com/detail_list/1,6902,2912,00.html">JConnect

@@ -99,36 +99,6 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
     /**
      * {@inheritDoc}
      *
-     * Initialize the service monitor.
-     * <p>
-     * @param parameters
-     * @exception RuntimeException
-     *                             Thrown if an unrecoverable error occurs that prevents the
-     *                             plug-in from functioning.
-     */
-    @Override
-    public void initialize(final Map<String, Object> parameters) {
-
-    }
-
-    /**
-     * Called by the poller framework when an interface is being added to the
-     * scheduler. Here we perform any necessary initialization to prepare the
-     * NetworkInterface object for polling.
-     *
-     * @exception RuntimeException
-     *                             Thrown if an unrecoverable error occurs that prevents the
-     *                             interface from being monitored.
-     * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
-     */
-    @Override
-    public void initialize(final MonitoredService svc) {
-        super.initialize(svc);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
      * The poll() method is responsible for polling the specified address for
      * SNMP service availability.
      *

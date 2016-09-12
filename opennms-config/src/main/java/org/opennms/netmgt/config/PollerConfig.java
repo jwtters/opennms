@@ -343,11 +343,6 @@ public interface PollerConfig {
      * @return a {@link java.util.Map} object.
      */
     public Map<String, ServiceMonitor> getServiceMonitors();
-    
-    /**
-     * <p>releaseAllServiceMonitors</p>
-     */
-    public void releaseAllServiceMonitors();
 
     /**
      * <p>getServiceMonitor</p>

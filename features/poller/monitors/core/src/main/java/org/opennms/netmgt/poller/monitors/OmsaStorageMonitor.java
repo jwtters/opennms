@@ -70,40 +70,12 @@ import org.springframework.stereotype.Component;
 final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
     
     public static final Logger LOG = LoggerFactory.getLogger(OmsaStorageMonitor.class);
-    
-    private static final String m_serviceName = "OMSAStorage";
-    
+
     private static final String virtualDiskRollUpStatus = ".1.3.6.1.4.1.674.10893.1.20.140.1.1.19";
     private static final String arrayDiskLogicalConnectionVirtualDiskNumber = ".1.3.6.1.4.1.674.10893.1.20.140.3.1.5";
     private static final String arrayDiskNexusID = ".1.3.6.1.4.1.674.10893.1.20.130.4.1.26";
     private static final String arrayDiskLogicalConnectionArrayDiskNumber =".1.3.6.1.4.1.674.10893.1.20.140.3.1.3";
     private static final String arrayDiskState=".1.3.6.1.4.1.674.10893.1.20.130.4.1.4";
-    
-    /**
-     * <p>serviceName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String serviceName() {
-        return m_serviceName;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void initialize(Map<String, Object> parameters) {
-    }
-
-
-    /**
-     * <p>initialize</p>
-     *
-     * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
-     */
-    @Override
-    public void initialize(MonitoredService svc) {
-        super.initialize(svc);
-        return;
-    }
 
     /** {@inheritDoc} */
     @Override

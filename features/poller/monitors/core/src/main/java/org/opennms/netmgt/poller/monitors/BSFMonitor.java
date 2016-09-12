@@ -40,16 +40,15 @@ import java.util.Map.Entry;
 
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
-import org.apache.bsf.BSFManagerTerminator;
 import org.apache.bsf.util.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 
 
@@ -140,25 +139,8 @@ public class BSFMonitor extends AbstractServiceMonitor {
     private static final String STATUS_AVAILABLE = "OK";
     private static final String STATUS_UNAVAILABLE = "NOK";
  
-    private BSFManager m_bsfManager;
-    
-    /**
-     * Initialize BSFManager
-     */
-    @Override
-    public void initialize(Map<String, Object> parameters) {
-        m_bsfManager = new BSFManager();
-    }
+    private final BSFManager m_bsfManager = new BSFManager();
 
-    /**
-     * Terminate the BSFManager
-     */
-    @Override
-    public void release() {
-        LOG.debug("Terminating the BSFManager.");
-        BSFManagerTerminator.terminate(m_bsfManager);
-    }
-    
     private void undeclareBean(String beanName) {
         try {
             m_bsfManager.undeclareBean(beanName);

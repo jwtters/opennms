@@ -77,7 +77,6 @@ public class PageSequenceMonitorIT {
         MockLogAppender.setupLogging(props);
 
         m_monitor = new PageSequenceMonitor();
-        m_monitor.initialize(Collections.emptyMap());
 
         m_params = new HashMap<String, Object>();
         m_params.put("timeout", "8000");
@@ -89,9 +88,7 @@ public class PageSequenceMonitorIT {
     }
     
     protected MonitoredService getHttpService(String hostname, InetAddress inetAddress) throws Exception {
-        MonitoredService svc = new MockMonitoredService(1, hostname, inetAddress, "HTTP");
-    	m_monitor.initialize(svc);
-    	return svc;
+        return new MockMonitoredService(1, hostname, inetAddress, "HTTP");
     }
 
     @After
