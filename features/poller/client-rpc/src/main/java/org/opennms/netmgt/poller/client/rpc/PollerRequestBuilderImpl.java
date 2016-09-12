@@ -42,7 +42,7 @@ import org.opennms.netmgt.poller.PollerRequestBuilder;
 import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
-import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
+import org.opennms.netmgt.poller.monitors.SimpleMonitoredService;
 
 public class PollerRequestBuilderImpl implements PollerRequestBuilder {
 
@@ -59,8 +59,6 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
     private InetAddress address;
 
     private LocationAwarePollerClientImpl client;
-
-    private static final String PORT = "port";
 
     private final Map<String, Object> attributes = new HashMap<>();
 
@@ -153,8 +151,10 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
 
         final PollerConfigLoader configLoader = serviceMonitor.getConfigLoader();
         if (configLoader != null) {
-            final Integer port = AbstractServiceMonitor.getKeyedInteger(attributes, PORT, null);
-            dto.addRuntimeAttributes(configLoader.getRuntimeAttributes(nodeId, location, address, port, attributes, service));
+            if (service == null) {
+                service = new SimpleMonitoredService(address, nodeId, null, serviceName);
+            }
+            dto.addRuntimeAttributes(configLoader.getRuntimeAttributes(service, attributes));
         }
 
         // Execute the request

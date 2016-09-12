@@ -38,6 +38,7 @@ import org.apache.commons.jexl2.MapContext;
 import org.apache.commons.jexl2.ReadonlyContext;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.netmgt.dao.jmx.JmxConfigDao;
 import org.opennms.netmgt.jmx.JmxUtils;
 import org.opennms.netmgt.jmx.connection.JmxConnectionManager;
 import org.opennms.netmgt.jmx.connection.JmxConnectors;
@@ -52,6 +53,7 @@ import org.opennms.netmgt.poller.PollerConfigLoader;
 import org.opennms.netmgt.poller.jmx.wrappers.ObjectNameWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Maps;
 
@@ -97,11 +99,14 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
         }
     }
 
+    @Autowired(required=false)
+    private JmxConfigDao m_jmxConfigDao;
+
     protected abstract JmxConnectors getConnectionName();
 
     @Override
     public PollerConfigLoader getConfigLoader() {
-        return new JmxConfigLoader();
+        return new JmxConfigLoader(m_jmxConfigDao);
     };
 
     /**

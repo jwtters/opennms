@@ -55,9 +55,15 @@ public abstract class AbstractServiceMonitor implements ServiceMonitor {
         final Map<String, Object> parameters = new HashMap<>(request.getMonitorParameters());
         final SimpleMonitoredService svc = new SimpleMonitoredService(request);
         if (request.getRuntimeAttributes() != null) {
+            // By default, we append the runtime attributes to the monitor parameters
             parameters.putAll(request.getRuntimeAttributes());
         }
         return poll(svc, parameters);
+    }
+
+    @Override
+    public PollerConfigLoader getConfigLoader() {
+        return null;
     }
 
     @Override
@@ -136,8 +142,4 @@ public abstract class AbstractServiceMonitor implements ServiceMonitor {
         return defaultValue;
     }
 
-    @Override
-    public PollerConfigLoader getConfigLoader() {
-        return null;
-    }
 }

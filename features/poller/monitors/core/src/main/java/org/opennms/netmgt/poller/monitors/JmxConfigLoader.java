@@ -28,10 +28,11 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import java.net.InetAddress;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 
-import org.opennms.core.spring.BeanUtils;
+import org.opennms.netmgt.config.jmx.MBeanServer;
 import org.opennms.netmgt.dao.jmx.JmxConfigDao;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollerConfigLoader;
@@ -39,21 +40,26 @@ import org.opennms.netmgt.snmp.InetAddrUtils;
 
 public class JmxConfigLoader implements PollerConfigLoader {
 
-    protected JmxConfigDao m_jmxConfigDao;
+    private static final String PORT = "port";
+
+    private JmxConfigDao m_jmxConfigDao;
+
+    public JmxConfigLoader(JmxConfigDao jmxConfigDao) {
+        m_jmxConfigDao = Objects.requireNonNull(jmxConfigDao);
+    }
 
     @Override
-    public Map<String, String> getRuntimeAttributes(Integer nodeId, String location, InetAddress address, Integer port,
-            Map<String, Object> parameters, MonitoredService svc) {
-
-        if (m_jmxConfigDao == null) {
-            m_jmxConfigDao = BeanUtils.getBean("daoContext", "jmxConfigDao", JmxConfigDao.class);
-        }
+    public Map<String, String> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
+        final Integer port = AbstractServiceMonitor.getKeyedInteger(parameters, PORT, null);
         if (port == null) {
             throw new IllegalArgumentException("Need to specify port number in the form of port=number for JMXMonitor");
         }
-        return m_jmxConfigDao.getConfig().lookupMBeanServer(InetAddrUtils.str(address), port.toString())
-                .getParameterMap();
-
+        final MBeanServer mbeanServer = m_jmxConfigDao.getConfig().lookupMBeanServer(InetAddrUtils.str(svc.getAddress()), port.toString());
+        if (mbeanServer == null) {
+            return Collections.emptyMap();
+        } else {
+            return mbeanServer.getParameterMap();
+        }
     }
 
 }

@@ -30,7 +30,6 @@ package org.opennms.netmgt.poller.monitors;
 
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -39,15 +38,18 @@ import org.opennms.netmgt.poller.PollerConfigLoader;
 
 public class SnmpConfigLoader implements PollerConfigLoader {
 
-    @Override
-    public Map<String, String> getRuntimeAttributes(Integer nodeId, String location, InetAddress address, Integer port,
-            Map<String, Object> parameters, MonitoredService svc) {
+    // Statically initialize the SnmpPeerFactory
+    {
         try {
             SnmpPeerFactory.init();
         } catch (IOException e) {
             throw new UndeclaredThrowableException(e);
         }
-        return SnmpPeerFactory.getInstance().getAgentConfig(address).toMap();
+    }
+
+    @Override
+    public Map<String, String> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
+        return SnmpPeerFactory.getInstance().getAgentConfig(svc.getAddress()).toMap();
     }
 
 }

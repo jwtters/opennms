@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.mock;
 
-import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -105,10 +104,9 @@ public class MockMonitor extends AbstractServiceMonitor {
     public PollerConfigLoader getConfigLoader() {
         return new PollerConfigLoader() {
             @Override
-            public Map<String, String> getRuntimeAttributes(Integer nodeId, String location, InetAddress address,
-                    Integer port, Map<String, Object> parameters, MonitoredService svc) {
+            public Map<String, String> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
                 final Map<String, String> attributes = new HashMap<>();
-                final PollStatus pollStatus = doPoll(nodeId, InetAddrUtils.str(address), m_svcName);
+                final PollStatus pollStatus = doPoll(svc.getNodeId(), InetAddrUtils.str(svc.getAddress()), m_svcName);
                 attributes.put("status", Integer.toString(pollStatus.getStatusCode()));
                 attributes.put("reason", pollStatus.getReason());
                 return attributes;

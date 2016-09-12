@@ -94,11 +94,9 @@ public class CiscoPingMibConfigLoader extends SnmpConfigLoader {
     }
 
     @Override
-    public Map<String, String> getRuntimeAttributes(Integer nodeId, String location, InetAddress address, Integer port,
-            Map<String, Object> parameters, MonitoredService svc) {
+    public Map<String, String> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
 
-        Map<String, String> runtimeAttributes = super.getRuntimeAttributes(nodeId, location, address, port, parameters,
-                svc);
+        Map<String, String> runtimeAttributes = super.getRuntimeAttributes(svc, parameters);
         if (nodeDao == null) {
             nodeDao = BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class);
         }

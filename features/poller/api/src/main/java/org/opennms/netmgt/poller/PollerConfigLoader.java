@@ -28,12 +28,10 @@
 
 package org.opennms.netmgt.poller;
 
-import java.net.InetAddress;
 import java.util.Map;
 
 public interface PollerConfigLoader {
 
-    public Map<String, String> getRuntimeAttributes(Integer nodeId, String location, InetAddress address, Integer port,
-            Map<String, Object> parameters, MonitoredService svc);
+    public Map<String, String> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters);
 
 }
