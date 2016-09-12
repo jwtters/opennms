@@ -73,6 +73,7 @@ public abstract class SnmpMonitorStrategy extends AbstractServiceMonitor {
         final Map<String, Object> parameters = new HashMap<>(request.getMonitorParameters());
         final SimpleMonitoredService svc = new SimpleMonitoredService(request);
         if (request.getRuntimeAttributes() != null) {
+            // JW: TODO: FIXME: This is not thread safe
             // All of the keys in the runtime attribute map are used to store the agent configuration
             setAgentConfig(SnmpAgentConfig.fromMap(request.getRuntimeAttributes()));
         } else {

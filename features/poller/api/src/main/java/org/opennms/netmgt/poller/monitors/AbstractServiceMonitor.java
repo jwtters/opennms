@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.poller.monitors;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.netmgt.poller.PollStatus;
@@ -51,8 +52,12 @@ public abstract class AbstractServiceMonitor implements ServiceMonitor {
 
     @Override
     public PollStatus poll(PollerRequest request) {
+        final Map<String, Object> parameters = new HashMap<>(request.getMonitorParameters());
         final SimpleMonitoredService svc = new SimpleMonitoredService(request);
-        return poll(svc, request.getMonitorParameters());
+        if (request.getRuntimeAttributes() != null) {
+            parameters.putAll(request.getRuntimeAttributes());
+        }
+        return poll(svc, parameters);
     }
 
     @Override

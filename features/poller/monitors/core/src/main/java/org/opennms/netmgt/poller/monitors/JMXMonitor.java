@@ -29,7 +29,6 @@
 package org.opennms.netmgt.poller.monitors;
 
 import java.net.InetAddress;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.jexl2.Expression;
@@ -50,8 +49,6 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerConfigLoader;
-import org.opennms.netmgt.poller.PollerRequest;
-import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.jmx.wrappers.ObjectNameWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,16 +102,6 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
     @Override
     public PollerConfigLoader getConfigLoader() {
         return new JmxConfigLoader();
-    };
-
-    @Override
-    public PollStatus poll(PollerRequest request) {
-        final Map<String, Object> parameters = new HashMap<>(request.getMonitorParameters());
-        final SimpleMonitoredService svc = new SimpleMonitoredService(request);
-        if (request.getRuntimeAttributes() != null) {
-            parameters.putAll(request.getRuntimeAttributes());
-        }
-        return poll(svc, parameters);
     };
 
     /**
