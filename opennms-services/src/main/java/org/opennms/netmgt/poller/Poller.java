@@ -376,12 +376,7 @@ public class Poller extends AbstractServiceDaemon {
             getEventProcessor().close();
         }
 
-        releaseServiceMonitors();
         setScheduler(null);
-    }
-
-    private void releaseServiceMonitors() {
-        getPollerConfig().releaseAllServiceMonitors();
     }
 
     /**

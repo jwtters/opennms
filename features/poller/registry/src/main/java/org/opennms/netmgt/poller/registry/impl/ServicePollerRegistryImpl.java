@@ -50,7 +50,7 @@ public class ServicePollerRegistryImpl implements ServicePollerRegistry, Initial
     private static final String TYPE = "type";
 
     @Autowired(required = false)
-    Set<ServiceMonitor> m_serviceMonitors;
+    private Set<ServiceMonitor> m_serviceMonitors;
 
     private final Map<String, ServiceMonitor> m_monitorsByClassName = new HashMap<>();
 

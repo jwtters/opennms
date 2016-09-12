@@ -516,10 +516,6 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
     }
 
     @Override
-    public void releaseAllServiceMonitors() {
-    }
-
-    @Override
     public List<InetAddress> getIpList(final Package pkg) {
         return Collections.emptyList();
     }
