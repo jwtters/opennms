@@ -28,14 +28,12 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerConfigLoader;
 import org.opennms.netmgt.poller.PollerRequest;
-import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.ServiceMonitor;
 
 /**
@@ -143,26 +141,12 @@ public abstract class AbstractServiceMonitor implements ServiceMonitor {
     public void release(MonitoredService svc) {
     }
 
-    /** {@inheritDoc} */
     @Override
-    public abstract PollStatus poll(MonitoredService svc, Map<String, Object> parameters);
-    
-    @Override
-    public PollerResponse poll(PollerRequest request) {
-         PollStatus pollStatus = invokePoll(request);
-         return new PollerResponseImpl(pollStatus);
+    public PollStatus poll(PollerRequest request) {
+        final SimpleMonitoredService svc = new SimpleMonitoredService(request);
+        return poll(svc, request.getMonitorParameters());
     }
 
-    public PollStatus invokePoll(PollerRequest request) {
-
-        InetAddress address = request.getAddress();
-        Map<String, Object> parameters = request.getAttributeMap();
-        String pollerName = request.getClassName();
-        SimpleMonitoredService svc = new SimpleMonitoredService(address, pollerName);
-
-        return poll(svc, parameters);
-    }
-    
     public static Object getKeyedObject(final Map<String, Object> parameterMap, final String key, final Object defaultValue) {
         if (key == null) return defaultValue;
 

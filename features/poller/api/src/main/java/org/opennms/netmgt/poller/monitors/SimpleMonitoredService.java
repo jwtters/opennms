@@ -32,6 +32,7 @@ import java.net.InetAddress;
 import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
+import org.opennms.netmgt.poller.PollerRequest;
 
 /**
  * The Class SimpleMonitoredService.
@@ -41,16 +42,16 @@ import org.opennms.netmgt.poller.NetworkInterface;
 public class SimpleMonitoredService implements MonitoredService {
     
     /** The IP address. */
-    private InetAddress ipAddress;
+    private final InetAddress ipAddress;
     
     /** The node id. */
-    private int nodeId;
-    
+    private final int nodeId;
+
     /** The node label. */
-    private String nodeLabel;
-    
+    private final String nodeLabel;
+
     /** The service name. */
-    private String svcName;
+    private final String svcName;
 
     /**
      * Instantiates a new simple monitored service.
@@ -74,8 +75,11 @@ public class SimpleMonitoredService implements MonitoredService {
      * @param svcName the service name
      */
     public SimpleMonitoredService(final InetAddress ipAddress, final String svcName) {
-        this.ipAddress = ipAddress;
-        this.svcName = svcName;
+        this(ipAddress, 0, null, svcName);
+    }
+
+    public SimpleMonitoredService(final PollerRequest request) {
+        this(request.getAddress(), request.getServiceName());
     }
 
     /* (non-Javadoc)

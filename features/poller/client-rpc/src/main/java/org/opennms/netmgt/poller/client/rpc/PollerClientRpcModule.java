@@ -33,7 +33,7 @@ import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 
 import org.opennms.core.rpc.xml.AbstractXmlRpcModule;
-import org.opennms.netmgt.poller.PollerResponse;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.registry.api.ServicePollerRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,8 +76,8 @@ public class PollerClientRpcModule extends AbstractXmlRpcModule<PollerRequestDTO
 
             @Override
             public PollerResponseDTO get() {
-                PollerResponse pollerResponse = poller.poll(request);
-                return new PollerResponseDTO(pollerResponse.getPollStatus());
+                final PollStatus pollStatus = poller.poll(request);
+                return new PollerResponseDTO(pollStatus);
             }
 
         }, executor);

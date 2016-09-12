@@ -77,7 +77,7 @@ import org.opennms.netmgt.poller.PollerRequest;
 
 @XmlRootElement(name = "poller-request")
 @XmlAccessorType(XmlAccessType.NONE)
-public class PollerRequestDTO implements RpcRequest, PollerRequest{
+public class PollerRequestDTO implements RpcRequest, PollerRequest {
 
     @XmlAttribute(name = "location")
     private String location;
@@ -152,7 +152,7 @@ public class PollerRequestDTO implements RpcRequest, PollerRequest{
     }
 
     @Override
-    public Map<String, Object> getAttributeMap() {
+    public Map<String, Object> getMonitorParameters() {
 
         Map<String, Object> pollerAttributeMap = new HashMap<>();
         for (PollerAttributeDTO attribute : pollerAttributes) {

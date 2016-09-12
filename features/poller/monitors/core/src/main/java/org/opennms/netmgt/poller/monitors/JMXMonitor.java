@@ -107,18 +107,14 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
         return new JmxConfigLoader();
     };
 
-    public PollerResponse poll(PollerRequest request) {
-        
-        InetAddress address = request.getAddress();
-        Map<String, Object> parameters = request.getAttributeMap();
-        String pollerName = request.getClassName();
-        SimpleMonitoredService svc = new SimpleMonitoredService(address, pollerName);
-
+    @Override
+    public PollStatus poll(PollerRequest request) {
+        final Map<String, Object> parameters = new HashMap<>(request.getMonitorParameters());
+        final SimpleMonitoredService svc = new SimpleMonitoredService(request);
         if (request.getRuntimeAttributes() != null) {
             parameters.putAll(request.getRuntimeAttributes());
         }
-        PollStatus pollstatus = poll(svc, parameters);
-        return new PollerResponseImpl(pollstatus);
+        return poll(svc, parameters);
     };
 
     /**

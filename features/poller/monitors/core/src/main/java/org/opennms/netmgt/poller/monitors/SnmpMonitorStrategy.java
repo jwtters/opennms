@@ -29,20 +29,15 @@
 package org.opennms.netmgt.poller.monitors;
 
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerConfigLoader;
 import org.opennms.netmgt.poller.PollerRequest;
-import org.opennms.netmgt.poller.PollerResponse;
-import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
-import org.opennms.netmgt.poller.monitors.PollerResponseImpl;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpValue;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <p>Abstract SnmpMonitorStrategy class.</p>
@@ -51,9 +46,6 @@ import org.slf4j.LoggerFactory;
  * @version $Id: $
  */
 public abstract class SnmpMonitorStrategy extends AbstractServiceMonitor {
-    
-    
-    private static final Logger LOG = LoggerFactory.getLogger(SnmpMonitorStrategy.class);
 
     /**
      * Constant for less-than operand
@@ -75,29 +67,20 @@ public abstract class SnmpMonitorStrategy extends AbstractServiceMonitor {
     protected boolean hex = false;
     
     protected SnmpAgentConfig agentConfig;
-    /*
-     * TODO: Use it or loose it.
-     * Commented out because it is not currently used in this monitor
-     */
-    //private Category log = ThreadCategory.getInstance(getClass());
 
-    /** {@inheritDoc} */
     @Override
-    public abstract PollStatus poll(MonitoredService svc, Map<String, Object> parameters);
-    
-    @Override
-    public PollerResponse poll(PollerRequest request) {
-
+    public PollStatus poll(PollerRequest request) {
+        final Map<String, Object> parameters = new HashMap<>(request.getMonitorParameters());
+        final SimpleMonitoredService svc = new SimpleMonitoredService(request);
         if (request.getRuntimeAttributes() != null) {
             // All of the keys in the runtime attribute map are used to store the agent configuration
             setAgentConfig(SnmpAgentConfig.fromMap(request.getRuntimeAttributes()));
         } else {
             setAgentConfig(new SnmpAgentConfig());
         }
-
-        return new PollerResponseImpl(invokePoll(request));
+        return poll(svc, parameters);
     }
-    
+
     @Override
     public PollerConfigLoader getConfigLoader() {
         return new SnmpConfigLoader();

@@ -179,7 +179,7 @@ public interface ServiceMonitor {
      */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters);
 
-    public PollerResponse poll(PollerRequest request);
+    public PollStatus poll(PollerRequest request);
 
     public PollerConfigLoader getConfigLoader();
 

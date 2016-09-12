@@ -28,20 +28,14 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import java.net.InetAddress;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.PollerConfigLoader;
-import org.opennms.netmgt.poller.PollerRequest;
-import org.opennms.netmgt.poller.PollerResponse;
-import org.opennms.netmgt.poller.ServiceMonitor;
-import org.springframework.stereotype.Component;
 import org.opennms.netmgt.poller.monitors.support.LoopPlugin;
+import org.springframework.stereotype.Component;
 
 /**
  * <p>LoopMonitor class.</p>
@@ -52,57 +46,11 @@ import org.opennms.netmgt.poller.monitors.support.LoopPlugin;
 
 @Distributable
 @Component
-public class LoopMonitor implements ServiceMonitor {
+public class LoopMonitor extends AbstractServiceMonitor {
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.poller.ServiceMonitor#initialize(org.opennms.netmgt.config.PollerConfig, java.util.Map)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public void initialize(Map<String, Object> parameters) {
-        return;
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.poller.ServiceMonitor#release()
-     */
-    /**
-     * <p>release</p>
-     */
-    @Override
-    public void release() {
-        return;
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.poller.ServiceMonitor#initialize(org.opennms.netmgt.poller.MonitoredService)
-     */
-    /**
-     * <p>initialize</p>
-     *
-     * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
-     */
-    @Override
-    public void initialize(MonitoredService svc) {
-        return;
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.poller.ServiceMonitor#release(org.opennms.netmgt.poller.MonitoredService)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public void release(MonitoredService svc) {
-        return;
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.poller.ServiceMonitor#poll(org.opennms.netmgt.poller.MonitoredService, java.util.Map, org.opennms.netmgt.config.poller.Package)
-     */
-    /** {@inheritDoc} */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        LoopPlugin lp = new LoopPlugin();
+        final LoopPlugin lp = new LoopPlugin();
         boolean isAvailable = lp.isProtocolSupported(svc.getAddress(), parameters);
         int status = (isAvailable ? PollStatus.SERVICE_AVAILABLE : PollStatus.SERVICE_UNAVAILABLE);
         StringBuffer sb = new StringBuffer();
@@ -110,24 +58,7 @@ public class LoopMonitor implements ServiceMonitor {
         sb.append(ParameterMap.getKeyedString(parameters, "is-supported", "false"));
         sb.append(" for ip-match: ");
         sb.append(ParameterMap.getKeyedString(parameters, "ip-match", "*.*.*.*"));
-        
+
         return PollStatus.get(status, sb.toString());
     }
-
-    @Override
-    public PollerResponse poll(PollerRequest request) {
-        InetAddress address = request.getAddress();
-        Map<String, Object> parameters = request.getAttributeMap();
-        String pollerName = request.getClassName();
-        SimpleMonitoredService svc = new SimpleMonitoredService(address, pollerName);
-        PollStatus pollStatus = poll(svc, parameters);
-        return new PollerResponseImpl(pollStatus);
-    }
-
-    @Override
-    public PollerConfigLoader getConfigLoader() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
 }

@@ -525,7 +525,7 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
     }
     
     @Override
-    public PollerResponse poll(PollerRequest request) {
+    public PollStatus poll(PollerRequest request) {
 
         if (request.getRuntimeAttributes() != null) {
             Map<String, String> params = new HashMap<>();
@@ -537,18 +537,14 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
             setAgentConfig(new SnmpAgentConfig());
         }
 
-        InetAddress address = request.getAddress();
-        Map<String, Object> parameters = request.getAttributeMap();
-        String pollerName = request.getClassName();
-        SimpleMonitoredService svc = new SimpleMonitoredService(address, pollerName);
-
+        final Map<String, Object> parameters = new HashMap<>(request.getMonitorParameters());
+        final SimpleMonitoredService svc = new SimpleMonitoredService(request);
         if (request.getRuntimeAttributes() != null) {
             parameters.putAll(request.getRuntimeAttributes());
         }
-        PollStatus pollstatus = poll(svc, parameters);
-        return new PollerResponseImpl(pollstatus);
+        return poll(svc, parameters);
     };
-    
+
     @Override
     public PollerConfigLoader getConfigLoader() {
         return new CiscoPingMibConfigLoader();

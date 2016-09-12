@@ -75,20 +75,6 @@ public class MockMonitor extends AbstractServiceMonitor {
     }
 
     @Override
-    public PollStatus invokePoll(PollerRequest request) {
-        final String ipAddr = InetAddrUtils.str(request.getAddress());
-        if ("invalid".equals(request.getRuntimeAttributes().get("status"))) {
-            LOG.info("Invalid Poll: {}/{}", ipAddr, m_svcName);
-            m_network.receivedInvalidPoll(ipAddr, m_svcName);
-            return PollStatus.unknown("Mock.");
-        } else {
-            int statusCode = Integer.valueOf(request.getRuntimeAttributes().get("status"));
-            String reason = request.getRuntimeAttributes().get("reason");
-            return PollStatus.get(statusCode, reason);
-        }
-    }
-
-    @Override
     public PollStatus poll(MonitoredService monSvc, Map<String, Object> parameters) {
         // JW: TODO: Deduplicate.
         synchronized (m_network) {
