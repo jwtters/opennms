@@ -43,7 +43,7 @@ import org.springframework.stereotype.Component;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @version $Id: $
  */
-// this retrieves data from the deamon so it is not Distribuable
+// this retrieves data from the deamon so it is not Distributable
 @Distributable(DistributionContext.DAEMON)
 @Component
 public class PassiveServiceMonitor extends AbstractServiceMonitor {
@@ -51,5 +51,11 @@ public class PassiveServiceMonitor extends AbstractServiceMonitor {
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
     	return PassiveStatusKeeper.getInstance().getStatus(svc.getNodeLabel(), svc.getIpAddr(), svc.getSvcName());
+    }
+
+    @Override
+    public String getEffectiveLocation(String location) {
+        // Always run the PSK in the same JVM
+        return null;
     }
 }

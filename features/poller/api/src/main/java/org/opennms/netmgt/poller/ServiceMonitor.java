@@ -96,4 +96,12 @@ public interface ServiceMonitor {
 
     public PollerConfigLoader getConfigLoader();
 
+    /**
+     * Allows the monitor to override the location at which it should be run.
+     *
+     * @param location location associated with the service to be monitored
+     * @return a possibly updated location
+     */
+    public String getEffectiveLocation(String location);
+
 }

@@ -147,7 +147,7 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
         final PollerRequestDTO dto = new PollerRequestDTO();
         dto.setAddress(address);
         dto.setClassName(serviceMonitor.getClass().getCanonicalName());
-        dto.setLocation(location);
+        dto.setLocation(serviceMonitor.getEffectiveLocation(location));
         dto.addPollerAttributes(attributes);
         dto.setServiceName(serviceName);
 

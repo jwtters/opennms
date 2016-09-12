@@ -55,6 +55,11 @@ public abstract class AbstractServiceMonitor implements ServiceMonitor {
         return poll(svc, request.getMonitorParameters());
     }
 
+    @Override
+    public String getEffectiveLocation(String location) {
+        return location;
+    }
+
     public static Object getKeyedObject(final Map<String, Object> parameterMap, final String key, final Object defaultValue) {
         if (key == null) return defaultValue;
 
