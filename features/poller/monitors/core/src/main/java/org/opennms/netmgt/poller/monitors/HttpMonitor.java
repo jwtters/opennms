@@ -125,26 +125,22 @@ public class HttpMonitor extends AbstractServiceMonitor {
      */
     @Override
     public PollStatus poll(final MonitoredService svc, final Map<String, Object> parameters) {
-        final NetworkInterface<InetAddress> iface = svc.getNetInterface();
+        final InetAddress addr = svc.getAddress();
         final String nodeLabel = svc.getNodeLabel();
-
-        if (iface.getType() != NetworkInterface.TYPE_INET) {
-            throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
-        }
 
         // Cycle through the port list
         //
         int currentPort = -1;
-        final HttpMonitorClient httpClient = new HttpMonitorClient(nodeLabel, iface, new TreeMap<String, Object>(parameters));
+        final HttpMonitorClient httpClient = new HttpMonitorClient(nodeLabel, addr, new TreeMap<String, Object>(parameters));
 
         for (int portIndex = 0; portIndex < determinePorts(httpClient.getParameters()).length && httpClient.getPollStatus() != PollStatus.SERVICE_AVAILABLE; portIndex++) {
             currentPort = determinePorts(httpClient.getParameters())[portIndex];
 
             httpClient.setTimeoutTracker(new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT));
-            LOG.debug("Port = {}, Address = {}, {}", currentPort, (iface.getAddress()), httpClient.getTimeoutTracker());
+            LOG.debug("Port = {}, Address = {}, {}", currentPort, addr, httpClient.getTimeoutTracker());
             
             httpClient.setCurrentPort(currentPort);
-            String serviceInfo = new StringBuilder(iface.getAddress().toString())
+            String serviceInfo = new StringBuilder(addr.toString())
             .append(":").append(svc.getSvcName()).append(":").append(currentPort)
             .toString();
 
@@ -155,7 +151,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
                 try {
                     httpClient.getTimeoutTracker().startAttempt();                    
                     httpClient.connect();
-                    LOG.debug("HttpMonitor: connected to host: {} on port: {}", (iface.getAddress()), currentPort);
+                    LOG.debug("HttpMonitor: connected to host: {} on port: {}", addr, currentPort);
 
                     httpClient.sendHttpCommand();
                     
@@ -199,11 +195,11 @@ public class HttpMonitor extends AbstractServiceMonitor {
                 } catch (IOException e) {
                     String exceptionClass = e.getClass().getSimpleName();
                     LOG.warn("{} while polling {}", exceptionClass, serviceInfo, e);
-                    httpClient.setReason("IOException while polling address: "+(iface.getAddress())+": "+e.getMessage());
+                    httpClient.setReason("IOException while polling address: "+addr+": "+e.getMessage());
                 } catch (Throwable e) {
                     String exceptionClass = e.getClass().getSimpleName();
                     LOG.warn("Unexpected {} while polling {}", exceptionClass, serviceInfo, e);
-                    httpClient.setReason("Unexpected exception while polling address: "+(iface.getAddress())+": "+e.getMessage());
+                    httpClient.setReason("Unexpected exception while polling address: "+addr+": "+e.getMessage());
                 } finally {
                     httpClient.closeConnection();
                 }
@@ -306,7 +302,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
 
     final class HttpMonitorClient {
         private double m_responseTime;
-        final NetworkInterface<InetAddress> m_iface;
+        final InetAddress m_addr;
         final Map<String, Object> m_parameters;
         String m_httpCmd;
         Socket m_httpSocket;
@@ -323,9 +319,9 @@ public class HttpMonitor extends AbstractServiceMonitor {
         private final String m_nodeLabel;
         private boolean m_headerFinished = false;
         
-        HttpMonitorClient(final String nodeLabel, final NetworkInterface<InetAddress> iface, final Map<String, Object>parameters) {
+        HttpMonitorClient(final String nodeLabel, final InetAddress addr, final Map<String, Object>parameters) {
             m_nodeLabel = nodeLabel;
-            m_iface = iface;
+            m_addr = addr;
             m_parameters = parameters;
             buildCommand();
             m_serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
@@ -356,19 +352,18 @@ public class HttpMonitor extends AbstractServiceMonitor {
             m_responseTextFound  = found;
         }
 
-        private String determineVirtualHost(final NetworkInterface<InetAddress> iface, final Map<String, Object> parameters) {
+        private String determineVirtualHost(final InetAddress addr, final Map<String, Object> parameters) {
             final boolean res = ParameterMap.getKeyedBoolean(parameters, PARAMETER_RESOLVE_IP, false);
             final boolean useNodeLabel = ParameterMap.getKeyedBoolean(parameters, PARAMETER_NODE_LABEL_HOST_NAME, false);
             String virtualHost = ParameterMap.getKeyedString(parameters, PARAMETER_HOST_NAME, null);
 
             if (isBlank(virtualHost)) {
                 if (res) {
-                    return iface.getAddress().getCanonicalHostName();
+                    return addr.getCanonicalHostName();
                 } else if (useNodeLabel) {
                     return m_nodeLabel;
                 } else {
-                    final InetAddress addr = iface.getAddress();
-                    final String host = InetAddressUtils.str(iface.getAddress());
+                    final String host = InetAddressUtils.str(addr);
                     // Wrap IPv6 addresses in square brackets
                     if (addr instanceof Inet6Address) {
                         return "[" + host + "]";
@@ -426,7 +421,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
 
         private void connect() throws IOException, SocketException {
             m_httpSocket = new Socket();
-            m_httpSocket.connect(new InetSocketAddress(((InetAddress) m_iface.getAddress()), m_currentPort), m_timeoutTracker.getConnectionTimeout());
+            m_httpSocket.connect(new InetSocketAddress(m_addr, m_currentPort), m_timeoutTracker.getConnectionTimeout());
             m_serviceStatus = PollStatus.SERVICE_UNRESPONSIVE;
             m_httpSocket.setSoTimeout(m_timeoutTracker.getSoTimeout());
             m_httpSocket = getSocketWrapper().wrapSocket(m_httpSocket);
@@ -501,7 +496,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
                     serverResponse = Integer.parseInt(t.nextToken());
                 } catch (final NumberFormatException nfE) {
                     if (HttpMonitor.LOG.isInfoEnabled()) {
-                        HttpMonitor.LOG.info("Error converting response code from host = {}, response = {}", (m_iface.getAddress()), m_currentLine);
+                        HttpMonitor.LOG.info("Error converting response code from host = {}, response = {}", m_addr, m_currentLine);
                     }
                 }
             }
@@ -562,7 +557,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
             final StringBuilder sb = new StringBuilder();
             sb.append("GET ").append(determineUrl(m_parameters)).append(" HTTP/1.1\r\n");
             sb.append("Connection: CLOSE \r\n");
-            sb.append("Host: ").append(determineVirtualHost(m_iface, m_parameters)).append("\r\n");
+            sb.append("Host: ").append(determineVirtualHost(m_addr, m_parameters)).append("\r\n");
             sb.append("User-Agent: ").append(determineUserAgent(m_parameters)).append("\r\n");
             
             if (determineBasicAuthentication(m_parameters) != null) {

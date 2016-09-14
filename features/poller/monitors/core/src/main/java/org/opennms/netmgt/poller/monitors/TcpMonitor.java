@@ -44,8 +44,6 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.PollStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,8 +97,6 @@ final public class TcpMonitor extends AbstractServiceMonitor {
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        NetworkInterface<InetAddress> iface = svc.getNetInterface();
-
         //
         // Process parameters
         //
@@ -108,9 +104,6 @@ final public class TcpMonitor extends AbstractServiceMonitor {
         //
         // Get interface address from NetworkInterface
         //
-        if (iface.getType() != NetworkInterface.TYPE_INET)
-            throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
-
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
         // Port
@@ -126,9 +119,9 @@ final public class TcpMonitor extends AbstractServiceMonitor {
 
         // Get the address instance.
         //
-        InetAddress ipv4Addr = (InetAddress) iface.getAddress();
+        InetAddress ipAddr = svc.getAddress();
 
-        final String hostAddress = InetAddressUtils.str(ipv4Addr);
+        final String hostAddress = InetAddressUtils.str(ipAddr);
 	LOG.debug("poll: address = {}, port = {}, {}", hostAddress, port, tracker);
 
         // Give it a whirl
@@ -142,9 +135,9 @@ final public class TcpMonitor extends AbstractServiceMonitor {
                 tracker.startAttempt();
 
                 socket = new Socket();
-                socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
+                socket.connect(new InetSocketAddress(ipAddr, port), tracker.getConnectionTimeout());
                 socket.setSoTimeout(tracker.getSoTimeout());
-                LOG.debug("TcpMonitor: connected to host: {} on port: {}", ipv4Addr, port);
+                LOG.debug("TcpMonitor: connected to host: {} on port: {}", ipAddr, port);
 
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.unresponsive();
@@ -194,11 +187,11 @@ final public class TcpMonitor extends AbstractServiceMonitor {
                 LOG.debug(reason);
                 serviceStatus = PollStatus.unavailable(reason);
             } catch (ConnectException e) {
-            	String reason = "Connection exception for address: " + ipv4Addr;
+            	String reason = "Connection exception for address: " + ipAddr;
                 LOG.debug(reason, e);
                 serviceStatus = PollStatus.unavailable(reason);
             } catch (IOException e) {
-            	String reason = "IOException while polling address: " + ipv4Addr;
+            	String reason = "IOException while polling address: " + ipAddr;
                 LOG.debug(reason, e);
                 serviceStatus = PollStatus.unavailable(reason);
             } finally {

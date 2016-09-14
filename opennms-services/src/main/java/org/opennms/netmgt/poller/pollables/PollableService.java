@@ -29,15 +29,12 @@
 package org.opennms.netmgt.poller.pollables;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.Map;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.scheduler.PostponeNecessary;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
@@ -70,7 +67,6 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
 	}
 
 	private final String m_svcName;
-    private final InetNetworkInterface m_netInterface;
 
     private volatile PollConfig m_pollConfig;
     private volatile PollStatus m_oldStatus;
@@ -85,7 +81,6 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     public PollableService(PollableInterface iface, String svcName) {
         super(iface, Scope.SERVICE);
         m_svcName = svcName;
-        m_netInterface = new InetNetworkInterface(iface.getAddress());
     }
     
     /**
@@ -197,17 +192,6 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
             updateStatus(newStatus);
         }
         return getStatus();
-    }
-
-    /**
-     * <p>getNetInterface</p>
-     *
-     * @throws UnknownHostException if any.
-     * @return a {@link org.opennms.netmgt.poller.NetworkInterface} object.
-     */
-    @Override
-    public NetworkInterface<InetAddress> getNetInterface() {
-        return m_netInterface;
     }
 
     /**
@@ -408,7 +392,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
         final Map<String, String> mdc = Logging.getCopyOfContextMap();
         try {
             Logging.putThreadContext("service", m_svcName);
-            Logging.putThreadContext("ipAddress", m_netInterface.getAddress().getHostAddress());
+            Logging.putThreadContext("ipAddress", getIpAddr());
             Logging.putThreadContext("nodeId", Integer.toString(getNodeId()));
             Logging.putThreadContext("nodeLabel", getNodeLabel());
             long startDate = System.currentTimeMillis();
@@ -482,8 +466,4 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
         m_pollConfig.refreshThresholds();
     }
 
-    @Override
-    public String getSvcUrl() {
-        return null;
-    }
 }

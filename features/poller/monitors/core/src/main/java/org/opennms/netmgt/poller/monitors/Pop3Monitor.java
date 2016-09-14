@@ -102,28 +102,21 @@ final public class Pop3Monitor extends AbstractServiceMonitor {
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        NetworkInterface<InetAddress> iface = svc.getNetInterface();
-
-        // Get interface address from NetworkInterface
-        //
-        if (iface.getType() != NetworkInterface.TYPE_INET)
-            throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
-
         // Process parameters
         //
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
         int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
 
-        InetAddress ipv4Addr = (InetAddress) iface.getAddress();
+        InetAddress ipAddr = svc.getAddress();
 
-        LOG.debug("poll: address = {}, port = {}, {}", ipv4Addr, port, tracker);
+        LOG.debug("poll: address = {}, port = {}, {}", ipAddr, port, tracker);
 
         PollStatus serviceStatus = PollStatus.unavailable();
 
         for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
             Socket socket = null;
-            final String hostAddress = InetAddressUtils.str(ipv4Addr);
+            final String hostAddress = InetAddressUtils.str(ipAddr);
 			try {
                 //
                 // create a connected socket
@@ -131,9 +124,9 @@ final public class Pop3Monitor extends AbstractServiceMonitor {
                 tracker.startAttempt();
 
                 socket = new Socket();
-                socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
+                socket.connect(new InetSocketAddress(ipAddr, port), tracker.getConnectionTimeout());
                 socket.setSoTimeout(tracker.getSoTimeout());
-                LOG.debug("Pop3Monitor: connected to host: {} on port: {}", ipv4Addr, port);
+                LOG.debug("Pop3Monitor: connected to host: {} on port: {}", ipAddr, port);
 
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.unresponsive();

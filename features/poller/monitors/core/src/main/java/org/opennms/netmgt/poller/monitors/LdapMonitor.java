@@ -46,6 +46,7 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -121,8 +122,6 @@ public class LdapMonitor extends AbstractServiceMonitor {
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        NetworkInterface<InetAddress> iface = svc.getNetInterface();
-
         int serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
         String reason = null;
 
@@ -138,12 +137,7 @@ public class LdapMonitor extends AbstractServiceMonitor {
         final String password = (String) parameters.get("password");
         final String ldapDn = (String) parameters.get("dn");
 
-        final Object addressObject = iface.getAddress();
-        String address = null;
-        if (addressObject instanceof InetAddress)
-            address = InetAddressUtils.str(((InetAddress) addressObject));
-        else if (addressObject instanceof String)
-            address = (String) addressObject;
+        String address = InetAddrUtils.str(svc.getAddress());
 
         // first just try a connection to the box via socket. Just in case there
         // is
@@ -157,7 +151,7 @@ public class LdapMonitor extends AbstractServiceMonitor {
         try {
 
             socket = new Socket();
-            socket.connect(new InetSocketAddress((InetAddress) iface.getAddress(), ldapPort), tracker.getConnectionTimeout());
+            socket.connect(new InetSocketAddress(svc.getAddress(), ldapPort), tracker.getConnectionTimeout());
             socket.setSoTimeout(tracker.getSoTimeout());
             LOG.debug("LdapMonitor: connected to host: {} on port: {}", address, ldapPort);
 

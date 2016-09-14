@@ -48,8 +48,6 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.PollStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,17 +116,9 @@ final public class TrivialTimeMonitor extends AbstractServiceMonitor {
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        NetworkInterface<InetAddress> iface = svc.getNetInterface();
-
         //
         // Process parameters
         //
-
-        //
-        // Get interface address from NetworkInterface
-        //
-        if (iface.getType() != NetworkInterface.TYPE_INET)
-            throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
 
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
@@ -138,9 +128,9 @@ final public class TrivialTimeMonitor extends AbstractServiceMonitor {
 
         // Get the address instance.
         //
-        InetAddress ipv4Addr = (InetAddress) iface.getAddress();
+        InetAddress ipAddr = svc.getAddress();
 
-        LOG.debug("poll: address = {}, port = {}, tracker = {}", InetAddressUtils.str(ipv4Addr), port, tracker);
+        LOG.debug("poll: address = {}, port = {}, tracker = {}", InetAddressUtils.str(ipAddr), port, tracker);
         
         // Get the permissible amount of skew.
         //
@@ -162,9 +152,9 @@ final public class TrivialTimeMonitor extends AbstractServiceMonitor {
         }
         
         if (protocol.equalsIgnoreCase("tcp")) {
-            serviceStatus = pollTimeTcp(svc, parameters, serviceStatus, tracker, ipv4Addr, port, allowedSkew, persistSkew);
+            serviceStatus = pollTimeTcp(svc, parameters, serviceStatus, tracker, ipAddr, port, allowedSkew, persistSkew);
         } else if (protocol.equalsIgnoreCase("udp")) {
-            serviceStatus = pollTimeUdp(svc, parameters, serviceStatus, tracker, ipv4Addr, port, allowedSkew, persistSkew);
+            serviceStatus = pollTimeUdp(svc, parameters, serviceStatus, tracker, ipAddr, port, allowedSkew, persistSkew);
         }
 
         //

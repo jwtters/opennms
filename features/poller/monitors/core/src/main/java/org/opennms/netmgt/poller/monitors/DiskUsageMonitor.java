@@ -112,10 +112,8 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
         MatchType matchType = MatchType.EXACT;
         RequireType reqType = RequireType.ALL;
 
-        NetworkInterface<InetAddress> iface = svc.getNetInterface();
-
         PollStatus status = PollStatus.available();
-        InetAddress ipaddr = (InetAddress) iface.getAddress();
+        InetAddress ipaddr = svc.getAddress();
 
         // Retrieve this interface's SNMP peer object
         //

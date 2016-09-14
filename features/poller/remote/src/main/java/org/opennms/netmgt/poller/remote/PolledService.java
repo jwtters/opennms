@@ -40,9 +40,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
 
 /**
  * <p>PolledService class.</p>
@@ -52,9 +50,9 @@ import org.opennms.netmgt.poller.NetworkInterface;
  */
 public class PolledService implements MonitoredService, Serializable, Comparable<PolledService> {
     
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 3L;
 
-    private final InetNetworkInterface m_netInterface;
+    private final InetAddress m_address;
     private final Map<String,Object> m_monitorConfiguration;
     private final OnmsPollModel m_pollModel;
     private final Integer m_serviceId;
@@ -77,7 +75,7 @@ public class PolledService implements MonitoredService, Serializable, Comparable
         m_nodeLabel = monitoredService.getIpInterface().getNode().getLabel();
         m_nodeLocation = monitoredService.getIpInterface().getNode().getLocation().getLocationName();
         m_svcName = monitoredService.getServiceName();
-        m_netInterface = new InetNetworkInterface(monitoredService.getIpInterface().getIpAddress());
+        m_address = monitoredService.getIpInterface().getIpAddress();
 		m_monitorConfiguration = monitorConfiguration;
 		m_pollModel = pollModel;
 		// Add all of the application names for the service to this object
@@ -100,7 +98,7 @@ public class PolledService implements MonitoredService, Serializable, Comparable
      */
     @Override
     public InetAddress getAddress() {
-        return m_netInterface.getAddress();
+        return m_address;
     }
 
     /**
@@ -110,17 +108,7 @@ public class PolledService implements MonitoredService, Serializable, Comparable
      */
     @Override
     public String getIpAddr() {
-        return InetAddressUtils.str(m_netInterface.getAddress());
-    }
-
-    /**
-     * <p>getNetInterface</p>
-     *
-     * @return a {@link org.opennms.netmgt.poller.NetworkInterface} object.
-     */
-    @Override
-    public NetworkInterface<InetAddress> getNetInterface() {
-        return m_netInterface;
+        return InetAddressUtils.str(m_address);
     }
 
     /**
@@ -233,8 +221,4 @@ public class PolledService implements MonitoredService, Serializable, Comparable
             .toComparison();
     }
 
-    @Override
-    public String getSvcUrl() {
-        return null;
-    }
 }

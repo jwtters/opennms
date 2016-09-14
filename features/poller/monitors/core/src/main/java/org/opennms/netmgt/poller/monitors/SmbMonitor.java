@@ -73,16 +73,9 @@ final public class SmbMonitor extends AbstractServiceMonitor {
     
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        NetworkInterface<InetAddress> iface = svc.getNetInterface();
-
-        // Get interface address from NetworkInterface
-        //
-        if (iface.getType() != NetworkInterface.TYPE_INET)
-            throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
-
         // Extract the address
         //
-        InetAddress ipv4Addr = (InetAddress) iface.getAddress();
+        InetAddress ipAddr = svc.getAddress();
 
         // Default is a failed status
         //
@@ -96,10 +89,10 @@ final public class SmbMonitor extends AbstractServiceMonitor {
         /*
          * This try block was updated to reflect the behavior of the plugin.
          */
-        final String hostAddress = InetAddressUtils.str(ipv4Addr);
-        
+        final String hostAddress = InetAddressUtils.str(ipAddr);
+
         final boolean doNodeStatus = ParameterMap.getKeyedBoolean(parameters, DO_NODE_STATUS, DO_NODE_STATUS_DEFAULT);
-        
+
         try {
             nbtAddr = NbtAddress.getByName(hostAddress);
             

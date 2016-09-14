@@ -37,7 +37,6 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -133,13 +132,12 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {   
-        NetworkInterface<InetAddress> iface = svc.getNetInterface();
-        
+
         String returnValue = "";
 
         PollStatus status = PollStatus.unavailable();
-        InetAddress ipaddr = (InetAddress) iface.getAddress();
-        
+        InetAddress ipaddr = svc.getAddress();
+
         // Initialize the messages if the session is down
         String adminStateMsg = "N/A";
         String peerStateMsg = "N/A";

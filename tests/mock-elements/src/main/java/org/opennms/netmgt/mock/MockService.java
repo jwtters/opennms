@@ -34,9 +34,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -94,8 +92,6 @@ public class MockService extends MockElement implements MonitoredService {
     private SvcMgmtStatus m_mgmtStatus = SvcMgmtStatus.ACTIVE;
 
     private List<PollAnticipator> m_triggers = new ArrayList<PollAnticipator>();
-
-    private NetworkInterface<InetAddress> m_netAddr;
 
    /**
     * <p>Constructor for MockService.</p>
@@ -405,19 +401,6 @@ public class MockService extends MockElement implements MonitoredService {
     }
 
     /**
-     * <p>getNetInterface</p>
-     *
-     * @return a {@link org.opennms.netmgt.poller.NetworkInterface} object.
-     */
-    @Override
-    public NetworkInterface<InetAddress> getNetInterface() {
-        if (m_netAddr == null)
-            m_netAddr = new InetNetworkInterface(getAddress());
-        
-        return m_netAddr;
-    }
-
-    /**
      * <p>getAddress</p>
      *
      * @return a {@link java.net.InetAddress} object.
@@ -435,11 +418,6 @@ public class MockService extends MockElement implements MonitoredService {
 	 */
 	public Event createDemandPollEvent(int demandPollId) {
 		return MockEventUtil.createDemandPollServiceEvent("Test", this, demandPollId);
-	}
-
-    @Override
-	public String getSvcUrl() {
-		return null;
 	}
 
     public Event createOutageCreatedEvent() {

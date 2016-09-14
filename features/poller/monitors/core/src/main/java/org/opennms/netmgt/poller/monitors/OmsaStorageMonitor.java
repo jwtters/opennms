@@ -78,14 +78,12 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
     /** {@inheritDoc} */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        NetworkInterface<InetAddress> iface = svc.getNetInterface();
-        
         PollStatus status = PollStatus.available();
-        InetAddress ipaddr = (InetAddress) iface.getAddress();
-        
+        InetAddress ipaddr = svc.getAddress();
+
         final StringBuffer returnValue = new StringBuffer();
         
-        SnmpAgentConfig agentConfig = configureAgent(parameters, iface, ipaddr);
+        SnmpAgentConfig agentConfig = configureAgent(parameters, ipaddr);
 
         Integer virtualDiskNumber = ParameterMap.getKeyedInteger(parameters, "virtualDiskNumber", 1);
         
@@ -166,7 +164,7 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
         return status;
     }
 
-	private SnmpAgentConfig configureAgent(Map<String, Object> parameters, NetworkInterface<InetAddress> iface, InetAddress ipaddr) throws RuntimeException {
+	private SnmpAgentConfig configureAgent(Map<String, Object> parameters, InetAddress ipaddr) throws RuntimeException {
         // Retrieve this interface's SNMP peer object
         //
         SnmpAgentConfig agentConfig = getAgentConfig();

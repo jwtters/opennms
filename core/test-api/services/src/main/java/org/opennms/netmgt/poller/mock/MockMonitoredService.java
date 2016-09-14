@@ -31,9 +31,7 @@ package org.opennms.netmgt.poller.mock;
 import java.net.InetAddress;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
 
 public class MockMonitoredService implements MonitoredService {
     private final int m_nodeId;
@@ -80,17 +78,7 @@ public class MockMonitoredService implements MonitoredService {
     }
 
     @Override
-    public NetworkInterface<InetAddress> getNetInterface() {
-        return new InetNetworkInterface(m_inetAddr);
-    }
-
-    @Override
     public InetAddress getAddress() {
         return m_inetAddr;
-    }
-
-    @Override
-    public String getSvcUrl() {
-        return null;
     }
 }

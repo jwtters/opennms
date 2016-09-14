@@ -99,19 +99,10 @@ final public class DominoIIOPMonitor extends AbstractServiceMonitor {
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        NetworkInterface<InetAddress> iface = svc.getNetInterface();
-
         //
         // Process parameters
         //
 
-        //
-        // Get interface address from NetworkInterface
-        //
-        if (iface.getType() != NetworkInterface.TYPE_INET)
-            throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
-
-        
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
         int IORport = ParameterMap.getKeyedInteger(parameters, "ior-port", DEFAULT_IORPORT);
 
@@ -121,9 +112,9 @@ final public class DominoIIOPMonitor extends AbstractServiceMonitor {
 
         // Get the address instance.
         //
-        InetAddress ipv4Addr = (InetAddress) iface.getAddress();
+        InetAddress ipAddr = svc.getAddress();
 
-        final String hostAddress = InetAddressUtils.str(ipv4Addr);
+        final String hostAddress = InetAddressUtils.str(ipAddr);
 
 		LOG.debug("poll: address = {}, port = {}, {}", hostAddress, port, tracker);
 
@@ -135,7 +126,7 @@ final public class DominoIIOPMonitor extends AbstractServiceMonitor {
         try {
             retrieveIORText(hostAddress, IORport);
         } catch (Throwable e) {
-            String reason = "failed to get the corba IOR from " + ipv4Addr;
+            String reason = "failed to get the corba IOR from " + ipAddr;
             LOG.debug(reason, e);
             return PollStatus.unavailable(reason);
         }
@@ -152,10 +143,10 @@ final public class DominoIIOPMonitor extends AbstractServiceMonitor {
                 tracker.startAttempt();
                 
                 socket = new Socket();
-                socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
+                socket.connect(new InetSocketAddress(ipAddr, port), tracker.getConnectionTimeout());
                 socket.setSoTimeout(tracker.getSoTimeout());
 
-                LOG.debug("DominoIIOPMonitor: connected to host: {} on port: {}", ipv4Addr, port);
+                LOG.debug("DominoIIOPMonitor: connected to host: {} on port: {}", ipAddr, port);
 
                 // got here so its up...
                 
@@ -170,11 +161,11 @@ final public class DominoIIOPMonitor extends AbstractServiceMonitor {
                 LOG.debug(reason);
                 status = PollStatus.unavailable(reason);
             } catch (ConnectException e) {
-                String reason = "Connection exception for address: " + ipv4Addr+" : "+e.getMessage();
+                String reason = "Connection exception for address: " + ipAddr+" : "+e.getMessage();
                 LOG.debug(reason);
                 status = PollStatus.unavailable(reason);
             } catch (IOException e) {
-                String reason = "IOException while polling address: " + ipv4Addr+" : "+e.getMessage();
+                String reason = "IOException while polling address: " + ipAddr+" : "+e.getMessage();
                 LOG.debug(reason);
                 status = PollStatus.unavailable(reason);
             } finally {

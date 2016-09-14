@@ -35,15 +35,13 @@ import java.util.Map;
 import org.opennms.core.utils.ExecRunner;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.PollStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is designed to be used by the service poller framework to test the
@@ -97,18 +95,10 @@ final public class GpMonitor extends AbstractServiceMonitor {
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         LOG.warn("GpMonitor: This poller monitor is deprecated in favor of SystemExecuteMonitor. GpMonitor will be removed in a future release.");
-        NetworkInterface<InetAddress> iface = svc.getNetInterface();
 
         //
         // Process parameters
         //
-
-        //
-        // Get interface address from NetworkInterface
-        //
-        if (iface.getType() != NetworkInterface.TYPE_INET)
-            throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
-
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
         String hoption = ParameterMap.getKeyedString(parameters, "hoption", "--hostname");
@@ -139,9 +129,9 @@ final public class GpMonitor extends AbstractServiceMonitor {
 
         // Get the address instance.
         //
-        InetAddress ipv4Addr = (InetAddress) iface.getAddress();
+        InetAddress ipAddr = svc.getAddress();
 
-        final String hostAddress = InetAddressUtils.str(ipv4Addr);
+        final String hostAddress = InetAddressUtils.str(ipAddr);
 
 		LOG.debug("poll: address = {}, script = {}, arguments = {}, {}", hostAddress, script, args, tracker);
 

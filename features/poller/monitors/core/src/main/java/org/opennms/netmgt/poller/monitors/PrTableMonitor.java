@@ -77,10 +77,8 @@ final public class PrTableMonitor extends SnmpMonitorStrategy {
      *                Thrown for any uncrecoverable errors.
      */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        NetworkInterface<InetAddress> iface = svc.getNetInterface();
-
         PollStatus status = PollStatus.available();
-        InetAddress ipaddr = (InetAddress) iface.getAddress();
+        InetAddress ipaddr = svc.getAddress();
 
         ArrayList<String> errorStringReturn = new ArrayList<String>();
 

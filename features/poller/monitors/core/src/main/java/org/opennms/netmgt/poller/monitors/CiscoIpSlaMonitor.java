@@ -36,7 +36,6 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -185,13 +184,11 @@ final public class CiscoIpSlaMonitor extends SnmpMonitorStrategy {
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String,Object> parameters) {
-        NetworkInterface<InetAddress> iface = svc.getNetInterface();
-
         String returnValue = "SNMP request failed or Cisco IP SLA tag ";
         boolean monitorThresh = false;
-        
+
         PollStatus status = PollStatus.unavailable();
-        InetAddress ipaddr = (InetAddress) iface.getAddress();
+        InetAddress ipaddr = svc.getAddress();
 
         // Retrieve this interface's SNMP peer object
         //

@@ -108,12 +108,6 @@ final public class SSLCertMonitor extends AbstractServiceMonitor {
      */
     @Override
     public PollStatus poll(final MonitoredService svc, final Map<String, Object> parameters) {
-        final NetworkInterface<InetAddress> iface = svc.getNetInterface();
-
-        if (iface.getType() != NetworkInterface.TYPE_INET) {
-            throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
-        }
-
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
         // Port
@@ -139,9 +133,9 @@ final public class SSLCertMonitor extends AbstractServiceMonitor {
 
         // Get the address instance.
         //
-        InetAddress ipv4Addr = (InetAddress) iface.getAddress();
+        InetAddress ipAddr = svc.getAddress();
 
-        final String hostAddress = InetAddressUtils.str(ipv4Addr);
+        final String hostAddress = InetAddressUtils.str(ipAddr);
         LOG.debug("poll: address={}, port={}, {}", hostAddress, port, tracker);
 
         // Give it a whirl
@@ -154,9 +148,9 @@ final public class SSLCertMonitor extends AbstractServiceMonitor {
                 tracker.startAttempt();
 
                 socket = new Socket();
-                socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
+                socket.connect(new InetSocketAddress(ipAddr, port), tracker.getConnectionTimeout());
                 socket.setSoTimeout(tracker.getSoTimeout());
-                LOG.debug("Connected to host: {} on port: {}", ipv4Addr, port);
+                LOG.debug("Connected to host: {} on port: {}", ipAddr, port);
                 SSLSocket sslSocket = (SSLSocket) getSocketWrapper().wrapSocket(socket);
 
                 // We're connected, so upgrade status to unresponsive
@@ -202,11 +196,11 @@ final public class SSLCertMonitor extends AbstractServiceMonitor {
                 LOG.debug(reason);
                 serviceStatus = PollStatus.unavailable(reason);
             } catch (ConnectException e) {
-                String reason = "Connection exception for address: " + ipv4Addr;
+                String reason = "Connection exception for address: " + ipAddr;
                 LOG.debug(reason, e);
                 serviceStatus = PollStatus.unavailable(reason);
             } catch (IOException e) {
-                String reason = "IOException while polling address: " + ipv4Addr;
+                String reason = "IOException while polling address: " + ipAddr;
                 LOG.debug(reason, e);
                 serviceStatus = PollStatus.unavailable(reason);
             } finally {

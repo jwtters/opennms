@@ -117,14 +117,7 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
      * status to SERVICE_AVAILABLE and return.
      */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        NetworkInterface<InetAddress> iface = svc.getNetInterface();
-
         // Process parameters
-
-        // Get interface address from NetworkInterface
-        if (iface.getType() != NetworkInterface.TYPE_INET)
-            throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
-
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
         // Port
@@ -158,9 +151,9 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
         boolean boolSSLFilter = ParameterMap.getKeyedBoolean(parameters, PARAMETER_SSLFILTER, DEFAULT_SSLFILTER);
 
         // Get the address instance.
-        InetAddress ipv4Addr = (InetAddress) iface.getAddress();
+        InetAddress ipAddr = svc.getAddress();
 
-        final String hostAddress = InetAddressUtils.str(ipv4Addr);
+        final String hostAddress = InetAddressUtils.str(ipAddr);
 
         LOG.debug("poll: address = " + hostAddress + ", port = " + port + ", " + tracker);
 

@@ -112,19 +112,12 @@ public class JDBCMonitor extends AbstractServiceMonitor {
 	 */
         @Override
 	public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-		NetworkInterface<InetAddress> iface = svc.getNetInterface();
-
 		// Assume that the service is down
 		PollStatus status = PollStatus.unavailable();
 		Driver driver = null;
 		Connection con = null;
 		Statement statement = null;
 		ResultSet resultset = null;
-
-		if (iface.getType() != NetworkInterface.TYPE_INET) {
-			LOG.error("Unsupported interface type, only TYPE_INET currently supported");
-			throw new NetworkInterfaceNotSupportedException(getClass().getName() + ": Unsupported interface type, only TYPE_INET currently supported");
-		}
 
 		if (parameters == null) {
 			throw new NullPointerException("parameter cannot be null");
@@ -141,9 +134,9 @@ public class JDBCMonitor extends AbstractServiceMonitor {
 		LOG.info("Loaded JDBC driver");
 
 		// Get the JDBC url host part
-		InetAddress ipv4Addr = (InetAddress) iface.getAddress();
+		InetAddress ipAddr = svc.getAddress();
 		String url = null;
-		url = DBTools.constructUrl(ParameterMap.getKeyedString(parameters, "url", DBTools.DEFAULT_URL), ipv4Addr.getCanonicalHostName());
+		url = DBTools.constructUrl(ParameterMap.getKeyedString(parameters, "url", DBTools.DEFAULT_URL), ipAddr.getCanonicalHostName());
 		LOG.debug("JDBC url: {}", url);
 		
 		TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
@@ -179,7 +172,7 @@ public class JDBCMonitor extends AbstractServiceMonitor {
 						double responseTime = tracker.elapsedTimeInMillis();
 						status = PollStatus.available(responseTime);
 
-						LOG.debug("JDBC service is AVAILABLE on: {}", ipv4Addr.getCanonicalHostName());
+						LOG.debug("JDBC service is AVAILABLE on: {}", ipAddr.getCanonicalHostName());
 						LOG.debug("poll: responseTime= {}ms", responseTime);
 
 						break;
@@ -187,7 +180,7 @@ public class JDBCMonitor extends AbstractServiceMonitor {
 				} // end if con
 			} catch (SQLException sqlEx) {
 				
-				String reason = "JDBC service is not responding on: " + ipv4Addr.getCanonicalHostName() + ", " + sqlEx.getSQLState() + ", " + sqlEx.toString();
+				String reason = "JDBC service is not responding on: " + ipAddr.getCanonicalHostName() + ", " + sqlEx.getSQLState() + ", " + sqlEx.toString();
                 LOG.debug(reason, sqlEx);
                 status = PollStatus.unavailable(reason);
 

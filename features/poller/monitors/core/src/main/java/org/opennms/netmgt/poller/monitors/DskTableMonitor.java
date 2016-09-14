@@ -37,7 +37,6 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -77,10 +76,8 @@ final public class DskTableMonitor extends SnmpMonitorStrategy {
      *                Thrown for any uncrecoverable errors.
      */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        NetworkInterface<InetAddress> iface = svc.getNetInterface();
-
         PollStatus status = PollStatus.available();
-        InetAddress ipaddr = (InetAddress) iface.getAddress();
+        InetAddress ipaddr = svc.getAddress();
 
         ArrayList<String> errorStringReturn = new ArrayList<String>();
 

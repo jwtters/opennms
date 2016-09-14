@@ -86,15 +86,8 @@ final public class StrafePingMonitor extends AbstractServiceMonitor {
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        NetworkInterface<InetAddress> iface = svc.getNetInterface();
-
-        // Get interface address from NetworkInterface
-        //
-        if (iface.getType() != NetworkInterface.TYPE_INET)
-            throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
-
         PollStatus serviceStatus = PollStatus.unavailable(null);
-        InetAddress host = (InetAddress) iface.getAddress();
+        InetAddress host = svc.getAddress();
         List<Number> responseTimes = null;
 
         try {

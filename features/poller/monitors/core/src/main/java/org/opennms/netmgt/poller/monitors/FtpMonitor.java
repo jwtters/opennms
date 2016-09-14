@@ -44,8 +44,6 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.monitors.support.FtpResponse;
 import org.slf4j.Logger;
@@ -97,13 +95,6 @@ public class FtpMonitor extends AbstractServiceMonitor {
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        NetworkInterface<InetAddress> iface = svc.getNetInterface();
-
-        // Check the interface type
-        if (iface.getType() != NetworkInterface.TYPE_INET) {
-            throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
-        }
-
         // Get the parameters
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
         int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
@@ -111,12 +102,12 @@ public class FtpMonitor extends AbstractServiceMonitor {
         String password = ParameterMap.getKeyedString(parameters, "password", null);
 
         // Extract the address
-        InetAddress ipv4Addr = (InetAddress) iface.getAddress();
+        InetAddress ipAddr = svc.getAddress();
 
         PollStatus serviceStatus = PollStatus.unavailable();
         for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
 
-            LOG.debug("FtpMonitor.poll: Polling interface: {} {}", InetAddressUtils.str(ipv4Addr), tracker);
+            LOG.debug("FtpMonitor.poll: Polling interface: {} {}", InetAddressUtils.str(ipAddr), tracker);
 
             Socket socket = null;
             try {
@@ -124,9 +115,9 @@ public class FtpMonitor extends AbstractServiceMonitor {
                 tracker.startAttempt();
 
                 socket = new Socket();
-                socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
+                socket.connect(new InetSocketAddress(ipAddr, port), tracker.getConnectionTimeout());
                 socket.setSoTimeout(tracker.getSoTimeout());
-                LOG.debug("FtpMonitor: connected to host: {} on port: {}", ipv4Addr, port);
+                LOG.debug("FtpMonitor: connected to host: {} on port: {}", ipAddr, port);
 
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.unresponsive();
@@ -202,11 +193,11 @@ public class FtpMonitor extends AbstractServiceMonitor {
                     serviceStatus = PollStatus.unavailable();
                 }
             } catch (NumberFormatException e) {
-            	String reason = "NumberFormatException while polling address: " + ipv4Addr;
+            	String reason = "NumberFormatException while polling address: " + ipAddr;
                 LOG.debug(reason, e);
                 serviceStatus = PollStatus.unavailable(reason);
             } catch (NoRouteToHostException e) {
-            	String reason = "No route to host exception for address: " + ipv4Addr;
+            	String reason = "No route to host exception for address: " + ipAddr;
                 LOG.debug(reason, e);
                 serviceStatus = PollStatus.unavailable(reason);
             } catch (InterruptedIOException e) {
@@ -214,11 +205,11 @@ public class FtpMonitor extends AbstractServiceMonitor {
                 LOG.debug(reason);
                 serviceStatus = PollStatus.unavailable(reason);
             } catch (ConnectException e) {
-            	String reason = "Connection exception for address: " + ipv4Addr;
+            	String reason = "Connection exception for address: " + ipAddr;
                 LOG.debug(reason, e);
                 serviceStatus = PollStatus.unavailable(reason);
             } catch (IOException e) {
-            	String reason = "IOException while polling address: " + ipv4Addr;
+            	String reason = "IOException while polling address: " + ipAddr;
                 LOG.debug(reason, e);
                 serviceStatus = PollStatus.unavailable(reason);
             } finally {

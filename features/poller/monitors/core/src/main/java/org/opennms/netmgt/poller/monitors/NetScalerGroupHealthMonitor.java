@@ -62,8 +62,7 @@ public class NetScalerGroupHealthMonitor extends SnmpMonitorStrategy {
     private static final Logger LOG = LoggerFactory.getLogger(NetScalerGroupHealthMonitor.class);
 
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        NetworkInterface<InetAddress> iface = svc.getNetInterface();
-        InetAddress ipaddr = (InetAddress) iface.getAddress();
+        InetAddress ipaddr = svc.getAddress();
 
         SnmpAgentConfig agentConfig = getAgentConfig();
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);

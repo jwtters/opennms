@@ -115,9 +115,7 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> map) {
-
-        final NetworkInterface<InetAddress> iface = svc.getNetInterface();
-        final InetAddress ipv4Addr = iface.getAddress();
+        final InetAddress ipv4Addr = svc.getAddress();
 
         PollStatus serviceStatus = PollStatus.unavailable();
         try {

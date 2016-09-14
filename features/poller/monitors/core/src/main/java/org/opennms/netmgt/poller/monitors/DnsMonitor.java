@@ -120,14 +120,6 @@ final public class DnsMonitor extends AbstractServiceMonitor {
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        NetworkInterface<InetAddress> iface = svc.getNetInterface();
-
-        //
-        // Get interface address from NetworkInterface
-        //
-        if (iface.getType() != NetworkInterface.TYPE_INET)
-            throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
-
         // get the parameters
         //
         TimeoutTracker timeoutTracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
@@ -157,7 +149,7 @@ final public class DnsMonitor extends AbstractServiceMonitor {
 
         // get the address and DNS address request
         //
-        final InetAddress addr = iface.getAddress();
+        final InetAddress addr = svc.getAddress();
 
         PollStatus serviceStatus = null;
         serviceStatus = pollDNS(timeoutTracker, port, addr, lookup, fatalCodes, minAnswers, maxAnswers);

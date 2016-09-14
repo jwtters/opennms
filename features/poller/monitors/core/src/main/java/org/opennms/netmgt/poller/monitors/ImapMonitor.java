@@ -138,17 +138,9 @@ public class ImapMonitor extends AbstractServiceMonitor {
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        NetworkInterface<InetAddress> iface = svc.getNetInterface();
-
-        // Get interface address from NetworkInterface
-        //
-        if (iface.getType() != NetworkInterface.TYPE_INET)
-            throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
-
         // Process parameters
         //
 
-        
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
         // Retries
         //
@@ -156,10 +148,10 @@ public class ImapMonitor extends AbstractServiceMonitor {
 
         // Get interface address from NetworkInterface
         //
-        InetAddress ipv4Addr = (InetAddress) iface.getAddress();
+        InetAddress ipAddr = svc.getAddress();
 
 
-        LOG.debug("ImapMonitor.poll: address: {} port: {} {}", ipv4Addr, port, tracker);
+        LOG.debug("ImapMonitor.poll: address: {} port: {} {}", ipAddr, port, tracker);
 
         PollStatus serviceStatus = PollStatus.unavailable();
 
@@ -172,7 +164,7 @@ public class ImapMonitor extends AbstractServiceMonitor {
                 tracker.startAttempt();
 
                 socket = new Socket();
-                socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
+                socket.connect(new InetSocketAddress(ipAddr, port), tracker.getConnectionTimeout());
                 socket.setSoTimeout(tracker.getSoTimeout());
 
                 // We're connected, so upgrade status to unresponsive
@@ -222,13 +214,13 @@ public class ImapMonitor extends AbstractServiceMonitor {
 
             } catch (NoRouteToHostException e) {
             	
-            	String reason = "No route to host exception for address: " + ipv4Addr;
+            	String reason = "No route to host exception for address: " + ipAddr;
                 LOG.debug(reason, e);
                 serviceStatus = PollStatus.unavailable(reason);
 
             } catch (ConnectException e) {
                 // Connection refused. Continue to retry.
-            	String reason = "Connection exception for address: " + ipv4Addr;
+            	String reason = "Connection exception for address: " + ipAddr;
                 LOG.debug(reason, e);
                 serviceStatus = PollStatus.unavailable(reason);
             } catch (InterruptedIOException e) {
@@ -236,7 +228,7 @@ public class ImapMonitor extends AbstractServiceMonitor {
                 LOG.debug(reason);
                 serviceStatus = PollStatus.unavailable(reason);
             } catch (IOException e) {
-            	String reason = "IOException while polling address: " + ipv4Addr;
+            	String reason = "IOException while polling address: " + ipAddr;
                 LOG.debug(reason, e);
                 serviceStatus = PollStatus.unavailable(reason);
             } finally {

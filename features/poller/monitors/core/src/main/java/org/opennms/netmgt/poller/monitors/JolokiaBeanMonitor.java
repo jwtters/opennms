@@ -110,17 +110,10 @@ final public class JolokiaBeanMonitor extends AbstractServiceMonitor {
      * SERVICE_AVAILABLE and return.
      */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        NetworkInterface<InetAddress> iface = svc.getNetInterface();
-
         //
         // Process parameters
         //
         //
-        // Get interface address from NetworkInterface
-        if (iface.getType() != NetworkInterface.TYPE_INET) {
-            throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
-        }
-
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
         // Port
@@ -155,9 +148,9 @@ final public class JolokiaBeanMonitor extends AbstractServiceMonitor {
         String strBannerMatch = ParameterMap.getKeyedString(parameters, PARAMETER_BANNER, null);
 
         // Get the address instance.
-        InetAddress ipv4Addr = (InetAddress) iface.getAddress();
+        InetAddress ipAddr = svc.getAddress();
 
-        final String hostAddress = InetAddressUtils.str(ipv4Addr);
+        final String hostAddress = InetAddressUtils.str(ipAddr);
 
         LOGGER.debug("poll: address = " + hostAddress + ", port = " + port + ", " + tracker);
 
@@ -250,7 +243,7 @@ final public class JolokiaBeanMonitor extends AbstractServiceMonitor {
                 }
 
             } catch (J4pConnectException e) {
-                String reason = "Connection exception for address: " + ipv4Addr + ":" + port + " " + e.getMessage();
+                String reason = "Connection exception for address: " + ipAddr + ":" + port + " " + e.getMessage();
                 LOGGER.debug(reason, e);
                 serviceStatus = PollStatus.unavailable(reason);
                 break;

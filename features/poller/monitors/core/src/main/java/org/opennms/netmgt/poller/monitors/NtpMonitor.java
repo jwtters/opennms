@@ -95,17 +95,6 @@ final public class NtpMonitor extends AbstractServiceMonitor {
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        NetworkInterface<InetAddress> iface = svc.getNetInterface();
-
-        //
-        // Get interface address from NetworkInterface
-        //
-        if (iface.getType() != NetworkInterface.TYPE_INET)
-            throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
-
-        // get the log
-        //
-
         // get the parameters
         //
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
@@ -114,7 +103,7 @@ final public class NtpMonitor extends AbstractServiceMonitor {
 
         // get the address and NTP address request
         //
-        InetAddress ipv4Addr = (InetAddress) iface.getAddress();
+        InetAddress ipAddr = svc.getAddress();
 
         PollStatus serviceStatus = PollStatus.unavailable();
         DatagramSocket socket = null;
@@ -129,7 +118,7 @@ final public class NtpMonitor extends AbstractServiceMonitor {
                     // Send NTP request
                     //
                     byte[] data = new NtpMessage().toByteArray();
-                    DatagramPacket outgoing = new DatagramPacket(data, data.length, ipv4Addr, port);
+                    DatagramPacket outgoing = new DatagramPacket(data, data.length, ipAddr, port);
 
                     tracker.startAttempt();
 
@@ -158,19 +147,19 @@ final public class NtpMonitor extends AbstractServiceMonitor {
             }
         } catch (NoRouteToHostException e) {
         	
-        	String reason = "No route to host exception for address: " + ipv4Addr;
+        	String reason = "No route to host exception for address: " + ipAddr;
             LOG.debug(reason, e);
             serviceStatus = PollStatus.unavailable(reason);
         	
         } catch (ConnectException e) {
         	
-        	String reason = "Connection exception for address: " + ipv4Addr;
+        	String reason = "Connection exception for address: " + ipAddr;
             LOG.debug(reason, e);
             serviceStatus = PollStatus.unavailable(reason);
         	
         } catch (IOException ex) {
         	
-        	String reason = "IOException while polling address: " + ipv4Addr;
+        	String reason = "IOException while polling address: " + ipAddr;
             LOG.debug(reason, ex);
             serviceStatus = PollStatus.unavailable(reason);
         	

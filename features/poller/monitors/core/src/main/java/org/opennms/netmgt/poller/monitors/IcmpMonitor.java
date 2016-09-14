@@ -77,15 +77,8 @@ final public class IcmpMonitor extends AbstractServiceMonitor {
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        NetworkInterface<InetAddress> iface = svc.getNetInterface();
-
-        // Get interface address from NetworkInterface
-        //
-        if (iface.getType() != NetworkInterface.TYPE_INET)
-            throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
-
         Number rtt = null;
-        InetAddress host = (InetAddress) iface.getAddress();
+        InetAddress host = svc.getAddress();
 
         try {
             
