@@ -28,16 +28,19 @@
 
 package org.opennms.netmgt.poller.monitors;
 
+import java.io.IOException;
 import java.math.BigInteger;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.PollerConfigLoader;
-import org.opennms.netmgt.poller.PollerRequest;
+import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.ImmutableMap;
 
 /**
  * <p>Abstract SnmpMonitorStrategy class.</p>
@@ -46,6 +49,8 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * @version $Id: $
  */
 public abstract class SnmpMonitorStrategy extends AbstractServiceMonitor {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpMonitorStrategy.class);
 
     /**
      * Constant for less-than operand
@@ -65,33 +70,27 @@ public abstract class SnmpMonitorStrategy extends AbstractServiceMonitor {
     public static final String MATCHES = "~";
     
     protected boolean hex = false;
-    
-    protected SnmpAgentConfig agentConfig;
 
     @Override
-    public PollStatus poll(PollerRequest request) {
-        final Map<String, Object> parameters = new HashMap<>(request.getMonitorParameters());
-        final SimpleMonitoredService svc = new SimpleMonitoredService(request);
-        if (request.getRuntimeAttributes() != null) {
-            // JW: TODO: FIXME: This is not thread safe
-            // All of the keys in the runtime attribute map are used to store the agent configuration
-            setAgentConfig(SnmpAgentConfig.fromMap(request.getRuntimeAttributes()));
-        } else {
-            setAgentConfig(new SnmpAgentConfig());
+    public Map<String, Object> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
+        try {
+            SnmpPeerFactory.init();
+        } catch (IOException e) {
+            LOG.error("SnmpPeerFactory initialization failed.", e);
         }
-        return poll(svc, parameters);
+        return ImmutableMap.of("agent", SnmpPeerFactory.getInstance().getAgentConfig(svc.getAddress()));
     }
 
-    @Override
-    public PollerConfigLoader getConfigLoader() {
-        return new SnmpConfigLoader();
+    public SnmpAgentConfig getAgentConfig(Map<String, Object> parameters) {
+        return getKeyedInstance(parameters, "agent", () -> { return new SnmpAgentConfig(); });
     }
-    
+
     public String getStringValue(SnmpValue result) {
     	if (hex)
     		return result.toHexString();
     	return result.toString();
     }
+
     /**
      * Verifies that the result of the SNMP query meets the criteria specified
      * by the operator and the operand from the configuration file.
@@ -182,16 +181,6 @@ public abstract class SnmpMonitorStrategy extends AbstractServiceMonitor {
         } else {
             return null;
         }
-    }
-
-
-    public SnmpAgentConfig getAgentConfig() {
-        return agentConfig;
-    }
-
-
-    public void setAgentConfig(SnmpAgentConfig agentConfig) {
-        this.agentConfig = agentConfig;
     }
 
 }

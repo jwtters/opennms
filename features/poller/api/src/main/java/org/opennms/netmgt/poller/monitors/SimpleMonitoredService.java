@@ -32,7 +32,6 @@ import java.net.InetAddress;
 import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.netmgt.poller.PollerRequest;
 
 /**
  * The Class SimpleMonitoredService.
@@ -78,20 +77,10 @@ public class SimpleMonitoredService implements MonitoredService {
         this(ipAddress, 0, null, svcName);
     }
 
-    public SimpleMonitoredService(final PollerRequest request) {
-        this(request.getAddress(), request.getServiceName());
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.poller.MonitoredService#getSvcUrl()
-     */
-    public String getSvcUrl() {
-        return null;
-    }
-
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.MonitoredService#getSvcName()
      */
+    @Override
     public String getSvcName() {
         return svcName;
     }
@@ -99,6 +88,7 @@ public class SimpleMonitoredService implements MonitoredService {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.MonitoredService#getIpAddr()
      */
+    @Override
     public String getIpAddr() {
         return ipAddress.getHostAddress();
     }
@@ -106,6 +96,7 @@ public class SimpleMonitoredService implements MonitoredService {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.MonitoredService#getNodeId()
      */
+    @Override
     public int getNodeId() {
         return nodeId;
     }
@@ -113,20 +104,15 @@ public class SimpleMonitoredService implements MonitoredService {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.MonitoredService#getNodeLabel()
      */
+    @Override
     public String getNodeLabel() {
         return nodeLabel;
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.poller.MonitoredService#getNetInterface()
-     */
-    public NetworkInterface<InetAddress> getNetInterface() {
-        return new InetNetworkInterface(getAddress());
-    }
-
-    /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.MonitoredService#getAddress()
      */
+    @Override
     public InetAddress getAddress() {
         return ipAddress;
     }

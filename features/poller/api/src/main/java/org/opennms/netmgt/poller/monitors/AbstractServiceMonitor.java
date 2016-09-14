@@ -28,12 +28,11 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
+import java.util.function.Supplier;
 
-import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.PollerConfigLoader;
-import org.opennms.netmgt.poller.PollerRequest;
+import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
 
 /**
@@ -51,19 +50,8 @@ import org.opennms.netmgt.poller.ServiceMonitor;
 public abstract class AbstractServiceMonitor implements ServiceMonitor {
 
     @Override
-    public PollStatus poll(PollerRequest request) {
-        final Map<String, Object> parameters = new HashMap<>(request.getMonitorParameters());
-        final SimpleMonitoredService svc = new SimpleMonitoredService(request);
-        if (request.getRuntimeAttributes() != null) {
-            // By default, we append the runtime attributes to the monitor parameters
-            parameters.putAll(request.getRuntimeAttributes());
-        }
-        return poll(svc, parameters);
-    }
-
-    @Override
-    public PollerConfigLoader getConfigLoader() {
-        return null;
+    public Map<String, Object> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
+        return Collections.emptyMap();
     }
 
     @Override
@@ -78,6 +66,16 @@ public abstract class AbstractServiceMonitor implements ServiceMonitor {
         if (value == null) return defaultValue;
 
         return value;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T getKeyedInstance(final Map<String, Object> parameterMap, final String key, final Supplier<T> defaultValue) {
+        if (key == null) return defaultValue.get();
+
+        final Object value = parameterMap.get(key);
+        if (value == null) return defaultValue.get();
+
+        return (T)value;
     }
 
     public static Boolean getKeyedBoolean(final Map<String, Object> parameterMap, final String key, final Boolean defaultValue) {

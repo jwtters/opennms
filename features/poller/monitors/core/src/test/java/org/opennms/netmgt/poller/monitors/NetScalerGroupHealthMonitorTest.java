@@ -82,7 +82,7 @@ public class NetScalerGroupHealthMonitorTest implements InitializingBean {
         MockLogAppender.setupLogging();
         monitor = new NetScalerGroupHealthMonitor();
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
-        monitor.setAgentConfig(m_snmpPeerFactory.getAgentConfig(InetAddressUtils.getInetAddress(TEST_IP_ADDRESS)));
+        // JW: TODO: monitor.setAgentConfig(m_snmpPeerFactory.getAgentConfig(InetAddressUtils.getInetAddress(TEST_IP_ADDRESS)));
     }
 
     @After

@@ -86,8 +86,7 @@ final public class LogMatchTableMonitor extends SnmpMonitorStrategy {
         ArrayList<String> errorStringReturn = new ArrayList<String>();
 
         // Retrieve this interface's SNMP peer object
-        SnmpAgentConfig agentConfig = getAgentConfig();
-        if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
+        final SnmpAgentConfig agentConfig = getAgentConfig(parameters);
         final String hostAddress = InetAddressUtils.str(ipaddr);
         LOG.debug("poll: setting SNMP peer attribute for interface {}", hostAddress);
 

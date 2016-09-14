@@ -92,9 +92,7 @@ public interface ServiceMonitor {
      */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters);
 
-    public PollStatus poll(PollerRequest request);
-
-    public PollerConfigLoader getConfigLoader();
+    public Map<String, Object> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters);
 
     /**
      * Allows the monitor to override the location at which it should be run.

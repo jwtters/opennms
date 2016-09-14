@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.poller;
 
-import java.net.InetAddress;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -36,23 +35,15 @@ public interface PollerRequestBuilder {
 
     PollerRequestBuilder withService(MonitoredService service);
 
-    PollerRequestBuilder withNodeId(Integer nodeId);
-
-    PollerRequestBuilder withLocation(String location);
-
     PollerRequestBuilder withMonitor(ServiceMonitor serviceMonitor);
 
     PollerRequestBuilder withMonitorClassName(String className);
-
-    PollerRequestBuilder withAddress(InetAddress address);
 
     PollerRequestBuilder withAttribute(String key, Object value);
 
     PollerRequestBuilder withAttributes(Map<String, Object> attributes);
 
     PollerRequestBuilder withAdaptor(ServiceMonitorAdaptor adaptor);
-
-    PollerRequestBuilder withServiceName(String serviceName);
 
     CompletableFuture<PollerResponse> execute();
 

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.poller.client.rpc;
 
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Supplier;
@@ -62,15 +63,16 @@ public class PollerClientRpcModule extends AbstractXmlRpcModule<PollerRequestDTO
     @Override
     public CompletableFuture<PollerResponseDTO> execute(PollerRequestDTO request) {
         final String className = request.getClassName();
-        final ServiceMonitor poller = serviceMonitorRegistry.getMonitorByClassName(className);
-        if (poller == null) {
-            throw new IllegalArgumentException("No poller found with class name '" + className + "'.");
+        final ServiceMonitor monitor = serviceMonitorRegistry.getMonitorByClassName(className);
+        if (monitor == null) {
+            throw new IllegalArgumentException("No monitor found with class name '" + className + "'.");
         }
 
         return CompletableFuture.supplyAsync(new Supplier<PollerResponseDTO>() {
             @Override
             public PollerResponseDTO get() {
-                final PollStatus pollStatus = poller.poll(request);
+                final Map<String, Object> parameters = request.getMonitorParameters();
+                final PollStatus pollStatus = monitor.poll(request, parameters);
                 return new PollerResponseDTO(pollStatus);
             }
         }, executor);

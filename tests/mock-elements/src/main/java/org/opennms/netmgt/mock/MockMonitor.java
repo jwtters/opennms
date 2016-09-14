@@ -34,7 +34,6 @@ import java.util.Map;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.PollerConfigLoader;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
 import org.opennms.netmgt.snmp.InetAddrUtils;
@@ -101,17 +100,12 @@ public class MockMonitor extends AbstractServiceMonitor {
     }
 
     @Override
-    public PollerConfigLoader getConfigLoader() {
-        return new PollerConfigLoader() {
-            @Override
-            public Map<String, String> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
-                final Map<String, String> attributes = new HashMap<>();
-                final PollStatus pollStatus = doPoll(svc.getNodeId(), InetAddrUtils.str(svc.getAddress()), m_svcName);
-                attributes.put("status", Integer.toString(pollStatus.getStatusCode()));
-                attributes.put("reason", pollStatus.getReason());
-                return attributes;
-            }
-        };
+    public Map<String, Object> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
+        final Map<String, Object> attributes = new HashMap<>();
+        final PollStatus pollStatus = doPoll(svc.getNodeId(), InetAddrUtils.str(svc.getAddress()), m_svcName);
+        attributes.put("status", Integer.toString(pollStatus.getStatusCode()));
+        attributes.put("reason", pollStatus.getReason());
+        return attributes;
     }
 
 }

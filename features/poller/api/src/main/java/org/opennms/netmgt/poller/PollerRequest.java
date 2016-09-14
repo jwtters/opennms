@@ -28,34 +28,16 @@
 
 package org.opennms.netmgt.poller;
 
-import java.net.InetAddress;
 import java.util.Map;
 
 /**
  * Encapsulates all of the parameters and state required to a poll.
  */
-public interface PollerRequest {
-
-    /**
-     * @return the name of the service monitored.
-     */
-    String getServiceName();
-
-    /**
-     * @return the address of the host against with the {@link org.opennms.netmgt.poller.ServiceMonitor}
-     * should be invoked.
-     */
-    InetAddress getAddress();
+public interface PollerRequest extends MonitoredService  {
 
     /**
      * @return a map of configuration parameters for the {@link org.opennms.netmgt.poller.ServiceMonitor}.
      */
     Map<String, Object> getMonitorParameters();
-
-    /**
-     * @return additional attributes stored outside of the {@link {@link org.opennms.netmgt.poller.ServiceMonitor}'s
-     * configuration that may be required when invoking the monitor.
-     */
-    Map<String, String> getRuntimeAttributes();
 
 }

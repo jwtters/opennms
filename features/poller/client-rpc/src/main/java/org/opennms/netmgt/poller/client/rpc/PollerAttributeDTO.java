@@ -39,7 +39,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.opennms.core.xml.JaxbClassObjectAdapter;
 
-@XmlRootElement(name = "poller-attribute")
+@XmlRootElement(name = "attribute")
 @XmlAccessorType(XmlAccessType.NONE)
 public class PollerAttributeDTO {
 
@@ -112,5 +112,10 @@ public class PollerAttributeDTO {
         return Objects.equals(this.key, other.key)
                 && Objects.equals(this.value, other.value)
                 && Objects.equals(this.contents, other.contents);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("PollerAttributeDTO[key='%s', value='%s', contents='%s']", key, value, contents);
     }
 }

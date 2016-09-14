@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.poller.client.rpc;
 
-import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,26 +36,16 @@ import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.PollerConfigLoader;
 import org.opennms.netmgt.poller.PollerRequestBuilder;
 import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
-import org.opennms.netmgt.poller.monitors.SimpleMonitoredService;
 
 public class PollerRequestBuilderImpl implements PollerRequestBuilder {
 
     private MonitoredService service;
 
-    private Integer nodeId;
-
-    private String location;
-
-    private String serviceName;
-
     private ServiceMonitor serviceMonitor;
-
-    private InetAddress address;
 
     private LocationAwarePollerClientImpl client;
 
@@ -71,24 +60,6 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
     @Override
     public PollerRequestBuilder withService(MonitoredService service) {
         this.service = service;
-        if (service != null) {
-            this.nodeId = service.getNodeId();
-            this.location = service.getNodeLocation();
-            this.address = service.getAddress();
-            this.serviceName = service.getSvcName();
-        }
-        return this;
-    }
-
-    @Override
-    public PollerRequestBuilder withNodeId(Integer nodeId) {
-        this.nodeId = nodeId;
-        return this;
-    }
-
-    @Override
-    public PollerRequestBuilder withLocation(String location) {
-        this.location = location;
         return this;
     }
 
@@ -101,12 +72,6 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
     @Override
     public PollerRequestBuilder withMonitorClassName(String className) {
         this.serviceMonitor = client.getRegistry().getMonitorByClassName(className);
-        return this;
-    }
-
-    @Override
-    public PollerRequestBuilder withAddress(InetAddress address) {
-        this.address = address;
         return this;
     }
 
@@ -129,36 +94,31 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
     }
 
     @Override
-    public PollerRequestBuilder withServiceName(String serviceName) {
-        this.serviceName = serviceName;
-        return this;
-    }
-
-    @Override
     public CompletableFuture<PollerResponse> execute() {
-        if (address == null) {
-            throw new IllegalArgumentException("Address is required.");
-        } else if (serviceMonitor == null) {
+        if (serviceMonitor == null) {
             throw new IllegalArgumentException("Monitor or monitor class name is required.");
+        } else if (service == null) {
+            throw new IllegalArgumentException("Monitored service is required.");
         }
 
-        final PollerRequestDTO dto = new PollerRequestDTO();
-        dto.setAddress(address);
-        dto.setClassName(serviceMonitor.getClass().getCanonicalName());
-        dto.setLocation(serviceMonitor.getEffectiveLocation(location));
-        dto.addPollerAttributes(attributes);
-        dto.setServiceName(serviceName);
+        final PollerRequestDTO request = new PollerRequestDTO();
+        request.setLocation(serviceMonitor.getEffectiveLocation(service.getNodeLocation()));
+        request.setClassName(serviceMonitor.getClass().getCanonicalName());
+        request.setServiceName(service.getSvcName());
+        request.setAddress(service.getAddress());
+        request.setNodeId(service.getNodeId());
+        request.setNodeLabel(service.getNodeLabel());
+        request.setNodeLocation(service.getNodeLocation());
+        request.addAttributes(attributes);
 
-        final PollerConfigLoader configLoader = serviceMonitor.getConfigLoader();
-        if (configLoader != null) {
-            if (service == null) {
-                service = new SimpleMonitoredService(address, nodeId, null, serviceName);
-            }
-            dto.addRuntimeAttributes(configLoader.getRuntimeAttributes(service, attributes));
-        }
+        // Retrieve the runtime attributes, which may include attributes
+        // such as the agent details and other state related attributes
+        // which should be included in the request
+        final Map<String, Object> parameters = request.getMonitorParameters();
+        request.addAttributes(serviceMonitor.getRuntimeAttributes(request, parameters));
 
         // Execute the request
-        return client.getDelegate().execute(dto).thenApply(results -> {
+        return client.getDelegate().execute(request).thenApply(results -> {
             PollStatus pollStatus = results.getPollStatus();
             for (ServiceMonitorAdaptor adaptor : adaptors) {
                 pollStatus = adaptor.handlePollResult(service, attributes, pollStatus);

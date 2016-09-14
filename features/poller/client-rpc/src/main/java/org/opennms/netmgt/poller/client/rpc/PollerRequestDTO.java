@@ -44,40 +44,12 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.core.rpc.api.RpcRequest;
-/*******************************************************************************
- * This file is part of OpenNMS(R).
- *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
- *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.poller.PollerRequest;
-
 
 @XmlRootElement(name = "poller-request")
 @XmlAccessorType(XmlAccessType.NONE)
-public class PollerRequestDTO implements RpcRequest, PollerRequest {
+public class PollerRequestDTO implements RpcRequest, PollerRequest{
 
     @XmlAttribute(name = "location")
     private String location;
@@ -92,11 +64,17 @@ public class PollerRequestDTO implements RpcRequest, PollerRequest {
     @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
     private InetAddress address;
 
-    @XmlElement(name = "poller-attribute")
-    private List<PollerAttributeDTO> pollerAttributes = new ArrayList<>();
+    @XmlAttribute(name = "node-id")
+    private Integer nodeId;
 
-    @XmlElement(name = "runtime-attribute")
-    private List<PollerAttributeDTO> runtimeAttributes = new ArrayList<>();
+    @XmlAttribute(name = "node-label")
+    private String nodeLabel;
+
+    @XmlAttribute(name = "node-location")
+    private String nodeLocation;
+
+    @XmlElement(name = "attribute")
+    private List<PollerAttributeDTO> attributes = new ArrayList<>();
 
     public String getLocation() {
         return location;
@@ -118,6 +96,11 @@ public class PollerRequestDTO implements RpcRequest, PollerRequest {
         return serviceName;
     }
 
+    @Override
+    public String getSvcName() {
+        return serviceName;
+    }
+
     public void setServiceName(String serviceName) {
         this.serviceName = serviceName;
     }
@@ -131,31 +114,58 @@ public class PollerRequestDTO implements RpcRequest, PollerRequest {
         this.address = address;
     }
 
-    public List<PollerAttributeDTO> getPollerAttributes() {
-        return pollerAttributes;
+    @Override
+    public String getIpAddr() {
+        return InetAddressUtils.str(address);
     }
 
-    public void setPollerAttributes(List<PollerAttributeDTO> pollerAttributes) {
-        this.pollerAttributes = pollerAttributes;
+    @Override
+    public int getNodeId() {
+        return nodeId == null ? 0 : nodeId;
     }
 
-    public void addPollerAttribute(String key, String value) {
-        pollerAttributes.add(new PollerAttributeDTO(key, value));
+    public void setNodeId(int nodeId) {
+        this.nodeId = nodeId;
     }
 
-    public void addPollerAttribute(String key, Object value) {
-        pollerAttributes.add(new PollerAttributeDTO(key, value));
+    @Override
+    public String getNodeLabel() {
+        return nodeLabel;
     }
 
-    public void addPollerAttributes(Map<String, Object> attributes) {
-        attributes.entrySet().stream().forEach(e -> this.addPollerAttribute(e.getKey(), e.getValue()));
+    public void setNodeLabel(String nodeLabel) {
+        this.nodeLabel = nodeLabel;
+    }
+
+    @Override
+    public String getNodeLocation() {
+        return nodeLocation;
+    }
+
+    public void setNodeLocation(String nodeLocation) {
+        this.nodeLocation = nodeLocation;
+    }
+
+    public List<PollerAttributeDTO> getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(List<PollerAttributeDTO> attributes) {
+        this.attributes = attributes;
+    }
+
+    public void addAttribute(String key, Object value) {
+        attributes.add(new PollerAttributeDTO(key, value));
+    }
+
+    public void addAttributes(Map<String, Object> attributes) {
+        attributes.entrySet().stream().forEach(e -> addAttribute(e.getKey(), e.getValue()));
     }
 
     @Override
     public Map<String, Object> getMonitorParameters() {
-
         Map<String, Object> pollerAttributeMap = new HashMap<>();
-        for (PollerAttributeDTO attribute : pollerAttributes) {
+        for (PollerAttributeDTO attribute : attributes) {
             if (attribute.getContents() != null) {
                 pollerAttributeMap.put(attribute.getKey(), attribute.getContents());
             } else {
@@ -165,53 +175,26 @@ public class PollerRequestDTO implements RpcRequest, PollerRequest {
         return pollerAttributeMap;
     }
 
-    public void setRuntimeAttributes(List<PollerAttributeDTO> attributes) {
-        this.runtimeAttributes = attributes;
-    }
-
-    public void addRuntimeAttribute(String key, String value) {
-        runtimeAttributes.add(new PollerAttributeDTO(key, value));
-    }
-
-    public void addRuntimeAttributes(Map<String, String> attributes) {
-        attributes.entrySet().stream().forEach(e -> this.addRuntimeAttribute(e.getKey(), e.getValue()));
-    }
-    
-    @Override
-    public Map<String, String> getRuntimeAttributes() {
-        Map<String, String> runtimeAttributeMap = new HashMap<String, String>();
-        for (PollerAttributeDTO agentAttribute : runtimeAttributes) {
-            runtimeAttributeMap.put(agentAttribute.getKey(), agentAttribute.getValue());
-        }
-        return runtimeAttributeMap;
-    }
-
     @Override
     public Long getTimeToLiveMs() {
         return null;
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(address, className, location, pollerAttributes,
-                runtimeAttributes, serviceName);
+    public boolean equals(final Object other) {
+        if (!(other instanceof PollerRequestDTO)) {
+            return false;
+        }
+        PollerRequestDTO castOther = (PollerRequestDTO) other;
+        return Objects.equals(location, castOther.location) && Objects.equals(className, castOther.className)
+                && Objects.equals(serviceName, castOther.serviceName) && Objects.equals(address, castOther.address)
+                && Objects.equals(nodeId, castOther.nodeId) && Objects.equals(nodeLabel, castOther.nodeLabel)
+                && Objects.equals(attributes, castOther.attributes);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        PollerRequestDTO other = (PollerRequestDTO) obj;
-        return Objects.equals(this.address, other.address)
-                && Objects.equals(this.className, other.className)
-                && Objects.equals(this.location, other.location)
-                && Objects.equals(this.pollerAttributes, other.pollerAttributes)
-                && Objects.equals(this.runtimeAttributes, other.runtimeAttributes)
-                && Objects.equals(this.serviceName, other.serviceName);
+    public int hashCode() {
+        return Objects.hash(location, className, serviceName, address, nodeId, nodeLabel, attributes);
     }
 
 }

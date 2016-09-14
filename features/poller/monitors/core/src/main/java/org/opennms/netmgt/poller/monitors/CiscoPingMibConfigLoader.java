@@ -1,22 +1,24 @@
 package org.opennms.netmgt.poller.monitors;
 
+import static org.opennms.netmgt.poller.monitors.CiscoPingMibMonitor.PARM_PROXY_FOREIGN_ID;
+import static org.opennms.netmgt.poller.monitors.CiscoPingMibMonitor.PARM_PROXY_FOREIGN_SOURCE;
+import static org.opennms.netmgt.poller.monitors.CiscoPingMibMonitor.PARM_PROXY_IP_ADDR;
+import static org.opennms.netmgt.poller.monitors.CiscoPingMibMonitor.PARM_PROXY_NODE_ID;
+
 import java.net.InetAddress;
 import java.util.Map;
 import java.util.Properties;
 
-import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.opennms.netmgt.poller.monitors.CiscoPingMibMonitor.*;
 
-public class CiscoPingMibConfigLoader extends SnmpConfigLoader {
+public class CiscoPingMibConfigLoader  {
 
     private static final Logger LOG = LoggerFactory.getLogger(CiscoPingMibConfigLoader.class);
 
@@ -93,9 +95,9 @@ public class CiscoPingMibConfigLoader extends SnmpConfigLoader {
         return null;
     }
 
-    @Override
     public Map<String, String> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
-
+        return null;
+        /*
         Map<String, String> runtimeAttributes = super.getRuntimeAttributes(svc, parameters);
         if (nodeDao == null) {
             nodeDao = BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class);
@@ -107,6 +109,7 @@ public class CiscoPingMibConfigLoader extends SnmpConfigLoader {
         InetAddress proxyIpAddr = determineProxyAddress(parameters, svc);
         runtimeAttributes.put(PROXY_IP_ADDR, InetAddrUtils.str(proxyIpAddr));
         return runtimeAttributes;
+        */
     }
 
     private Properties getServiceProperties(MonitoredService svc) {

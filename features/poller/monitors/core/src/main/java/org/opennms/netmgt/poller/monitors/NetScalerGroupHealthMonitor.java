@@ -64,9 +64,7 @@ public class NetScalerGroupHealthMonitor extends SnmpMonitorStrategy {
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         InetAddress ipaddr = svc.getAddress();
 
-        SnmpAgentConfig agentConfig = getAgentConfig();
-        if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
-
+        final SnmpAgentConfig agentConfig = getAgentConfig(parameters);
         final String hostAddress = InetAddressUtils.str(ipaddr);
 
         PollStatus status = PollStatus.unavailable("NetScalerGroupHealthMonitor: cannot determinate group health, addr=" + hostAddress);

@@ -43,9 +43,6 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.PollerConfigLoader;
-import org.opennms.netmgt.poller.PollerRequest;
-import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -53,7 +50,6 @@ import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpValueFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 /**
  * <P>
@@ -412,11 +408,10 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
             LOG.debug("Unable to determine proxy address for this service");
             return PollStatus.unavailable("Unable to determine proxy address for this service");
         }
-        
+
         // Retrieve the *proxy* interface's SNMP peer object
         //
-        SnmpAgentConfig agentConfig = getAgentConfig();
-        if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for proxy-ping interface " + proxyIpAddr);
+        final SnmpAgentConfig agentConfig = getAgentConfig(parameters);
         LOG.debug("poll: setting SNMP peer attribute for interface {}", proxyIpAddr.getHostAddress());
 
         // set timeout and retries on SNMP peer object
@@ -508,6 +503,8 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
         return serviceStatus;
     }
     
+    /*
+     * JW: TODO: Review
     @Override
     public PollStatus poll(PollerRequest request) {
 
@@ -528,10 +525,12 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
         }
         return poll(svc, parameters);
     };
-
+    */
+    
     @Override
-    public PollerConfigLoader getConfigLoader() {
-        return new CiscoPingMibConfigLoader();
+    public Map<String, Object> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
+        // TODO:
+        return null;
     }
 
 	private void cleanupCurrentEntry(CiscoPingEntry pingEntry, InetAddress proxyIpAddr, SnmpAgentConfig agentConfig) {

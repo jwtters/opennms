@@ -44,6 +44,7 @@ import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerResponse;
+import org.opennms.netmgt.poller.monitors.SimpleMonitoredService;
 
 @Command(scope = "poller", name = "poll", description = "Used to invoke a monitor against a host at a specified location")
 public class Poll extends OsgiCommandSupport {
@@ -64,9 +65,11 @@ public class Poll extends OsgiCommandSupport {
 
     @Override
     protected Object doExecute() throws Exception {
-        final CompletableFuture<PollerResponse> future = locationAwarePollerClient.poll().withLocation(location)
-                .withMonitorClassName(className).withAddress(InetAddress.getByName(host))
-                .withAttributes(parse(attributes)).execute();
+        final CompletableFuture<PollerResponse> future = locationAwarePollerClient.poll()
+                .withService(new SimpleMonitoredService(InetAddress.getByName(host), "SVC"))
+                .withMonitorClassName(className)
+                .withAttributes(parse(attributes))
+                .execute();
 
         while (true) {
             try {
