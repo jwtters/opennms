@@ -36,6 +36,7 @@ import org.apache.commons.jexl2.JexlContext;
 import org.apache.commons.jexl2.JexlEngine;
 import org.apache.commons.jexl2.MapContext;
 import org.apache.commons.jexl2.ReadonlyContext;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.dao.jmx.JmxConfigDao;
@@ -53,11 +54,11 @@ import org.opennms.netmgt.poller.PollerConfigLoader;
 import org.opennms.netmgt.poller.jmx.wrappers.ObjectNameWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.google.common.collect.Maps;
 
-@Distributable
 /**
  * This class computes the response time of making a connection to the remote
  * server. If the connection is successful the reponse time RRD is updated.
@@ -65,6 +66,7 @@ import com.google.common.collect.Maps;
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
+@Distributable
 public abstract class JMXMonitor extends AbstractServiceMonitor {
 
     private static final Logger LOG = LoggerFactory.getLogger(JMXMonitor.class);
@@ -99,14 +101,13 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
         }
     }
 
-    @Autowired(required=false)
-    private JmxConfigDao m_jmxConfigDao;
+    private final Supplier<JmxConfigDao> jmxConfigDao = Suppliers.memoize(() -> BeanUtils.getBean("daoContext", "jmxConfigDao", JmxConfigDao.class));
 
     protected abstract JmxConnectors getConnectionName();
 
     @Override
     public PollerConfigLoader getConfigLoader() {
-        return new JmxConfigLoader(m_jmxConfigDao);
+        return new JmxConfigLoader(jmxConfigDao.get());
     };
 
     /**

@@ -36,11 +36,6 @@
       <artifactId>org.opennms.features.poller.api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.poller</groupId>
-      <artifactId>org.opennms.features.poller.registry</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.api</artifactId>
     </dependency>

@@ -45,7 +45,6 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 /**
  * <p>
@@ -59,7 +58,6 @@ import org.springframework.stereotype.Component;
  * @version $Id: $
  */
 @Distributable(DistributionContext.DAEMON)
-@Component
 final public class BgpSessionMonitor extends SnmpMonitorStrategy {
     
     public static final Logger LOG = LoggerFactory.getLogger(BgpSessionMonitor.class);

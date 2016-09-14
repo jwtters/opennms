@@ -13,7 +13,6 @@
   <modules>
     <module>api</module>
     <module>client-rpc</module>
-    <module>registry</module>
     <module>monitors</module>
     <module>remote</module>
     <module>runtime</module>

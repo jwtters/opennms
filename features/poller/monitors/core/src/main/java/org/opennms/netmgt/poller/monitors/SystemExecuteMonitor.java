@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.poller.monitors;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Map;
+
 import org.opennms.core.utils.ExecRunner;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
@@ -37,14 +41,8 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Map;
 
 @Distributable(DistributionContext.ALL)
-@Component
 final public class SystemExecuteMonitor extends AbstractServiceMonitor {
     private static final Logger LOGGER = LoggerFactory.getLogger(SystemExecuteMonitor.class);
 

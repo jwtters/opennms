@@ -37,7 +37,7 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+
 /**
  * This class uses the Java 5 isReachable method to determine up/down and is
  * currently considered "experimental".  Please give it a try and let us
@@ -47,7 +47,6 @@ import org.springframework.stereotype.Component;
  * @version $Id: $
  */
 @Distributable
-@Component
 public class AvailabilityMonitor extends AbstractServiceMonitor {
     
     

@@ -73,7 +73,7 @@ public class Poll extends OsgiCommandSupport {
                 try {
                     PollerResponse pollerResponse = future.get(1, TimeUnit.SECONDS);
                     if (pollerResponse.getPollStatus().getStatusCode() == PollStatus.SERVICE_AVAILABLE) {
-                        System.out.printf("\n%s was successful on %s:\n", className, host);
+                        System.out.printf("\nService available on %s using %s:\n", host, className);
                         final Map<String, Number> properties = pollerResponse.getPollStatus().getProperties();
                         if (properties.size() > 0) {
                             properties.entrySet().stream().forEach(e -> {
@@ -84,7 +84,7 @@ public class Poll extends OsgiCommandSupport {
                         }
 
                     } else {
-                        System.out.printf("\n%s failed on %s\n", className, host);
+                        System.out.printf("\nService unavailable on %s using %s\n", host, className);
                     }
                 } catch (InterruptedException e) {
                     System.out.println("\nInterrupted.");

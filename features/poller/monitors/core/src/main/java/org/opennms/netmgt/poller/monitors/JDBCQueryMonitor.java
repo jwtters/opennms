@@ -28,18 +28,17 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import java.sql.Statement;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.ResultSet;
-import java.util.Map;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.PollStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 
 
@@ -49,7 +48,6 @@ import org.springframework.stereotype.Component;
  * @author ranger
  * @version $Id: $
  */
-@Component
 public final class JDBCQueryMonitor extends JDBCMonitor {
     
     

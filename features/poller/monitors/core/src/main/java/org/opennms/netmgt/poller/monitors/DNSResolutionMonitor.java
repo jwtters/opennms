@@ -38,8 +38,14 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-import org.xbill.DNS.*;
+import org.xbill.DNS.ExtendedResolver;
+import org.xbill.DNS.Lookup;
+import org.xbill.DNS.Name;
+import org.xbill.DNS.Record;
+import org.xbill.DNS.Resolver;
+import org.xbill.DNS.SimpleResolver;
+import org.xbill.DNS.TextParseException;
+import org.xbill.DNS.Type;
 
 /**
  * DNSResolutionMonitor
@@ -47,7 +53,6 @@ import org.xbill.DNS.*;
  * @author brozow, fooker
  */
 @Distributable
-@Component
 public class DNSResolutionMonitor extends AbstractServiceMonitor {
     public static final Logger LOG = LoggerFactory.getLogger(DNSResolutionMonitor.class);
 

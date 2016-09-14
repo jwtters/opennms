@@ -44,9 +44,6 @@ import javax.mail.search.HeaderTerm;
 import javax.mail.search.SearchTerm;
 import javax.mail.search.SubjectTerm;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.javamail.JavaMailer;
 import org.opennms.javamail.JavaMailerException;
@@ -56,6 +53,8 @@ import org.opennms.netmgt.config.mailtransporttest.SendmailTest;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 //TODO: adjust to use new javamail-configuration.xml
 
@@ -74,7 +73,6 @@ import org.opennms.netmgt.poller.PollStatus;
  * @version $Id: $
  */
 @Distributable
-@Component
 public class MailTransportMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(MailTransportMonitor.class);
 

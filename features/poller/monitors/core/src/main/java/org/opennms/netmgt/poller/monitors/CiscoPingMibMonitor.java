@@ -72,7 +72,6 @@ import org.springframework.stereotype.Component;
 // This monitor uses SNMP and therefore relies on the SNMP peer factory,
 // so it is not distributable
 @Distributable(DistributionContext.DAEMON)
-@Component
 public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
     private static final Logger LOG = LoggerFactory.getLogger(CiscoPingMibMonitor.class);
 	

@@ -65,10 +65,12 @@ import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.ServiceSelector;
+import org.opennms.netmgt.poller.DefaultServiceMonitorRegistry;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
+import org.opennms.netmgt.poller.ServiceMonitorRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,7 +85,9 @@ abstract public class PollerConfigManager implements PollerConfig {
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
-    
+
+    private static final ServiceMonitorRegistry s_serviceMonitorRegistry = new DefaultServiceMonitorRegistry();
+
     /**
      * <p>Constructor for PollerConfigManager.</p>
      *
@@ -963,7 +967,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         
         for (final ServiceMonitorLocator locator : locators) {
             try {
-                m_svcMonitors.put(locator.getServiceName(), locator.getServiceMonitor());
+                m_svcMonitors.put(locator.getServiceName(), locator.getServiceMonitor(s_serviceMonitorRegistry));
             } catch (Throwable t) {
                 LOG.warn("start: Failed to create monitor {} for service {}", locator.getServiceLocatorKey(), locator.getServiceName(), t);
             }
@@ -1048,6 +1052,11 @@ abstract public class PollerConfigManager implements PollerConfig {
             throw new MarshallingResourceFailureException("The monitor for service: "+monitor.getService()+" class-name: "+monitor.getClassName()+" must implement ServiceMonitor");
         }
         return mc;
+    }
+
+    @Override
+    public ServiceMonitorRegistry getServiceMonitorRegistry() {
+        return s_serviceMonitorRegistry;
     }
 
     /**

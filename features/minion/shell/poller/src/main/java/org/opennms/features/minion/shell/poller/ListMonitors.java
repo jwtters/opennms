@@ -32,7 +32,7 @@ import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.opennms.netmgt.poller.registry.api.ServiceMonitorRegistry;
+import org.opennms.netmgt.poller.ServiceMonitorRegistry;
 
 @Command(scope = "poller", name = "list-monitors", description = "Lists all of the available monitors.")
 @Service

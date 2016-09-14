@@ -49,7 +49,6 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 /**
  * This class is designed to be used by the service poller framework to test the
@@ -60,10 +59,8 @@ import org.springframework.stereotype.Component;
  * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
  */
 @Distributable
-@Component
 final public class MemcachedMonitor extends AbstractServiceMonitor {
-    
-    
+
     public static final Logger LOG = LoggerFactory.getLogger(MemcachedMonitor.class);
 
     /**

@@ -52,7 +52,6 @@ import org.opennms.netmgt.poller.monitors.nrpe.NrpeException;
 import org.opennms.netmgt.poller.monitors.nrpe.NrpePacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 /**
  * This class is designed to be used by the service poller framework to test the
@@ -65,7 +64,6 @@ import org.springframework.stereotype.Component;
  * @author <A HREF="mike@opennms.org">Mike </A>
  */
 @Distributable
-@Component
 final public class NrpeMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(NrpeMonitor.class);
 

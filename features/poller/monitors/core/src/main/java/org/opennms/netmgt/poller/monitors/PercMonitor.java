@@ -45,7 +45,6 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 /**
  * <P>
@@ -62,7 +61,6 @@ import org.springframework.stereotype.Component;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 @Distributable(DistributionContext.DAEMON)
-@Component
 final public class PercMonitor extends SnmpMonitorStrategy {
     
     

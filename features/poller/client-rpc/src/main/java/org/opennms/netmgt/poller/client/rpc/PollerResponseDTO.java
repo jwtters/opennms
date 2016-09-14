@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.poller.client.rpc;
 
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -37,8 +39,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.opennms.core.rpc.api.RpcResponse;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerResponse;
-
-import com.google.common.base.Objects;
 
 @XmlRootElement(name = "poller-response")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -81,7 +81,7 @@ public class PollerResponseDTO implements RpcResponse, PollerResponse {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(failureMesage, pollStatus);
+        return Objects.hash(failureMesage, pollStatus);
     }
 
     @Override
@@ -93,8 +93,8 @@ public class PollerResponseDTO implements RpcResponse, PollerResponse {
         if (getClass() != obj.getClass())
             return false;
         PollerResponseDTO other = (PollerResponseDTO) obj;
-        return Objects.equal(this.failureMesage, other.failureMesage)
-                && Objects.equal(this.pollStatus, other.pollStatus);
+        return Objects.equals(this.failureMesage, other.failureMesage)
+                && Objects.equals(this.pollStatus, other.pollStatus);
     }
 
 }

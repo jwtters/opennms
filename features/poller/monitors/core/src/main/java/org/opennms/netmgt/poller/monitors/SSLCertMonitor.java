@@ -40,7 +40,9 @@ import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Map;
+
 import javax.net.ssl.SSLSocket;
+
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.SocketWrapper;
@@ -53,7 +55,6 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.PollStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 /**
  * This class is designed to be used by the service poller framework to test the
@@ -64,7 +65,6 @@ import org.springframework.stereotype.Component;
  * @author <a href="mailto:ronald.roskens@gmail.com">Ronald Roskens</a>
  */
 @Distributable
-@Component
 final public class SSLCertMonitor extends AbstractServiceMonitor {
     
     

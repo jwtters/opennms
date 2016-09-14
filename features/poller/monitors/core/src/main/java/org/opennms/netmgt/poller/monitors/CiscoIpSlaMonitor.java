@@ -45,7 +45,6 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 /**
  * <p>
@@ -60,9 +59,7 @@ import org.springframework.stereotype.Component;
  * @author <A HREF="mailto:r.trommer@open-factory.org">Ronny Trommer</A>
  * @version $Id: $
  */
-
 @Distributable(DistributionContext.DAEMON)
-@Component
 final public class CiscoIpSlaMonitor extends SnmpMonitorStrategy {
     
     public static final Logger LOG = LoggerFactory.getLogger(CiscoIpSlaMonitor.class);

@@ -32,9 +32,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.netmgt.poller.DefaultServiceMonitorRegistry;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
+import org.opennms.netmgt.poller.ServiceMonitorRegistry;
 import org.springframework.util.Assert;
 
 /**
@@ -44,6 +46,8 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class DefaultPollService implements PollService {
+
+    private static final ServiceMonitorRegistry s_serviceMonitorRegistry = new DefaultServiceMonitorRegistry();
 
     private TimeAdjustment m_timeAdjustment;
     private Map<String, ServiceMonitor> m_monitors = null;
@@ -61,7 +65,7 @@ public class DefaultPollService implements PollService {
 
         Map<String, ServiceMonitor> monitors = new HashMap<String, ServiceMonitor>();
         for (ServiceMonitorLocator locator : locators) {
-            monitors.put(locator.getServiceName(), locator.getServiceMonitor());
+            monitors.put(locator.getServiceName(), locator.getServiceMonitor(s_serviceMonitorRegistry));
         }
         
         m_monitors = monitors;

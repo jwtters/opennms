@@ -48,7 +48,6 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 
 
@@ -130,7 +129,6 @@ import org.springframework.stereotype.Component;
  * @author <A HREF="mailto:dschlenk@converge-one.com</A>
  * @author <A HREF="http://www.opennms.org">OpenNMS</A>
  */
-@Component
 public class BSFMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(BSFMonitor.class);
 

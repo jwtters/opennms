@@ -53,7 +53,6 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.PollStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 /**
  * <P>
@@ -67,7 +66,6 @@ import org.springframework.stereotype.Component;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 @Distributable
-@Component
 public final class SmtpMonitor extends AbstractServiceMonitor {
 
     public static final Logger LOG = LoggerFactory.getLogger(SmtpMonitor.class);

@@ -35,7 +35,6 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.monitors.support.LoopPlugin;
-import org.springframework.stereotype.Component;
 
 /**
  * <p>LoopMonitor class.</p>
@@ -43,9 +42,7 @@ import org.springframework.stereotype.Component;
  * @author david
  * @version $Id: $
  */
-
 @Distributable
-@Component
 public class LoopMonitor extends AbstractServiceMonitor {
 
     @Override

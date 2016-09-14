@@ -32,8 +32,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
 
-import jcifs.netbios.NbtAddress;
-
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.Distributable;
@@ -44,7 +42,8 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.PollStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+
+import jcifs.netbios.NbtAddress;
 
 /**
  * <P>
@@ -59,10 +58,8 @@ import org.springframework.stereotype.Component;
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="mailto:mike@opennms.org">Mike </A>
  */
-
 // I this thise needs a jcifs.properties file so we can't distribute it now
 @Distributable(DistributionContext.DAEMON)
-@Component
 final public class SmbMonitor extends AbstractServiceMonitor {
     
     public static final Logger LOG = LoggerFactory.getLogger(SmbMonitor.class);

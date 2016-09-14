@@ -55,20 +55,11 @@ import org.slf4j.LoggerFactory;
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
-
 @Distributable
 final public class IcmpMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(IcmpMonitor.class);
 
     private PingerFactory m_pingerFactory = null;
-
-    /**
-     * Constructs a new monitor.
-     *
-     * @throws java.io.IOException if any.
-     */
-    public IcmpMonitor() throws IOException {
-    }
 
     /**
      * {@inheritDoc}
@@ -126,5 +117,9 @@ final public class IcmpMonitor extends AbstractServiceMonitor {
             m_pingerFactory = BeanUtils.getBean("daemonContext", "pingerFactory", PingerFactory.class);
         }
         return m_pingerFactory;
+    }
+
+    public void setPingerFactory(PingerFactory pingerFactory) {
+        m_pingerFactory = pingerFactory;
     }
 }

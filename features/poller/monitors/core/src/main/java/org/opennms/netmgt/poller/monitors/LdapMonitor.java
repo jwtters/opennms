@@ -48,7 +48,6 @@ import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.PollStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPException;
@@ -66,10 +65,8 @@ import com.novell.ldap.LDAPSocketFactory;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 @Distributable
-@Component
 public class LdapMonitor extends AbstractServiceMonitor {
-    
-    
+
     public static final Logger LOG = LoggerFactory.getLogger(LdapMonitor.class);
 
     /**

@@ -26,47 +26,34 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller.registry.impl;
+package org.opennms.netmgt.poller;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.Set;
 
-import org.opennms.netmgt.poller.PollerConfigLoader;
 import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.netmgt.poller.registry.api.ServiceMonitorRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.collect.ImmutableMap;
+public class DefaultServiceMonitorRegistry implements ServiceMonitorRegistry {
 
-public class ServiceMonitorRegistryImpl implements ServiceMonitorRegistry, InitializingBean {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ServiceMonitorRegistryImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultServiceMonitorRegistry.class);
 
     private static final String TYPE = "type";
 
-    @Autowired(required = false)
-    private Set<ServiceMonitor> m_serviceMonitors;
+    private static final ServiceLoader<ServiceMonitor> s_serviceMonitorLoader = ServiceLoader.load(ServiceMonitor.class);
 
     private final Map<String, ServiceMonitor> m_monitorsByClassName = new HashMap<>();
 
-    private final Map<String, PollerConfigLoader> m_configLoaderByPollerClassName = new HashMap<>();
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        LOG.debug("afterPropertiesSet called , registering monitors");
-        if (m_serviceMonitors != null) {
-            for (ServiceMonitor serviceMonitor : m_serviceMonitors) {
-                onBind(serviceMonitor, ImmutableMap.of(TYPE, serviceMonitor.getClass().getCanonicalName()));
-                PollerConfigLoader configLoader = serviceMonitor.getConfigLoader();
-                m_configLoaderByPollerClassName.put(serviceMonitor.getClass().getCanonicalName(), configLoader);
-            }
+    public DefaultServiceMonitorRegistry() {
+        for (ServiceMonitor serviceMonitor : s_serviceMonitorLoader) {
+            Map<String, String> props = new HashMap<>(1);
+            props.put(TYPE, serviceMonitor.getClass().getCanonicalName());
+            onBind(serviceMonitor, props);
         }
-        LOG.debug("Registered ServiceMonitors classes are: {}", getMonitorClassNames());
     }
 
     @SuppressWarnings({ "rawtypes" })
@@ -74,7 +61,6 @@ public class ServiceMonitorRegistryImpl implements ServiceMonitorRegistry, Initi
         LOG.debug("bind called with {}: {}", serviceMonitor, properties);
         if (serviceMonitor != null) {
             final String className = getClassName(properties);
- 
             if (className == null) {
                 LOG.warn("Unable to determine the class name for monitor: {}, with properties: {}. The monitor will not be registered.",
                         serviceMonitor, properties);

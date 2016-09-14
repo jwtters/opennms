@@ -18,7 +18,6 @@
 		</service-properties>
 	</service>
 
-
 	<bean id="bgpSessionMonitor" class="org.opennms.netmgt.poller.monitors.BgpSessionMonitor" />
 	<service ref="bgpSessionMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
 		<service-properties>
@@ -26,7 +25,6 @@
 				value="org.opennms.netmgt.poller.monitors.BgpSessionMonitor" />
 		</service-properties>
 	</service>
-
 
 	<bean id="bsfMonitor" class="org.opennms.netmgt.poller.monitors.BSFMonitor" />
 	<service ref="bsfMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
@@ -135,11 +133,11 @@
 		</service-properties>
 	</service>
 
-	<!-- Pinger service -->
-	<reference id="pinger" interface="org.opennms.netmgt.icmp.Pinger" />
+	<!-- PingerFactory service -->
+	<reference id="pingerFactory" interface="org.opennms.netmgt.icmp.PingerFactory" />
 
 	<bean id="icmpMonitor" class="org.opennms.netmgt.poller.monitors.IcmpMonitor">
-		<property name="pinger" ref="pinger" />
+		<property name="pingerFactory" ref="pingerFactory" />
 	</bean>
 	<service ref="icmpMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
 		<service-properties>
@@ -381,7 +379,7 @@
 	</service>
 
 	<bean id="strafePingMonitor" class="org.opennms.netmgt.poller.monitors.StrafePingMonitor" >
-		<property name="pinger" ref="pinger" />
+		<property name="pingerFactory" ref="pingerFactory" />
 	</bean>
 	<service ref="strafePingMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
 		<service-properties>

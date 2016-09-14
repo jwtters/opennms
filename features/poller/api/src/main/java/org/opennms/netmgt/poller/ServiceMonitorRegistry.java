@@ -26,17 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller.monitors;
+package org.opennms.netmgt.poller;
 
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.BeanNameGenerator;
+import java.util.Set;
 
-public class MonitorsBeanNameGenerator implements BeanNameGenerator {
+import org.opennms.netmgt.poller.ServiceMonitor;
 
-    @Override
-    public String generateBeanName(BeanDefinition definition, BeanDefinitionRegistry registry) {
-        return definition.getBeanClassName();
-    }
+public interface ServiceMonitorRegistry {
+
+    ServiceMonitor getMonitorByClassName(String className);
+
+    Set<String> getMonitorClassNames();
 
 }

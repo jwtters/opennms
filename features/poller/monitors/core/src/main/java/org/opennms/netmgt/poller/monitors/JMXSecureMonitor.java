@@ -30,16 +30,14 @@ package org.opennms.netmgt.poller.monitors;
 
 import org.opennms.netmgt.jmx.connection.JmxConnectors;
 import org.opennms.netmgt.poller.Distributable;
-import org.springframework.stereotype.Component;
 
-@Distributable
 /**
  * <p>JMXSecureMonitor class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-@Component
+@Distributable
 public class JMXSecureMonitor extends JMXMonitor {
 
     @Override

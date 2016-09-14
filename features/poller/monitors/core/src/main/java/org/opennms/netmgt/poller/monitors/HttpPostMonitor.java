@@ -53,7 +53,6 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.PollStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 /**
  * This class is designed to be used by the service poller framework to test the
@@ -67,7 +66,6 @@ import org.springframework.stereotype.Component;
  */
 
 @Distributable(DistributionContext.DAEMON)
-@Component
 final public class HttpPostMonitor extends AbstractServiceMonitor {
 
     /**

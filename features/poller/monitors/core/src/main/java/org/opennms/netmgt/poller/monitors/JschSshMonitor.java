@@ -54,7 +54,6 @@ import org.opennms.netmgt.poller.PollStatus;
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  * @version $Id: $
  */
-
 @Distributable
 final public class JschSshMonitor extends AbstractServiceMonitor {
     private SshMonitor m_monitor;

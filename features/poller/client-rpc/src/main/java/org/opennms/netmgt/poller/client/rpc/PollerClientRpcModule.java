@@ -35,7 +35,7 @@ import java.util.function.Supplier;
 import org.opennms.core.rpc.xml.AbstractXmlRpcModule;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.netmgt.poller.registry.api.ServiceMonitorRegistry;
+import org.opennms.netmgt.poller.ServiceMonitorRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -44,7 +44,7 @@ public class PollerClientRpcModule extends AbstractXmlRpcModule<PollerRequestDTO
     public static final String RPC_MODULE_ID = "Poller";
 
     @Autowired
-    private ServiceMonitorRegistry servicePollerRegistry;
+    private ServiceMonitorRegistry serviceMonitorRegistry;
 
     @Autowired
     @Qualifier("pollerExecutor")
@@ -54,10 +54,6 @@ public class PollerClientRpcModule extends AbstractXmlRpcModule<PollerRequestDTO
         super(PollerRequestDTO.class, PollerResponseDTO.class);
     }
 
-    public void setServicePollerRegistry(ServiceMonitorRegistry servicePollerRegistry) {
-        this.servicePollerRegistry = servicePollerRegistry;
-    }
-
     @Override
     public String getId() {
         return RPC_MODULE_ID;
@@ -65,23 +61,23 @@ public class PollerClientRpcModule extends AbstractXmlRpcModule<PollerRequestDTO
 
     @Override
     public CompletableFuture<PollerResponseDTO> execute(PollerRequestDTO request) {
-        String className = request.getClassName();
-
-        ServiceMonitor poller = servicePollerRegistry.getMonitorByClassName(className);
+        final String className = request.getClassName();
+        final ServiceMonitor poller = serviceMonitorRegistry.getMonitorByClassName(className);
         if (poller == null) {
             throw new IllegalArgumentException("No poller found with class name '" + className + "'.");
         }
 
         return CompletableFuture.supplyAsync(new Supplier<PollerResponseDTO>() {
-
             @Override
             public PollerResponseDTO get() {
                 final PollStatus pollStatus = poller.poll(request);
                 return new PollerResponseDTO(pollStatus);
             }
-
         }, executor);
+    }
 
+    public void setServiceMonitorRegistry(ServiceMonitorRegistry serviceMonitorRegistry) {
+        this.serviceMonitorRegistry = serviceMonitorRegistry;
     }
 
     public void setExecutor(Executor executor) {

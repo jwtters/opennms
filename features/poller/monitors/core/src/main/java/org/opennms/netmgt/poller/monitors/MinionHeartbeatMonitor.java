@@ -28,24 +28,24 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import com.google.common.base.Suppliers;
+import java.util.Map;
+
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.dao.api.MinionDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.minion.OnmsMinion;
+import org.opennms.netmgt.poller.Distributable;
+import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.Map;
 import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 
+@Distributable(DistributionContext.DAEMON)
 public class MinionHeartbeatMonitor extends AbstractServiceMonitor {
-
-    private static final Logger LOG = LoggerFactory.getLogger(MinionHeartbeatMonitor.class);
 
     private final Supplier<NodeDao> nodeDao = Suppliers.memoize(() -> BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class));
     private final Supplier<MinionDao> minionDao = Suppliers.memoize(() -> BeanUtils.getBean("daoContext", "minionDao", MinionDao.class));
@@ -56,7 +56,7 @@ public class MinionHeartbeatMonitor extends AbstractServiceMonitor {
         final int period = 2 * ParameterMap.getKeyedInteger(parameters, "period", 30 * 1000);
 
         // Get the minion to test whereas the minion ID is the nodes foreign ID by convention
-        final OnmsNode node = this.nodeDao.get().get(svc.getNodeId());
+        final OnmsNode node = nodeDao.get().get(svc.getNodeId());
         final OnmsMinion minion = minionDao.get().findById(node.getForeignId());
 
         // Calculate the time since the last heartbeat was received
@@ -70,5 +70,11 @@ public class MinionHeartbeatMonitor extends AbstractServiceMonitor {
         }
 
         return status;
+    }
+
+    @Override
+    public String getEffectiveLocation(String location) {
+        // Always run in the OpenNMS JVM
+        return null;
     }
 }

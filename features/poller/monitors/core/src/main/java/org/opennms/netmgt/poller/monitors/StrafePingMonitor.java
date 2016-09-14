@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -70,14 +69,6 @@ final public class StrafePingMonitor extends AbstractServiceMonitor {
     private static final int DEFAULT_FAILURE_PING_COUNT = 20;
 
     private PingerFactory m_pingerFactory = null;
-
-    /**
-     * Constructs a new monitor.
-     *
-     * @throws java.io.IOException if any.
-     */
-    public StrafePingMonitor() throws IOException {
-    }
 
     /**
      * {@inheritDoc}
@@ -165,5 +156,9 @@ final public class StrafePingMonitor extends AbstractServiceMonitor {
             m_pingerFactory = BeanUtils.getBean("daemonContext", "pingerFactory", PingerFactory.class);
         }
         return m_pingerFactory;
+    }
+
+    public void setPingerFactory(PingerFactory pingerFactory) {
+        m_pingerFactory = pingerFactory;
     }
 }

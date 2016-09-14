@@ -53,7 +53,6 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.PollStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 /**
  * This class is designed to be used by the service poller framework to test the
@@ -64,9 +63,7 @@ import org.springframework.stereotype.Component;
  * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-
 @Distributable
-@Component
 final public class TrivialTimeMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(TrivialTimeMonitor.class);
 

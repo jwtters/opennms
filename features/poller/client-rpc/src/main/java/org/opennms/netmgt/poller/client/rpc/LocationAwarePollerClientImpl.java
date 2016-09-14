@@ -34,7 +34,7 @@ import org.opennms.core.rpc.api.RpcClient;
 import org.opennms.core.rpc.api.RpcClientFactory;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.PollerRequestBuilder;
-import org.opennms.netmgt.poller.registry.api.ServiceMonitorRegistry;
+import org.opennms.netmgt.poller.ServiceMonitorRegistry;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 

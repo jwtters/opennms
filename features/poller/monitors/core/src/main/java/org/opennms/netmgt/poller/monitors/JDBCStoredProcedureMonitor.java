@@ -35,7 +35,6 @@ import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.PollStatus;
-import org.springframework.stereotype.Component;
 
 /**
  * This class implements a basic JDBC monitoring framework; The idea is than
@@ -52,7 +51,6 @@ import org.springframework.stereotype.Component;
  * @since 0.1
  * @version $Id: $
  */
-@Component
 final public class JDBCStoredProcedureMonitor extends JDBCMonitor
 {
    /**

@@ -201,11 +201,6 @@
 			<artifactId>org.opennms.features.poller.client-rpc</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.opennms.features.poller</groupId>
-			<artifactId>org.opennms.features.poller.registry</artifactId>
-			<version>${project.version}</version>
-	    </dependency>
-		<dependency>
 			<groupId>org.opennms</groupId>
 			<artifactId>opennms-services</artifactId>
 		</dependency>
