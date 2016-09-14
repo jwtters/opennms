@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2003-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,24 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.api;
+package org.opennms.netmgt.provision;
 
 import java.net.InetAddress;
+import java.util.concurrent.CompletableFuture;
 
-public interface InterfaceToNodeCache {
+public interface LocationAwareDnsLookupClient {
 
-	void dataSourceSync();
+    CompletableFuture<String> lookup(String hostName, String location);
 
-	int getNodeId(String location, InetAddress ipAddr);
+    CompletableFuture<String> reverseLookup(InetAddress ipAddress, String location);
 
-	int setNodeId(String location, InetAddress ipAddr, int nodeId);
-
-	int removeNodeId(String location, InetAddress ipAddr);
-
-	int size();
-
-	/**
-	 * Should only be used for testing.
-	 */
-	void clear();
 }

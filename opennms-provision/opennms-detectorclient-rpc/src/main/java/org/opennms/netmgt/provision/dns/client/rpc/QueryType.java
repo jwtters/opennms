@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2003-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,24 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.api;
+package org.opennms.netmgt.provision.dns.client.rpc;
 
-import java.net.InetAddress;
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlType;
 
-public interface InterfaceToNodeCache {
+@XmlEnum
+@XmlType(name = "query-type")
+public enum QueryType {
 
-	void dataSourceSync();
-
-	int getNodeId(String location, InetAddress ipAddr);
-
-	int setNodeId(String location, InetAddress ipAddr, int nodeId);
-
-	int removeNodeId(String location, InetAddress ipAddr);
-
-	int size();
-
-	/**
-	 * Should only be used for testing.
-	 */
-	void clear();
+    LOOKUP, REVERSE_LOOKUP
 }

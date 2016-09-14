@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,35 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.mock;
+package org.opennms.netmgt.provision.dns.client.rpc;
 
-import java.net.InetAddress;
+import java.util.Arrays;
+import java.util.Collection;
 
-import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
+import org.junit.runners.Parameterized.Parameters;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class MockInterfaceToNodeCache implements InterfaceToNodeCache {
+public class DnsLookupResponseDTOTest extends XmlTestNoCastor<DnsLookupResponseDTO> {
 
-    @Override
-    public int setNodeId(String location, InetAddress ipAddr, int nodeId) {
-        return 0;
+    public DnsLookupResponseDTOTest(DnsLookupResponseDTO sampleObject, Object sampleXml) {
+        super(sampleObject, sampleXml, null);
+    }
+    
+    @Parameters
+    public static Collection<Object[]> data() throws Exception {
+        return Arrays.asList(new Object[][] {
+            {   getDnsLookupResponse(),
+                "<?xml version=\"1.0\"?>\n" +
+                "<dns-lookup-response host-response=\"127.0.0.1\" failure-message=\"UnknownHost\"/>"
+            }
+        });
     }
 
-    @Override
-    public int removeNodeId(String location, InetAddress ipAddr) {
-        return 0;
+    private static Object getDnsLookupResponse() {
+        DnsLookupResponseDTO dto = new DnsLookupResponseDTO();
+        dto.setHostResponse("127.0.0.1");
+        dto.setFailureMessage("UnknownHost");
+        return dto;
     }
 
-    @Override
-    public int getNodeId(String location, InetAddress ipAddr) {
-        return 0;
-    }
-
-    @Override
-    public void dataSourceSync() {}
-
-    @Override
-    public int size() { return 1; }
-
-    @Override
-    public void clear() {}
 }
