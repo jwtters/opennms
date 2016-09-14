@@ -55,10 +55,6 @@
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
-    <dependency>
-      <groupId>com.migesok</groupId>
-      <artifactId>jaxb-java-time-adapters</artifactId>
-    </dependency>
     <!-- breaks generation :(
     <dependency>
       <groupId>org.wicketstuff</groupId>
