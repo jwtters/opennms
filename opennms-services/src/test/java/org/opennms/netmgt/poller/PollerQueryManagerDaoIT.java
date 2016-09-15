@@ -130,8 +130,8 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 	@Autowired
 	private TransactionTemplate m_transactionTemplate;
 
-    @Autowired
-    private LocationAwarePollerClient m_locationAwarePollerClient;
+	@Autowired
+	private LocationAwarePollerClient m_locationAwarePollerClient;
 
 	@Override
 	public void setTemporaryDatabase(MockDatabase database) {

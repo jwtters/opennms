@@ -35,7 +35,6 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
-import org.springframework.stereotype.Component;
 
 /**
  * <p>PassiveServiceMonitor class.</p>
@@ -45,7 +44,6 @@ import org.springframework.stereotype.Component;
  */
 // this retrieves data from the deamon so it is not Distributable
 @Distributable(DistributionContext.DAEMON)
-@Component
 public class PassiveServiceMonitor extends AbstractServiceMonitor {
 
     @Override
