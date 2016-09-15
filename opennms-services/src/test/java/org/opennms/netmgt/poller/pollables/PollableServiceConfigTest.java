@@ -28,17 +28,16 @@
 
 package org.opennms.netmgt.poller.pollables;
 
-import static org.mockito.Mockito.mock;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -59,13 +58,12 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-@Ignore("JW: FIXME: TODO: Broken")
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-pinger.xml",
-        "classpath*:/META-INF/opennms/monitors.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-client-mock.xml",
+        "classpath:/META-INF/opennms/applicationContext-serviceMonitorRegistry.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-poller.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={

@@ -45,7 +45,6 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -83,7 +82,7 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
 
         final StringBuffer returnValue = new StringBuffer();
         
-        SnmpAgentConfig agentConfig = configureAgent(parameters, ipaddr);
+        SnmpAgentConfig agentConfig = configureAgent(svc, parameters);
 
         Integer virtualDiskNumber = ParameterMap.getKeyedInteger(parameters, "virtualDiskNumber", 1);
         
@@ -164,11 +163,11 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
         return status;
     }
 
-	private SnmpAgentConfig configureAgent(Map<String, Object> parameters, InetAddress ipaddr) throws RuntimeException {
+	private SnmpAgentConfig configureAgent(MonitoredService svc, Map<String, Object> parameters) {
         // Retrieve this interface's SNMP peer object
         //
-	    final SnmpAgentConfig agentConfig = getAgentConfig(parameters);
-        LOG.debug("poll: setting SNMP peer attribute for interface {}", InetAddressUtils.str(ipaddr));
+	    final SnmpAgentConfig agentConfig = getAgentConfig(svc, parameters);
+        LOG.debug("poll: setting SNMP peer attribute for interface {}", InetAddressUtils.str(svc.getAddress()));
         agentConfig.setTimeout(ParameterMap.getKeyedInteger(parameters, "timeout", agentConfig.getTimeout()));
         agentConfig.setRetries(ParameterMap.getKeyedInteger(parameters, "retry", ParameterMap.getKeyedInteger(parameters, "retries", agentConfig.getRetries())));
         agentConfig.setPort(ParameterMap.getKeyedInteger(parameters, "port", agentConfig.getPort()));

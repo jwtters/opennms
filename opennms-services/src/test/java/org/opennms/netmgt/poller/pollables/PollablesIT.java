@@ -100,8 +100,8 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations = {
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-pinger.xml",
-        "classpath*:/META-INF/opennms/monitors.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-client-mock.xml",
+        "classpath:/META-INF/opennms/applicationContext-serviceMonitorRegistry.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-poller.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={

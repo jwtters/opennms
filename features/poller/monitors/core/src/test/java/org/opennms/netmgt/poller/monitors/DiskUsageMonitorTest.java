@@ -93,7 +93,6 @@ public class DiskUsageMonitorTest implements InitializingBean {
         MockLogAppender.setupLogging();
         monitor = new DiskUsageMonitor();
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
-        // JW: TODO: monitor.setAgentConfig(m_snmpPeerFactory.getAgentConfig(InetAddressUtils.getInetAddress(TEST_IP_ADDRESS)));
     }
 
     @After
@@ -187,6 +186,7 @@ public class DiskUsageMonitorTest implements InitializingBean {
         parameters.put("free", 15);
         parameters.put("match-type", "exact");
         parameters.put("require-type", "any");
+        parameters.put("agent", m_snmpPeerFactory.getAgentConfig(InetAddressUtils.getInetAddress(TEST_IP_ADDRESS)));
         return parameters;
     }
 

@@ -89,7 +89,6 @@ public class HostResourceSWRunMonitorTest implements InitializingBean {
         MockLogAppender.setupLogging();
         monitor = new HostResourceSwRunMonitor();
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
-        // JW: TODO: monitor.setAgentConfig(m_snmpPeerFactory.getAgentConfig(InetAddressUtils.getInetAddress(TEST_IP_ADDRESS)));
     }
 
     @After
@@ -101,7 +100,6 @@ public class HostResourceSWRunMonitorTest implements InitializingBean {
 
     @Test
     public void testUnknownService() throws Exception {
-        // JW: TODO: monitor.setAgentConfig(m_snmpPeerFactory.getAgentConfig(InetAddressUtils.getInetAddress(TEST_IP_ADDRESS)));
         Map<String, Object> parameters = createBasicParams();
         parameters.put("service-name", "this service does not exist!");
         PollStatus status = monitor.poll(createMonitor(), parameters);
@@ -203,6 +201,7 @@ public class HostResourceSWRunMonitorTest implements InitializingBean {
         parameters.put("port", m_snmpPeerFactory.getAgentConfig(InetAddressUtils.getInetAddress(TEST_IP_ADDRESS)).getPort());
         parameters.put("service-name", "~^(auto|sh).*");
         parameters.put("match-all", "true");
+        parameters.put("agent", m_snmpPeerFactory.getAgentConfig(InetAddressUtils.getInetAddress(TEST_IP_ADDRESS)));
         return parameters;
     }
 

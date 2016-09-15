@@ -66,10 +66,8 @@ import org.springframework.test.context.ContextConfiguration;
 @JUnitConfigurationEnvironment
 public class SmtpMonitorIT {
 
-    private final SmtpMonitor m_monitor = new SmtpMonitor();
     private ServerSocket m_serverSocket = null;
     private Thread m_serverThread = null;
-    private static final int TIMEOUT = 2000;
 
     @Before
     public void setUp() throws Exception {

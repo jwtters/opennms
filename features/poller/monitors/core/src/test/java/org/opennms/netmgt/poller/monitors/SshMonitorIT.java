@@ -28,12 +28,14 @@
 
 package org.opennms.netmgt.poller.monitors;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.PatternSyntaxException;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;

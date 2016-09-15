@@ -30,6 +30,7 @@ package org.opennms.netmgt.poller.monitors;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.InetAddress;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -81,8 +82,8 @@ public abstract class SnmpMonitorStrategy extends AbstractServiceMonitor {
         return ImmutableMap.of("agent", SnmpPeerFactory.getInstance().getAgentConfig(svc.getAddress()));
     }
 
-    public SnmpAgentConfig getAgentConfig(Map<String, Object> parameters) {
-        return getKeyedInstance(parameters, "agent", () -> { return new SnmpAgentConfig(); });
+    public SnmpAgentConfig getAgentConfig(MonitoredService svc, Map<String, Object> parameters) {
+        return getKeyedInstance(parameters, "agent", () -> { return new SnmpAgentConfig(svc.getAddress()); });
     }
 
     public String getStringValue(SnmpValue result) {

@@ -32,6 +32,11 @@ import java.util.Set;
 
 import org.opennms.netmgt.poller.ServiceMonitor;
 
+/**
+ * Used to enumerate and retrieve available {@link ServiceMonitor} implementations.
+ *
+ * @author jwhite
+ */
 public interface ServiceMonitorRegistry {
 
     ServiceMonitor getMonitorByClassName(String className);

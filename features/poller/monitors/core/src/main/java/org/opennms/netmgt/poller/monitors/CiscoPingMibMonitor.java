@@ -35,14 +35,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -50,6 +54,9 @@ import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpValueFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 
 /**
  * <P>
@@ -72,176 +79,161 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
     private static final Logger LOG = LoggerFactory.getLogger(CiscoPingMibMonitor.class);
 	
     @SuppressWarnings("unused")
-    private static final class CiscoPingEntry {
+	private static final class CiscoPingEntry {
+		private int m_ciscoPingSerialNumber;
+		private int m_ciscoPingProtocol;
+		private InetAddress m_ciscoPingAddress;
+		private int m_ciscoPingPacketCount;
+		private int m_ciscoPingPacketSize;
+		private int m_ciscoPingPacketTimeout;
+		private int m_ciscoPingPacketDelay;
+		private String m_ciscoPingEntryOwner;
+		private String m_ciscoPingVrfName;
+		private int m_ciscoPingEntryStatus;
 
-        private int m_ciscoPingSerialNumber;
-        private int m_ciscoPingProtocol;
-        private InetAddress m_ciscoPingAddress;
-        private int m_ciscoPingPacketCount;
-        private int m_ciscoPingPacketSize;
-        private int m_ciscoPingPacketTimeout;
-        private int m_ciscoPingPacketDelay;
-        private String m_ciscoPingEntryOwner;
-        private String m_ciscoPingVrfName;
-        private int m_ciscoPingEntryStatus;
-
-        public int getCiscoPingSerialNumber() {
-            return m_ciscoPingSerialNumber;
-        }
-
-        public void setCiscoPingSerialNumber(int ciscoPingSerialNumber) {
-            m_ciscoPingSerialNumber = ciscoPingSerialNumber;
-        }
-
+		public int getCiscoPingSerialNumber() {
+			return m_ciscoPingSerialNumber;
+		}
+		public void setCiscoPingSerialNumber(int ciscoPingSerialNumber) {
+			m_ciscoPingSerialNumber = ciscoPingSerialNumber;
+		}
         public int getCiscoPingProtocol() {
-            return m_ciscoPingProtocol;
-        }
+			return m_ciscoPingProtocol;
+		}
+		public void setCiscoPingProtocol(int ciscoPingProtocol) {
+			m_ciscoPingProtocol = ciscoPingProtocol;
+		}
+		public InetAddress getCiscoPingAddress() {
+			return m_ciscoPingAddress;
+		}
+		public byte[] getCiscoPingAddressBytes() {
+			return m_ciscoPingAddress.getAddress();
+		}
+		public void setCiscoPingAddress(InetAddress ciscoPingAddress) {
+			m_ciscoPingAddress = ciscoPingAddress;
+		}
+		public int getCiscoPingPacketCount() {
+			return m_ciscoPingPacketCount;
+		}
+		public void setCiscoPingPacketCount(int ciscoPingPacketCount) {
+			m_ciscoPingPacketCount = ciscoPingPacketCount;
+		}
+		public int getCiscoPingPacketSize() {
+			return m_ciscoPingPacketSize;
+		}
+		public void setCiscoPingPacketSize(int ciscoPingPacketSize) {
+			m_ciscoPingPacketSize = ciscoPingPacketSize;
+		}
+		public int getCiscoPingPacketTimeout() {
+			return m_ciscoPingPacketTimeout;
+		}
+		public void setCiscoPingPacketTimeout(int ciscoPingPacketTimeout) {
+			m_ciscoPingPacketTimeout = ciscoPingPacketTimeout;
+		}
+		public int getCiscoPingPacketDelay() {
+			return m_ciscoPingPacketDelay;
+		}
+		public void setCiscoPingPacketDelay(int ciscoPingPacketDelay) {
+			m_ciscoPingPacketDelay = ciscoPingPacketDelay;
+		}
+		public String getCiscoPingEntryOwner() {
+			return m_ciscoPingEntryOwner;
+		}
+		public void setCiscoPingEntryOwner(String ciscoPingEntryOwner) {
+			m_ciscoPingEntryOwner = ciscoPingEntryOwner;
+		}
+		public String getCiscoPingVrfName() {
+			return m_ciscoPingVrfName;
+		}
+		public void setCiscoPingVrfName(String ciscoPingVrfName) {
+			m_ciscoPingVrfName = ciscoPingVrfName;
+		}
+		public int getCiscoPingEntryStatus() {
+			return m_ciscoPingEntryStatus;
+		}
+		public void setCiscoPingEntryStatus(int ciscoPingEntryStatus) {
+			m_ciscoPingEntryStatus= ciscoPingEntryStatus;
+		}
+		public int calculateMinInitialWait() {
+			return m_ciscoPingPacketCount * (m_ciscoPingPacketTimeout + m_ciscoPingPacketDelay);
+		}
+		
+		public SnmpObjId[] generateCreateOids() {
+			SnmpObjId[] oids = {
+					SnmpObjId.get(PING_ENTRY_OID + "." + PING_PROTOCOL + "." + m_ciscoPingSerialNumber),
+					SnmpObjId.get(PING_ENTRY_OID + "." + PING_ADDRESS + "." + m_ciscoPingSerialNumber),
+					SnmpObjId.get(PING_ENTRY_OID + "." + PING_PACKET_COUNT+ "." + m_ciscoPingSerialNumber),
+					SnmpObjId.get(PING_ENTRY_OID + "." + PING_PACKET_SIZE + "." + m_ciscoPingSerialNumber),
+					SnmpObjId.get(PING_ENTRY_OID + "." + PING_PACKET_TIMEOUT + "." + m_ciscoPingSerialNumber),
+					SnmpObjId.get(PING_ENTRY_OID + "." + PING_DELAY + "." + m_ciscoPingSerialNumber),
+					SnmpObjId.get(PING_ENTRY_OID + "." + PING_ENTRY_OWNER + "." + m_ciscoPingSerialNumber),
+					SnmpObjId.get(PING_ENTRY_OID + "." + PING_ENTRY_STATUS + "." + m_ciscoPingSerialNumber),
+					SnmpObjId.get(PING_ENTRY_OID + "." + PING_VRF_NAME + "." + m_ciscoPingSerialNumber)
+			};
+			return oids;
+		}
+		
+		public SnmpValue[] generateCreateValues() {
+			SnmpValueFactory vf = SnmpUtils.getValueFactory();
+			SnmpValue[] values = {
+					vf.getInt32(m_ciscoPingProtocol),
+					vf.getOctetString(m_ciscoPingAddress.getAddress()),
+					vf.getInt32(m_ciscoPingPacketCount),
+					vf.getInt32(m_ciscoPingPacketSize),
+					vf.getInt32(m_ciscoPingPacketTimeout),
+					vf.getInt32(m_ciscoPingPacketDelay),
+					vf.getOctetString(m_ciscoPingEntryOwner.getBytes()),
+					vf.getInt32(m_ciscoPingEntryStatus),
+					vf.getOctetString(m_ciscoPingVrfName.getBytes())
+			};
+			return values;
+		}
+		
+		public SnmpObjId[] generateRowStatusOids() {
+			SnmpObjId[] oids = {
+					SnmpObjId.get(PING_ENTRY_OID + "." + PING_ENTRY_STATUS + "." + m_ciscoPingSerialNumber)
+			};
+			return oids;
+		}
+		
+		public SnmpValue[] generateRowStatusValues() {
+			SnmpValueFactory vf = SnmpUtils.getValueFactory();
+			SnmpValue[] values = {
+					vf.getInt32(m_ciscoPingEntryStatus)
+			};
+			return values;
+		}
+		
+		public SnmpObjId[] generateResultsOids() {
+			SnmpObjId[] oids = {
+					SnmpObjId.get(PING_ENTRY_OID + "." + PING_SENT_PACKETS + "." + m_ciscoPingSerialNumber),
+					SnmpObjId.get(PING_ENTRY_OID + "." + PING_RECEIVED_PACKETS + "." + m_ciscoPingSerialNumber),
+					SnmpObjId.get(PING_ENTRY_OID + "." + PING_MIN_RTT + "." + m_ciscoPingSerialNumber),
+					SnmpObjId.get(PING_ENTRY_OID + "." + PING_AVG_RTT + "." + m_ciscoPingSerialNumber),
+					SnmpObjId.get(PING_ENTRY_OID + "." + PING_MAX_RTT + "." + m_ciscoPingSerialNumber),
+					SnmpObjId.get(PING_ENTRY_OID + "." + PING_COMPLETED + "." + m_ciscoPingSerialNumber)
+			};
+			return oids;
+		}
+		
+                @Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder("CiscoPingEntry: [ciscoPingSerialNumber=");
+			sb.append(m_ciscoPingSerialNumber).append(",");
+			sb.append("ciscoPingProtocol=").append(m_ciscoPingProtocol).append(",");
+			sb.append("ciscoPingAddress=").append(m_ciscoPingAddress).append(",");
+			sb.append("ciscoPingPacketCount=").append(m_ciscoPingPacketCount).append(",");
+			sb.append("ciscoPingPacketSize=").append(m_ciscoPingPacketSize).append(",");
+			sb.append("ciscoPingPacketTimeout=").append(m_ciscoPingPacketTimeout).append(",");
+			sb.append("ciscoPingPacketDelay=").append(m_ciscoPingPacketDelay).append(",");
+			sb.append("ciscoPingEntryOwner=").append(m_ciscoPingEntryOwner).append(",");
+			sb.append("ciscoPingVrfName=").append(m_ciscoPingVrfName);
+			sb.append("]");
+			
+			return sb.toString();
+		}
+	}
 
-        public void setCiscoPingProtocol(int ciscoPingProtocol) {
-            m_ciscoPingProtocol = ciscoPingProtocol;
-        }
-
-        public InetAddress getCiscoPingAddress() {
-            return m_ciscoPingAddress;
-        }
-
-        public byte[] getCiscoPingAddressBytes() {
-            return m_ciscoPingAddress.getAddress();
-        }
-
-        public void setCiscoPingAddress(InetAddress ciscoPingAddress) {
-            m_ciscoPingAddress = ciscoPingAddress;
-        }
-
-        public int getCiscoPingPacketCount() {
-            return m_ciscoPingPacketCount;
-        }
-
-        public void setCiscoPingPacketCount(int ciscoPingPacketCount) {
-            m_ciscoPingPacketCount = ciscoPingPacketCount;
-        }
-
-        public int getCiscoPingPacketSize() {
-            return m_ciscoPingPacketSize;
-        }
-
-        public void setCiscoPingPacketSize(int ciscoPingPacketSize) {
-            m_ciscoPingPacketSize = ciscoPingPacketSize;
-        }
-
-        public int getCiscoPingPacketTimeout() {
-            return m_ciscoPingPacketTimeout;
-        }
-
-        public void setCiscoPingPacketTimeout(int ciscoPingPacketTimeout) {
-            m_ciscoPingPacketTimeout = ciscoPingPacketTimeout;
-        }
-
-        public int getCiscoPingPacketDelay() {
-            return m_ciscoPingPacketDelay;
-        }
-
-        public void setCiscoPingPacketDelay(int ciscoPingPacketDelay) {
-            m_ciscoPingPacketDelay = ciscoPingPacketDelay;
-        }
-
-        public String getCiscoPingEntryOwner() {
-            return m_ciscoPingEntryOwner;
-        }
-
-        public void setCiscoPingEntryOwner(String ciscoPingEntryOwner) {
-            m_ciscoPingEntryOwner = ciscoPingEntryOwner;
-        }
-
-        public String getCiscoPingVrfName() {
-            return m_ciscoPingVrfName;
-        }
-
-        public void setCiscoPingVrfName(String ciscoPingVrfName) {
-            m_ciscoPingVrfName = ciscoPingVrfName;
-        }
-
-        public int getCiscoPingEntryStatus() {
-            return m_ciscoPingEntryStatus;
-        }
-
-        public void setCiscoPingEntryStatus(int ciscoPingEntryStatus) {
-            m_ciscoPingEntryStatus = ciscoPingEntryStatus;
-        }
-
-        public int calculateMinInitialWait() {
-            return m_ciscoPingPacketCount * (m_ciscoPingPacketTimeout + m_ciscoPingPacketDelay);
-        }
-
-        public SnmpObjId[] generateCreateOids() {
-            SnmpObjId[] oids = { SnmpObjId.get(PING_ENTRY_OID + "." + PING_PROTOCOL + "." + m_ciscoPingSerialNumber),
-                    SnmpObjId.get(PING_ENTRY_OID + "." + PING_ADDRESS + "." + m_ciscoPingSerialNumber),
-                    SnmpObjId.get(PING_ENTRY_OID + "." + PING_PACKET_COUNT + "." + m_ciscoPingSerialNumber),
-                    SnmpObjId.get(PING_ENTRY_OID + "." + PING_PACKET_SIZE + "." + m_ciscoPingSerialNumber),
-                    SnmpObjId.get(PING_ENTRY_OID + "." + PING_PACKET_TIMEOUT + "." + m_ciscoPingSerialNumber),
-                    SnmpObjId.get(PING_ENTRY_OID + "." + PING_DELAY + "." + m_ciscoPingSerialNumber),
-                    SnmpObjId.get(PING_ENTRY_OID + "." + PING_ENTRY_OWNER + "." + m_ciscoPingSerialNumber),
-                    SnmpObjId.get(PING_ENTRY_OID + "." + PING_ENTRY_STATUS + "." + m_ciscoPingSerialNumber),
-                    SnmpObjId.get(PING_ENTRY_OID + "." + PING_VRF_NAME + "." + m_ciscoPingSerialNumber) };
-            return oids;
-        }
-
-        public SnmpValue[] generateCreateValues() {
-            SnmpValueFactory vf = SnmpUtils.getValueFactory();
-            SnmpValue[] values = { vf.getInt32(m_ciscoPingProtocol), vf.getOctetString(m_ciscoPingAddress.getAddress()),
-                    vf.getInt32(m_ciscoPingPacketCount), vf.getInt32(m_ciscoPingPacketSize),
-                    vf.getInt32(m_ciscoPingPacketTimeout), vf.getInt32(m_ciscoPingPacketDelay),
-                    vf.getOctetString(m_ciscoPingEntryOwner.getBytes()), vf.getInt32(m_ciscoPingEntryStatus),
-                    vf.getOctetString(m_ciscoPingVrfName.getBytes()) };
-            return values;
-        }
-
-        public SnmpObjId[] generateRowStatusOids() {
-            SnmpObjId[] oids = {
-                    SnmpObjId.get(PING_ENTRY_OID + "." + PING_ENTRY_STATUS + "." + m_ciscoPingSerialNumber) };
-            return oids;
-        }
-
-        public SnmpValue[] generateRowStatusValues() {
-            SnmpValueFactory vf = SnmpUtils.getValueFactory();
-            SnmpValue[] values = { vf.getInt32(m_ciscoPingEntryStatus) };
-            return values;
-        }
-
-        public SnmpObjId[] generateResultsOids() {
-            SnmpObjId[] oids = {
-                    SnmpObjId.get(PING_ENTRY_OID + "." + PING_SENT_PACKETS + "." + m_ciscoPingSerialNumber),
-                    SnmpObjId.get(PING_ENTRY_OID + "." + PING_RECEIVED_PACKETS + "." + m_ciscoPingSerialNumber),
-                    SnmpObjId.get(PING_ENTRY_OID + "." + PING_MIN_RTT + "." + m_ciscoPingSerialNumber),
-                    SnmpObjId.get(PING_ENTRY_OID + "." + PING_AVG_RTT + "." + m_ciscoPingSerialNumber),
-                    SnmpObjId.get(PING_ENTRY_OID + "." + PING_MAX_RTT + "." + m_ciscoPingSerialNumber),
-                    SnmpObjId.get(PING_ENTRY_OID + "." + PING_COMPLETED + "." + m_ciscoPingSerialNumber) };
-            return oids;
-        }
-
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder("CiscoPingEntry: [ciscoPingSerialNumber=");
-            sb.append(m_ciscoPingSerialNumber).append(",");
-            sb.append("ciscoPingProtocol=").append(m_ciscoPingProtocol).append(",");
-            sb.append("ciscoPingAddress=").append(m_ciscoPingAddress).append(",");
-            sb.append("ciscoPingPacketCount=").append(m_ciscoPingPacketCount).append(",");
-            sb.append("ciscoPingPacketSize=").append(m_ciscoPingPacketSize).append(",");
-            sb.append("ciscoPingPacketTimeout=").append(m_ciscoPingPacketTimeout).append(",");
-            sb.append("ciscoPingPacketDelay=").append(m_ciscoPingPacketDelay).append(",");
-            sb.append("ciscoPingEntryOwner=").append(m_ciscoPingEntryOwner).append(",");
-            sb.append("ciscoPingVrfName=").append(m_ciscoPingVrfName);
-            sb.append("]");
-
-            return sb.toString();
-        }
-
-    }
-    /**
-     * Name of monitored service.
-     */
-    private static final String SERVICE_NAME = "CiscoPing";
-    
     /**
      * Default timeout, in milliseconds, for the SNMP operations underlying this poll
      */
@@ -255,11 +247,11 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
     /**
      * Identifier of the ciscoPingEntry object
      */
-    protected static final String PING_ENTRY_OID = ".1.3.6.1.4.1.9.9.16.1.1.1"; // Enterprises / cisco / ciscoMgmt /
+    private static final String PING_ENTRY_OID = ".1.3.6.1.4.1.9.9.16.1.1.1"; // Enterprises / cisco / ciscoMgmt /
                                                                                 // ciscoPingMIB / ciscoPingMIBObjects /
                                                                                 // ciscoPingTable / ciscoPingEntry
-    
 
+    @SuppressWarnings("unused")
     private static final String PING_SERIAL = "1";
     private static final String PING_PROTOCOL = "2";
     private static final String PING_ADDRESS = "3";
@@ -324,19 +316,16 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
     private static final int PARM_CLEANUP_INTERVAL_DEFAULT = 86400000;
     
     /* The node ID of the node that will act as our IOS ping proxy */
-    protected static final String PARM_PROXY_NODE_ID = "proxy-node-id";
+    private static final String PARM_PROXY_NODE_ID = "proxy-node-id";
     
     /* The foreign-source name of the node that will act as our IOS ping proxy */
-    protected static final String PARM_PROXY_FOREIGN_SOURCE = "proxy-node-foreign-source";
+    private static final String PARM_PROXY_FOREIGN_SOURCE = "proxy-node-foreign-source";
     
     /* The foreign-id of the node that will act as our IOS ping proxy */
-    protected static final String PARM_PROXY_FOREIGN_ID = "proxy-node-foreign-id";
+    private static final String PARM_PROXY_FOREIGN_ID = "proxy-node-foreign-id";
     
     /* The IP address of the interface to use as our IOS ping proxy */
-    protected static final String PARM_PROXY_IP_ADDR = "proxy-ip-addr";
-    
-    /* The proxyIpAddress derived from Config Loader */
-    protected static final String PROXY_IP_ADDR = "proxyIpAddress";
+    private static final String PARM_PROXY_IP_ADDR = "proxy-ip-addr";
     
     /* The IP address of the interface we ultimately want to ping */
     private static final String PARM_TARGET_IP_ADDR = "target-ip-addr";
@@ -345,17 +334,27 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
     private static final String PARM_SUCCESS_PERCENT = "success-percent";
     private static final int PARM_SUCCESS_PERCENT_DEFAULT = 100;
 
-    /**
-     * <P>
-     * Returns the name of the service that the plug-in monitors ("CiscoPing").
-     * </P>
-     *
-     * @return The service that the plug-in monitors.
-     */
-    public String serviceName() {
-        return SERVICE_NAME;
-    }
+    private final Supplier<NodeDao> nodeDao = Suppliers.memoize(() -> BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class));
 
+    @Override
+    public Map<String, Object> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
+        final Map<String, Object> attributes = new HashMap<>(super.getRuntimeAttributes(svc, parameters));
+
+        // Determine the target address
+        final InetAddress targetIpAddr = (InetAddress) determineTargetAddress(svc, parameters);
+
+        // Determine the node to use as our IOS ping proxy
+        final InetAddress proxyIpAddr = determineProxyAddress(parameters, svc);
+        if (proxyIpAddr == null) {
+            LOG.debug("Unable to determine proxy address for this service");
+            throw new IllegalStateException("Unable to determine proxy address for this service");
+        }
+
+        attributes.put("targetIpAddr", InetAddrUtils.str(targetIpAddr));
+        attributes.put("proxyIpAddr", InetAddrUtils.str(proxyIpAddr));
+        return attributes;
+    }
+ 
     /**
      * {@inheritDoc}
      *
@@ -369,14 +368,14 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+        final InetAddress targetIpAddr = InetAddrUtils.addr(getKeyedString(parameters, "targetIpAddr", null));
+        final InetAddress proxyIpAddr = InetAddrUtils.addr(getKeyedString(parameters, "proxyIpAddr", null));
 
-        InetAddress targetIpAddr = (InetAddress) determineTargetAddress(svc, parameters);
-    	
         int pingProtocol = 0;
         try {
-        	pingProtocol = determineAddrType(targetIpAddr);
+            pingProtocol = determineAddrType(targetIpAddr);
         } catch (RuntimeException e) {
-        	LOG.debug("Unknown address type - neither IPv4 nor IPv6", e);
+            LOG.debug("Unknown address type - neither IPv4 nor IPv6", e);
             return PollStatus.unavailable("Unknown address type - neither IPv4 nor IPv6");
         }
 
@@ -399,19 +398,10 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
         
         // FIXME: Should the cleanup stuff be fixed to actually use this? Not clear if it really matters.
         // int cleanupInterval = ParameterMap.getKeyedInteger(parameters, PARM_CLEANUP_INTERVAL, PARM_CLEANUP_INTERVAL_DEFAULT);
-        
-        // Determine the node to use as our IOS ping proxy
-
-        String proxyIpAddress = ParameterMap.getKeyedString(parameters,PROXY_IP_ADDR, null);
-        InetAddress proxyIpAddr = InetAddressUtils.addr(proxyIpAddress);
-        if (proxyIpAddr == null) {
-            LOG.debug("Unable to determine proxy address for this service");
-            return PollStatus.unavailable("Unable to determine proxy address for this service");
-        }
 
         // Retrieve the *proxy* interface's SNMP peer object
         //
-        final SnmpAgentConfig agentConfig = getAgentConfig(parameters);
+        SnmpAgentConfig agentConfig = getAgentConfig(svc, parameters);
         LOG.debug("poll: setting SNMP peer attribute for interface {}", proxyIpAddr.getHostAddress());
 
         // set timeout and retries on SNMP peer object
@@ -502,36 +492,6 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
         serviceStatus.setProperties(pingProps);
         return serviceStatus;
     }
-    
-    /*
-     * JW: TODO: Review
-    @Override
-    public PollStatus poll(PollerRequest request) {
-
-        if (request.getRuntimeAttributes() != null) {
-            Map<String, String> params = new HashMap<>();
-            params.putAll(request.getRuntimeAttributes());
-            params.remove(PROXY_IP_ADDR);
-            // All of the keys in the runtime attribute map are used to store the agent configuration
-            setAgentConfig(SnmpAgentConfig.fromMap(params));
-        } else {
-            setAgentConfig(new SnmpAgentConfig());
-        }
-
-        final Map<String, Object> parameters = new HashMap<>(request.getMonitorParameters());
-        final SimpleMonitoredService svc = new SimpleMonitoredService(request);
-        if (request.getRuntimeAttributes() != null) {
-            parameters.putAll(request.getRuntimeAttributes());
-        }
-        return poll(svc, parameters);
-    };
-    */
-    
-    @Override
-    public Map<String, Object> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
-        // TODO:
-        return null;
-    }
 
 	private void cleanupCurrentEntry(CiscoPingEntry pingEntry, InetAddress proxyIpAddr, SnmpAgentConfig agentConfig) {
         pingEntry.setCiscoPingEntryStatus(ROWSTATUS_DESTROY);
@@ -560,6 +520,60 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
 		return svc.getAddress();
 	}
 
+	private InetAddress determineProxyAddress(Map<String, Object> parameters, MonitoredService svc) {
+		LOG.debug("Determining the proxy address on which to set up the ciscoPingEntry for target interface {}", svc.getAddress());
+		OnmsNode proxyNode = null;
+		InetAddress proxyAddress = null;
+		String proxyNodeId = ParameterMap.getKeyedString(parameters, PARM_PROXY_NODE_ID, null);
+		String proxyNodeFS = ParameterMap.getKeyedString(parameters, PARM_PROXY_FOREIGN_SOURCE, null);
+		String proxyNodeFI = ParameterMap.getKeyedString(parameters, PARM_PROXY_FOREIGN_ID, null);
+		
+		String rawProxyIpAddr = ParameterMap.getKeyedString(parameters, PARM_PROXY_IP_ADDR, null);
+		String proxyIpAddr = rawProxyIpAddr;
+		if (rawProxyIpAddr != null) {
+			proxyIpAddr = PropertiesUtils.substitute(rawProxyIpAddr, getServiceProperties(svc));
+			LOG.debug("Expanded value '{}' of parameter {} to '{}' for service {} on interface {}", rawProxyIpAddr, PARM_PROXY_IP_ADDR, proxyIpAddr, svc.getSvcName(), svc.getAddress());
+		}
+
+		/* If we have a foreign-source and foreign-id, short circuit to use that */
+		if (proxyNodeFS != null && !proxyNodeFS.equals("") && proxyNodeFI != null && !proxyNodeFI.equals("")) {
+			LOG.debug("Trying to look up proxy node with foreign-source {}, foreign-id {} for target interface {}", proxyNodeFS, proxyNodeFI, svc.getAddress());
+			proxyNode = nodeDao.get().findByForeignId(proxyNodeFS, proxyNodeFI);
+			LOG.debug("Found a node via foreign-source / foreign-id '{}'/'{}' to use as proxy", proxyNodeFS, proxyNodeFI);
+			if (proxyNode != null && proxyNode.getPrimaryInterface() != null) proxyAddress = proxyNode.getPrimaryInterface().getIpAddress();
+		}
+		if (proxyAddress != null) {
+			LOG.info("Using address {} from node '{}':'{}' as proxy for service '{}' on interface {}", proxyAddress, proxyNodeFS, proxyNodeFI, svc.getSvcName(), svc.getIpAddr());
+			return proxyAddress;
+		}
+
+		/* No match with foreign-source / foreign-id?  Try with a node ID */
+		if (proxyNodeId != null && Integer.valueOf(proxyNodeId) != null) {
+			LOG.debug("Trying to look up proxy node with database ID {} for target interface {}", proxyNodeId, svc.getAddress());
+			proxyNode = nodeDao.get().get(Integer.valueOf(proxyNodeId));
+			if (proxyNode != null && proxyNode.getPrimaryInterface() != null) proxyAddress = proxyNode.getPrimaryInterface().getIpAddress();
+		}
+		if (proxyAddress != null) {
+			LOG.info("Using address {} from node with DBID {} as proxy for service '{}' on interface {}", proxyAddress, proxyNodeId, svc.getSvcName(), svc.getIpAddr());
+			return proxyAddress;
+		}
+		
+		/* No match with any node criteria?  Try for a plain old IP address. */
+		LOG.info("Trying to use address {} as proxy-ping agent address for target interface {}", proxyIpAddr, svc.getAddress());
+		try {
+			if (!"".equals(proxyIpAddr)) {
+				proxyAddress = InetAddressUtils.addr(proxyIpAddr);
+			}
+		} catch (final IllegalArgumentException e) {}
+		if (proxyAddress != null) {
+			LOG.info("Using address {} (user-specified) as proxy for service '{}' on interface {}", proxyAddress, svc.getSvcName(), svc.getIpAddr());
+			return proxyAddress;
+		}
+		
+		LOG.error("Unable to determine proxy address for service '{}' on interface '{}'. The poll will be unable to proceed.", svc.getSvcName(), svc.getIpAddr());
+		return null;
+	}
+
 	private int determineAddrType(InetAddress ipaddr) {
 		if (ipaddr instanceof Inet6Address) {
 			LOG.debug("The address {} is IPv6", ipaddr);
@@ -571,7 +585,7 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
 		LOG.error("The address {} is neither IPv4 nor IPv6. Don't know how to proceed, giving up.", ipaddr);
 		throw new RuntimeException("Cannot work with address " + ipaddr + " because it is neither IPv4 nor IPv6.");
 	}
-	
+
     private Properties getServiceProperties(MonitoredService svc) {
         Properties properties = new Properties();
         properties.put("ipaddr", svc.getIpAddr());

@@ -82,7 +82,6 @@ public class NetScalerGroupHealthMonitorTest implements InitializingBean {
         MockLogAppender.setupLogging();
         monitor = new NetScalerGroupHealthMonitor();
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
-        // JW: TODO: monitor.setAgentConfig(m_snmpPeerFactory.getAgentConfig(InetAddressUtils.getInetAddress(TEST_IP_ADDRESS)));
     }
 
     @After
@@ -107,6 +106,7 @@ public class NetScalerGroupHealthMonitorTest implements InitializingBean {
     private Map<String, Object> createBasicParams() {
         Map<String, Object> parameters = new HashMap<String,Object>();
         parameters.put("group-name", "p_d_wf-iis_http_s_grp");
+        parameters.put("agent", m_snmpPeerFactory.getAgentConfig(InetAddressUtils.getInetAddress(TEST_IP_ADDRESS)));
         return parameters;
     }
 

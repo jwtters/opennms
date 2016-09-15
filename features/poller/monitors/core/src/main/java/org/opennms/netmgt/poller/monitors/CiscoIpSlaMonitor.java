@@ -192,7 +192,7 @@ final public class CiscoIpSlaMonitor extends SnmpMonitorStrategy {
 
         // Retrieve this interface's SNMP peer object
         //
-        final SnmpAgentConfig agentConfig = getAgentConfig(parameters);
+        final SnmpAgentConfig agentConfig = getAgentConfig(svc, parameters);
         final String hostAddress = InetAddressUtils.str(ipaddr);
 		LOG.debug("poll: setting SNMP peer attribute for interface {}", hostAddress);
 

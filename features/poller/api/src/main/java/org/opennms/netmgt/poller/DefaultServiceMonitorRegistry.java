@@ -38,6 +38,24 @@ import org.opennms.netmgt.poller.ServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * <p>
+ * Aggregates {@link ServiceMonitor} implementations exposed via the {@link ServiceLoader}
+ * and via the OSGi registry.
+ * </p>
+ *
+ * <p>
+ * In order to expose a service monitor via the Java Service Loader, you must include the
+ * full package and class name in <em>/META-INF/services/org.opennms.netmgt.poller.ServiceMonitor</em>
+ * </p>
+ *
+ * <p>
+ * Services monitors exposed via OSGi must include a 'type' property with the class-name
+ * of the services monitor being exposed.
+ * </p>
+ *
+ * @author jwhite
+ */
 public class DefaultServiceMonitorRegistry implements ServiceMonitorRegistry {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultServiceMonitorRegistry.class);
@@ -81,7 +99,6 @@ public class DefaultServiceMonitorRegistry implements ServiceMonitorRegistry {
                 return;
             }
             m_monitorsByClassName.remove(className, serviceMonitor);
-
         }
     }
 

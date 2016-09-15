@@ -33,7 +33,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.net.InetAddress;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 

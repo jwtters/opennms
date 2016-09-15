@@ -38,12 +38,10 @@ import java.util.Map;
  * </p>
  *
  * <p>
- * When a service monitor plug-in is loaded and initialized, the framework will
- * initialize the monitor by calling the <EM>initialize()</EM> method. Likewise,
- * when the monitor is unloaded the framework calls the <EM>release()
- * </EM> method is called. If the plug-in needs to save or read any
- * configuration information after the initialize() call, a reference to the
- * proxy object should be saved at initialization.
+ * As of 19.0.0, service monitor plugins are retrieved from a
+ * {@link org.opennms.netmgt.poller.ServiceMonitorRegistry}. See the registry
+ * implementation documentation for details on how make the service monitors
+ * available to the registry.
  * </p>
  *
  * <P>
@@ -55,6 +53,7 @@ import java.util.Map;
  * deployments.
  * </P>
  *
+ * @author <A HREF="mailto:jesse@opennms.org">Jesse White</A>
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
@@ -64,7 +63,7 @@ public interface ServiceMonitor {
      * <P>
      * This method is the heart of the plug-in monitor. Each time an interface
      * requires a check to be performed as defined by the scheduler the poll
-     * method is invoked. The poll is passed the interface to check
+     * method is invoked. The poll is passed the service to check.
      * </P>
      *
      * <P>
@@ -75,11 +74,18 @@ public interface ServiceMonitor {
      * default events by setting the suppress event bit in the returned integer.
      * </P>
      *
+     * <P>
+     * <STRONG>NOTE: </STRONG> This method may be invoked on a Minion, in which
+     * case certain bean and facilities will not be available. If any state related
+     * information is required such as agent related configuration, it should retrieved
+     * by the {@link #getRuntimeAttributes(MonitoredService, Map)}.
+     * </P>
+     *
      * @param svc
-     *            TODO
+     *            Includes details about to the service being monitored.
      * @param parameters
-     *            The package parameters (timeout, retry, etc...) to be used for
-     *            this poll.
+     *            Includes the service parameters defined in <EM>poller-configuration.xml</EM> and those
+     *            returned by {@link #getRuntimeAttributes(MonitoredService, Map)}.
      * @return The availability of the interface and if a transition event
      *         should be suppressed.
      * @exception java.lang.RuntimeException
@@ -92,12 +98,22 @@ public interface ServiceMonitor {
      */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters);
 
+    /**
+     *
+     * @param svc
+     *            Includes details about to the service being monitored.
+     * @param parameters
+     *            Includes the service parameters defined in <EM>poller-configuration.xml</EM> and those
+     *            returned by {@link #getRuntimeAttributes(MonitoredService, Map)}.
+     * @return Additional attributes, which should be added to the parameter map before calling {@link #poll(MonitoredService, Map)}.
+     */
     public Map<String, Object> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters);
 
     /**
      * Allows the monitor to override the location at which it should be run.
      *
-     * @param location location associated with the service to be monitored
+     * @param location
+     *            location associated with the service to be monitored
      * @return a possibly updated location
      */
     public String getEffectiveLocation(String location);

@@ -94,7 +94,6 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-pinger.xml",
-        "classpath*:/META-INF/opennms/monitors.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-client-mock.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-poller.xml",
 
@@ -1065,7 +1064,6 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
         testSendNodeGainedService("SMTP", "HTTP");
     }
 
-    @Ignore("JW: TODO: Failing!")
     @Test
 	public void testSendIPv6NodeGainedService() {
 		m_pollerConfig.setNodeOutageProcessingEnabled(false);
@@ -1075,7 +1073,6 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
         testSendNodeGainedServices(99, "TestNode", "fe80:0000:0000:0000:0231:f982:0123:4567", new String[] { "SMTP", "HTTP" });
 	}
 
-    @Ignore("JW: TODO: Failing!")
     @Test
     public void testSendIPv6NodeGainedServiceNodeOutages() {
         m_pollerConfig.setNodeOutageProcessingEnabled(true);

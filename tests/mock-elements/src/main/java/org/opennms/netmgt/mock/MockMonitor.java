@@ -102,7 +102,7 @@ public class MockMonitor extends AbstractServiceMonitor {
     @Override
     public Map<String, Object> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
         final Map<String, Object> attributes = new HashMap<>();
-        final PollStatus pollStatus = doPoll(svc.getNodeId(), InetAddrUtils.str(svc.getAddress()), m_svcName);
+        final PollStatus pollStatus = doPoll(svc.getNodeId(), svc.getIpAddr(), m_svcName);
         attributes.put("status", Integer.toString(pollStatus.getStatusCode()));
         attributes.put("reason", pollStatus.getReason());
         return attributes;
